@@ -1,0 +1,163 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f9af1c6015733a42be940cc462aa7ed, type: 3}
+  m_Name: Log 3
+  m_EditorClassIdentifier: 
+  pipeline: {fileID: 11400000, guid: c889281b8b15f5b49bafc309ff1ab257, type: 2}
+  creationDate:
+    ticks: 638521783773780844
+  entries:
+  - logLevel: 0
+    internalTime:
+      ticks: 638521783802471617
+    message: '[Build(2 - StageAssetBundles)](assetlink://Assets%2fThunderKit%2fBuild.asset)[Manifest](assetlink://Assets%2fThunderKit%2fManifest.asset)
+      Creating 1 AssetBundles'
+    context:
+    - 'ne_scene
+
+      [NeoEditor](assetlink://Assets%2fScenes%2fNeoEditor.unity)
+
+      
+
+      [GameRenderer](assetlink://Assets%2fRenderTexture%2fGameRenderer.renderTexture)
+
+      
+
+      [star_full](assetlink://Assets%2fSprites%2fADOFAI%2fstar_full.png)
+
+      
+
+      [CameraSettings](assetlink://Assets%2fSprites%2fADOFAI%2fCameraSettings.png)
+
+      
+
+      [TrackFx](assetlink://Assets%2fSprites%2fADOFAI%2fTrackFx.png)
+
+      
+
+      [TMP_SDF](assetlink://Assets%2fTextMesh+Pro%2fShaders%2fTMP_SDF.shader)
+
+      
+
+      [PretendardVariable](assetlink://Assets%2fFonts%2fPretendardVariable.ttf)
+
+      
+
+      [PretendardVariable
+      SDF](assetlink://Assets%2fFonts%2fPretendardVariable+SDF.asset)
+
+      
+
+      [file_icon](assetlink://Assets%2fSprites%2fADOFAI%2ffile_icon.png)
+
+      
+
+      [TMP
+      - Text Component Icon](assetlink://Packages%2fcom.unity.textmeshpro%2fEditor+Resources%2fGizmos%2fTMP+-+Text+Component+Icon.psd)
+
+      
+
+      [TMP
+      - Font Asset Icon](assetlink://Packages%2fcom.unity.textmeshpro%2fEditor+Resources%2fGizmos%2fTMP+-+Font+Asset+Icon.psd)
+
+      
+
+      [LevelSettings](assetlink://Assets%2fSprites%2fADOFAI%2fLevelSettings.png)
+
+      
+
+      [SetFilter](assetlink://Assets%2fSprites%2fADOFAI%2fSetFilter.png)
+
+      
+
+      [AddDecoration](assetlink://Assets%2fSprites%2fADOFAI%2fAddDecoration.png)
+
+      
+
+      
+
+'
+  - logLevel: 3
+    internalTime:
+      ticks: 638521783798148396
+    message: '[Build(2 - StageAssetBundles)](assetlink://Assets%2fThunderKit%2fBuild.asset)
+      Execute Job'
+    context: []
+  - logLevel: 0
+    internalTime:
+      ticks: 638521783797973458
+    message: '[Build(1 - StageManifestFiles)](assetlink://Assets%2fThunderKit%2fBuild.asset)[Manifest](assetlink://Assets%2fThunderKit%2fManifest.asset)
+      staged ``` Assets/Info.json ``` in ``` ThunderKit/Staging/Info.json ```'
+    context: []
+  - logLevel: 3
+    internalTime:
+      ticks: 638521783797843816
+    message: '[Build(1 - StageManifestFiles)](assetlink://Assets%2fThunderKit%2fBuild.asset)
+      Execute Job'
+    context: []
+  - logLevel: 0
+    internalTime:
+      ticks: 638521783797603982
+    message: '[Build(0 - StageAssemblies)](assetlink://Assets%2fThunderKit%2fBuild.asset)[Manifest](assetlink://Assets%2fThunderKit%2fManifest.asset)
+      Build Completed: ``` ThunderKit/Libraries/NeoEditor.dll ```'
+    context: []
+  - logLevel: 0
+    internalTime:
+      ticks: 638521783793712619
+    message: '[Build(0 - StageAssemblies)](assetlink://Assets%2fThunderKit%2fBuild.asset)[Manifest](assetlink://Assets%2fThunderKit%2fManifest.asset)
+      staging ``` ThunderKit/Libraries ``` in ``` ThunderKit/Staging ```
+
+'
+    context:
+    - "Assembly Files\r\nFrom: ThunderKit/Libraries\\NeoEditor.dll\r\n  To: ThunderKit/Staging/NeoEditor.dll\r\n\r\n"
+  - logLevel: 0
+    internalTime:
+      ticks: 638521783785070643
+    message: '[Build(0 - StageAssemblies)](assetlink://Assets%2fThunderKit%2fBuild.asset)[Manifest](assetlink://Assets%2fThunderKit%2fManifest.asset)
+      Building : ThunderKit/Libraries/NeoEditor.dll'
+    context: []
+  - logLevel: 3
+    internalTime:
+      ticks: 638521783775227053
+    message: '[Build(0 - StageAssemblies)](assetlink://Assets%2fThunderKit%2fBuild.asset)[Manifest](assetlink://Assets%2fThunderKit%2fManifest.asset)
+      Execute Job'
+    context: []
+  - logLevel: 0
+    internalTime:
+      ticks: 638521783775167489
+    message: '[Build(2 - StageAssetBundles)](assetlink://Assets%2fThunderKit%2fBuild.asset)[Manifest](assetlink://Assets%2fThunderKit%2fManifest.asset)
+      Clearing PipelineJob error states'
+    context: []
+  - logLevel: 3
+    internalTime:
+      ticks: 638521783775147545
+    message: '[Build(2 - StageAssetBundles)](assetlink://Assets%2fThunderKit%2fBuild.asset)[Manifest](assetlink://Assets%2fThunderKit%2fManifest.asset)
+      Execute Pipeline'
+    context: []
+  - logLevel: 3
+    internalTime:
+      ticks: 638521783775117587
+    message: '[BuildAndCopy(0 - ExecutePipeline)](assetlink://Assets%2fThunderKit%2fBuildAndCopy.asset)
+      Execute Job'
+    context: []
+  - logLevel: 0
+    internalTime:
+      ticks: 638521783775077449
+    message: '[BuildAndCopy(0 - ExecutePipeline)](assetlink://Assets%2fThunderKit%2fBuildAndCopy.asset)
+      Clearing PipelineJob error states'
+    context: []
+  - logLevel: 3
+    internalTime:
+      ticks: 638521783775069291
+    message: '[BuildAndCopy(0 - ExecutePipeline)](assetlink://Assets%2fThunderKit%2fBuildAndCopy.asset)
+      Execute Pipeline'
+    context: []

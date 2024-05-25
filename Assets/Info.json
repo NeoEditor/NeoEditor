@@ -1,0 +1,8 @@
+{
+  "ID": "NeoEditor",
+  "DisplayName": "NeoEditor",
+  "Author": "ChocoSwi",
+  "Version": "0.1",
+  "AssemblyName": "NeoEditor.dll",
+  "EntryMethod": "NeoEditor.Main.Load"
+}
