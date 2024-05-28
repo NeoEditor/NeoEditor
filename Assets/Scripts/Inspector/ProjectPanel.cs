@@ -21,19 +21,32 @@ namespace NeoEditor.Inspector
         public Button levelButton;
         public Button miscButton;
 
-        public void Init(ADOFAI.LevelEventInfo song, ADOFAI.LevelEventInfo level, ADOFAI.LevelEventInfo misc)
+        public void Init(
+            ADOFAI.LevelEventInfo song,
+            ADOFAI.LevelEventInfo level,
+            ADOFAI.LevelEventInfo misc
+        )
         {
             NeoEditor editor = NeoEditor.Instance;
-            songSettings = Instantiate(editor.prefab_inspector, content).GetComponent<InspectorPanel>();
-            songSettings.selectedEvent = editor.events.Find(e => e.eventType == ADOFAI.LevelEventType.SongSettings);
-            
-            levelSettings = Instantiate(editor.prefab_inspector, content).GetComponent<InspectorPanel>();
-			levelSettings.selectedEvent = editor.events.Find(e => e.eventType == ADOFAI.LevelEventType.LevelSettings);
+            songSettings = Instantiate(editor.prefab_inspector, content)
+                .GetComponent<InspectorPanel>();
+            songSettings.selectedEvent = editor.events.Find(e =>
+                e.eventType == ADOFAI.LevelEventType.SongSettings
+            );
 
-			miscSettings = Instantiate(editor.prefab_inspector, content).GetComponent<InspectorPanel>();
-			miscSettings.selectedEvent = editor.events.Find(e => e.eventType == ADOFAI.LevelEventType.MiscSettings);
+            levelSettings = Instantiate(editor.prefab_inspector, content)
+                .GetComponent<InspectorPanel>();
+            levelSettings.selectedEvent = editor.events.Find(e =>
+                e.eventType == ADOFAI.LevelEventType.LevelSettings
+            );
 
-			inspectors = new InspectorPanel[] { songSettings, levelSettings, miscSettings };
+            miscSettings = Instantiate(editor.prefab_inspector, content)
+                .GetComponent<InspectorPanel>();
+            miscSettings.selectedEvent = editor.events.Find(e =>
+                e.eventType == ADOFAI.LevelEventType.MiscSettings
+            );
+
+            inspectors = new InspectorPanel[] { songSettings, levelSettings, miscSettings };
             tabButtons = new Button[] { songButton, levelButton, miscButton };
 
             for (int i = 0; i < inspectors.Length; i++)
@@ -54,8 +67,8 @@ namespace NeoEditor.Inspector
             for (int i = 0; i < inspectors.Length; i++)
             {
                 inspectors[i].gameObject.SetActive(i == index);
-				tabButtons[i].interactable = i != index;
-			}
+                tabButtons[i].interactable = i != index;
+            }
         }
-	}
+    }
 }

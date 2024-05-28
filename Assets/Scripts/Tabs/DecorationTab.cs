@@ -4,8 +4,5 @@ using UnityEngine;
 
 namespace NeoEditor.Tabs
 {
-    public class DecorationTab : TabBase
-    {
-        
-    }
+    public class DecorationTab : TabBase { }
 }

@@ -12,9 +12,6 @@ namespace NeoEditor.Inspector.Controls
         public Button help;
         public Button check;
 
-		void Start()
-		{
-			
-		}
-	}
+        void Start() { }
+    }
 }

@@ -4,8 +4,5 @@ using UnityEngine;
 
 namespace NeoEditor.PopupWindows
 {
-    public class SaveBeforeImportPopup : PopupBase
-    {
-        
-    }
+    public class SaveBeforeImportPopup : PopupBase { }
 }

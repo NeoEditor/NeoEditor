@@ -4,8 +4,5 @@ using UnityEngine;
 
 namespace NeoEditor.PopupWindows
 {
-    public class UnsavedChangesPopup : PopupBase
-    {
-        
-    }
+    public class UnsavedChangesPopup : PopupBase { }
 }

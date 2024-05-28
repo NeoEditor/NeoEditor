@@ -6,24 +6,29 @@ using System.Threading.Tasks;
 
 namespace NeoEditor
 {
-	public class SaveStateScope : IDisposable
-	{
-		private NeoEditor editor;
+    public class SaveStateScope : IDisposable
+    {
+        private NeoEditor editor;
 
-		public SaveStateScope(NeoEditor editor, bool clearRedo = false, bool dataHasChanged = true, bool skipSaving = false)
-		{
-			this.editor = editor;
-			if (!skipSaving)
-			{
-				//editor.SaveState(clearRedo, dataHasChanged);
-			}
+        public SaveStateScope(
+            NeoEditor editor,
+            bool clearRedo = false,
+            bool dataHasChanged = true,
+            bool skipSaving = false
+        )
+        {
+            this.editor = editor;
+            if (!skipSaving)
+            {
+                //editor.SaveState(clearRedo, dataHasChanged);
+            }
 
-			//editor.changingState++;
-		}
+            //editor.changingState++;
+        }
 
-		public void Dispose()
-		{
-			//editor.changingState--;
-		}
-	}
+        public void Dispose()
+        {
+            //editor.changingState--;
+        }
+    }
 }

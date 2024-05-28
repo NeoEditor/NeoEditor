@@ -8,11 +8,11 @@ namespace NeoEditor.PopupWindows
     public class PopupBase : MonoBehaviour
     {
         public TextMeshProUGUI title;
-		public TextMeshProUGUI content;
+        public TextMeshProUGUI content;
 
         public virtual void ClosePopup()
         {
             NeoEditor.Instance.showingPopup = false;
         }
-	}
+    }
 }
