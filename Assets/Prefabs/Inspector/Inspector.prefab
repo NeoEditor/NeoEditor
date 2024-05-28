@@ -590,8 +590,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 0
-    m_Right: 0
+    m_Left: 8
+    m_Right: 8
     m_Top: 4
     m_Bottom: 4
   m_ChildAlignment: 1
@@ -737,8 +737,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3342676634084539558}
   m_HandleRect: {fileID: 5717796738319368266}
   m_Direction: 0
-  m_Value: 1
-  m_Size: 0.99999994
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
