@@ -1,0 +1,174 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f9af1c6015733a42be940cc462aa7ed, type: 3}
+  m_Name: Log 109
+  m_EditorClassIdentifier: 
+  pipeline: {fileID: 11400000, guid: c889281b8b15f5b49bafc309ff1ab257, type: 2}
+  creationDate:
+    ticks: 638523525945992724
+  entries:
+  - logLevel: 3
+    internalTime:
+      ticks: 638523526038556897
+    message: '[BuildAndCopy](assetlink://Assets%2fThunderKit%2fBuildAndCopy.asset)
+      Finished execution'
+    context: []
+  - logLevel: 0
+    internalTime:
+      ticks: 638523526038207785
+    message: '[BuildAndCopy(1 - Copy)](assetlink://Assets%2fThunderKit%2fBuildAndCopy.asset)
+      ``` <StagingRoot> ``` to ``` <GamePath>/Mods/NeoEditor ```
+
+      
+
+      Copied
+      ``` ThunderKit/Staging ``` to ``` C:/Program Files (x86)/Steam/steamapps/common/A
+      Dance of Fire and Ice/Mods/NeoEditor ```'
+    context:
+    - 'Copied Files
+
+      
+
+      . C:/Program Files (x86)/Steam/steamapps/common/A
+      Dance of Fire and Ice/Mods/NeoEditor\.manifest
+
+      
+
+      . C:/Program
+      Files (x86)/Steam/steamapps/common/A Dance of Fire and Ice/Mods/NeoEditor\Info.json
+
+      
+
+      .
+      C:/Program Files (x86)/Steam/steamapps/common/A Dance of Fire and Ice/Mods/NeoEditor\NeoEditor.dll
+
+      
+
+      .
+      C:/Program Files (x86)/Steam/steamapps/common/A Dance of Fire and Ice/Mods/NeoEditor\ne_scene
+
+      
+
+      .
+      C:/Program Files (x86)/Steam/steamapps/common/A Dance of Fire and Ice/Mods/NeoEditor\ne_scene.manifest'
+  - logLevel: 3
+    internalTime:
+      ticks: 638523526037549543
+    message: '[BuildAndCopy(1 - Copy)](assetlink://Assets%2fThunderKit%2fBuildAndCopy.asset)
+      Execute Job'
+    context: []
+  - logLevel: 3
+    internalTime:
+      ticks: 638523526034912939
+    message: '[Build](assetlink://Assets%2fThunderKit%2fBuild.asset) Finished execution'
+    context: []
+  - logLevel: 0
+    internalTime:
+      ticks: 638523526023633137
+    message: '[Build(2 - StageAssetBundles)](assetlink://Assets%2fThunderKit%2fBuild.asset)[Manifest](assetlink://Assets%2fThunderKit%2fManifest.asset)
+      Creating 1 AssetBundles'
+    context:
+    - 'ne_scene
+
+      [NeoEditor](assetlink://Assets%2fScenes%2fNeoEditor.unity)
+
+      
+
+      
+
+'
+  - logLevel: 3
+    internalTime:
+      ticks: 638523526016286464
+    message: '[Build(2 - StageAssetBundles)](assetlink://Assets%2fThunderKit%2fBuild.asset)
+      Execute Job'
+    context: []
+  - logLevel: 0
+    internalTime:
+      ticks: 638523526015348952
+    message: '[Build(1 - StageManifestFiles)](assetlink://Assets%2fThunderKit%2fBuild.asset)[Manifest](assetlink://Assets%2fThunderKit%2fManifest.asset)
+      staged ``` Assets/Info.json ``` in ``` ThunderKit/Staging/Info.json ```'
+    context: []
+  - logLevel: 3
+    internalTime:
+      ticks: 638523526014790450
+    message: '[Build(1 - StageManifestFiles)](assetlink://Assets%2fThunderKit%2fBuild.asset)
+      Execute Job'
+    context: []
+  - logLevel: 0
+    internalTime:
+      ticks: 638523526013802477
+    message: '[Build(0 - StageAssemblies)](assetlink://Assets%2fThunderKit%2fBuild.asset)[Manifest](assetlink://Assets%2fThunderKit%2fManifest.asset)
+      Build Completed: ``` ThunderKit/Libraries/NeoEditor.dll ```'
+    context: []
+  - logLevel: 0
+    internalTime:
+      ticks: 638523526007484018
+    message: '[Build(0 - StageAssemblies)](assetlink://Assets%2fThunderKit%2fBuild.asset)[Manifest](assetlink://Assets%2fThunderKit%2fManifest.asset)
+      staging ``` ThunderKit/Libraries ``` in ``` ThunderKit/Staging ```
+
+'
+    context:
+    - "Assembly Files\r\nFrom: ThunderKit/Libraries\\NeoEditor.dll\r\n  To: ThunderKit/Staging/NeoEditor.dll\r\n\r\n"
+  - logLevel: 1
+    internalTime:
+      ticks: 638523526007289417
+    message: '[Build(0 - StageAssemblies)](assetlink://Assets%2fThunderKit%2fBuild.asset)[Manifest](assetlink://Assets%2fThunderKit%2fManifest.asset)
+      Assets\Scripts\EditorControls.cs(28,16): warning CS0414: The field ''EditorControls.changingSlider''
+      is assigned but its value is never used'
+    context:
+    - 'Assets\Scripts\EditorControls.cs (28:16)
+
+      [Assets\Scripts\EditorControls.cs(28,16):
+      warning CS0414: The field ''EditorControls.changingSlider'' is assigned but
+      its value is never used](exceptionsource://C:\Users\User\Choco\ADOFAI\Project\NeoEditor\Assets\Scripts\EditorControls.cs#28)'
+  - logLevel: 0
+    internalTime:
+      ticks: 638523525980830775
+    message: '[Build(0 - StageAssemblies)](assetlink://Assets%2fThunderKit%2fBuild.asset)[Manifest](assetlink://Assets%2fThunderKit%2fManifest.asset)
+      Building : ThunderKit/Libraries/NeoEditor.dll'
+    context: []
+  - logLevel: 3
+    internalTime:
+      ticks: 638523525947773489
+    message: '[Build(0 - StageAssemblies)](assetlink://Assets%2fThunderKit%2fBuild.asset)
+      Execute Job'
+    context: []
+  - logLevel: 0
+    internalTime:
+      ticks: 638523525947713916
+    message: '[Build](assetlink://Assets%2fThunderKit%2fBuild.asset) Clearing PipelineJob
+      error states'
+    context: []
+  - logLevel: 3
+    internalTime:
+      ticks: 638523525947683999
+    message: '[Build](assetlink://Assets%2fThunderKit%2fBuild.asset) Execute Pipeline'
+    context: []
+  - logLevel: 3
+    internalTime:
+      ticks: 638523525947653867
+    message: '[BuildAndCopy(0 - ExecutePipeline)](assetlink://Assets%2fThunderKit%2fBuildAndCopy.asset)
+      Execute Job'
+    context: []
+  - logLevel: 0
+    internalTime:
+      ticks: 638523525947623929
+    message: '[BuildAndCopy](assetlink://Assets%2fThunderKit%2fBuildAndCopy.asset)
+      Clearing PipelineJob error states'
+    context: []
+  - logLevel: 3
+    internalTime:
+      ticks: 638523525947443245
+    message: '[BuildAndCopy](assetlink://Assets%2fThunderKit%2fBuildAndCopy.asset)
+      Execute Pipeline'
+    context: []

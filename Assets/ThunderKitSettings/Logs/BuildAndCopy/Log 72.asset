@@ -18,6 +18,56 @@ MonoBehaviour:
   entries:
   - logLevel: 3
     internalTime:
+      ticks: 638522716589630656
+    message: '[BuildAndCopy](assetlink://Assets%2fThunderKit%2fBuildAndCopy.asset)
+      Finished execution'
+    context: []
+  - logLevel: 0
+    internalTime:
+      ticks: 638522716589401276
+    message: '[BuildAndCopy(1 - Copy)](assetlink://Assets%2fThunderKit%2fBuildAndCopy.asset)
+      ``` <StagingRoot> ``` to ``` <GamePath>/Mods/NeoEditor ```
+
+      
+
+      Copied
+      ``` ThunderKit/Staging ``` to ``` C:/Program Files (x86)/Steam/steamapps/common/A
+      Dance of Fire and Ice/Mods/NeoEditor ```'
+    context:
+    - 'Copied Files
+
+      
+
+      . C:/Program Files (x86)/Steam/steamapps/common/A
+      Dance of Fire and Ice/Mods/NeoEditor\.manifest
+
+      
+
+      . C:/Program
+      Files (x86)/Steam/steamapps/common/A Dance of Fire and Ice/Mods/NeoEditor\Info.json
+
+      
+
+      .
+      C:/Program Files (x86)/Steam/steamapps/common/A Dance of Fire and Ice/Mods/NeoEditor\NeoEditor.dll
+
+      
+
+      .
+      C:/Program Files (x86)/Steam/steamapps/common/A Dance of Fire and Ice/Mods/NeoEditor\ne_scene
+
+      
+
+      .
+      C:/Program Files (x86)/Steam/steamapps/common/A Dance of Fire and Ice/Mods/NeoEditor\ne_scene.manifest'
+  - logLevel: 3
+    internalTime:
+      ticks: 638522716588962441
+    message: '[BuildAndCopy(1 - Copy)](assetlink://Assets%2fThunderKit%2fBuildAndCopy.asset)
+      Execute Job'
+    context: []
+  - logLevel: 3
+    internalTime:
       ticks: 638522716586084164
     message: '[Build](assetlink://Assets%2fThunderKit%2fBuild.asset) Finished execution'
     context: []

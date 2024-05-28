@@ -36,6 +36,10 @@ MonoBehaviour:
   - assetBundleName: ne_scene
     assets:
     - {fileID: 102900000, guid: 81925bce437f4ee42839768ce05ac093, type: 3}
+  - assetBundleName: ne_asset
+    assets:
+    - {fileID: 8400000, guid: 34314749a38907b418eea589b07b27be, type: 2}
+    - {fileID: 8400000, guid: eedcff35bba17404c9dd78e5f50dfd4c, type: 2}
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0

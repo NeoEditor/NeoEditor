@@ -7,10 +7,8 @@ namespace NeoEditor
 {
     public class ScrollbarSetter : MonoBehaviour
     {
-        public RectTransform maxSize;
         public RectTransform horizontal;
         public RectTransform vertical;
-        public ScrollRect scroll;
 
   //      void Start()
   //      {

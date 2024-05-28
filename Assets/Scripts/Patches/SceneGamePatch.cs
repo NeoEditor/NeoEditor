@@ -21,14 +21,13 @@ namespace NeoEditor.Patches
 			}
 		}
 
-		[HarmonyPatch(typeof(scnGame), "Play")]
+		//[HarmonyPatch(typeof(scnGame), "Play")]
 		public static class PlayWithoutCountdown
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
 			{
-				if(NeoEditor.Instance == null) return instructions;
 				var codes = new List<CodeInstruction>(instructions);
-				int index = -1;
+				
 				for (int i = 0; i < codes.Count; i++)
 				{
 					CodeInstruction code = codes[i];
@@ -37,13 +36,41 @@ namespace NeoEditor.Patches
 					if (code.operand.GetType().BaseType == typeof(MethodInfo) &&
 						(MethodInfo)code.operand == typeof(ADOBase).GetProperty("isLevelEditor", AccessTools.all).GetMethod)
 					{
-						index = i + 1;
+						codes[i + 1].opcode = OpCodes.Brfalse_S;
+						break;
 					}
 				}
+				
+				return codes.AsEnumerable();
+			}
+		}
 
-				if (index != -1)
+		//[HarmonyPatch(typeof(scnGame), "FinishCustomLevelLoading")]
+		public static class FixLoadLevel
+		{
+			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+			{
+				var codes = new List<CodeInstruction>(instructions);
+				
+				for (int i = 0; i < codes.Count; i++)
 				{
-					codes[index].opcode = OpCodes.Brfalse_S;
+					CodeInstruction code = codes[i];
+					if (code.opcode != OpCodes.Call) continue;
+
+					if (code.operand.GetType().BaseType == typeof(MethodInfo) &&
+						(MethodInfo)code.operand == typeof(ADOBase).GetProperty("isLevelEditor", AccessTools.all).GetMethod)
+					{
+						if (codes[i + 1].opcode == OpCodes.Brtrue)
+							codes[i + 1].opcode = OpCodes.Brfalse;
+						else if (codes[i + 1].opcode == OpCodes.Brtrue_S)
+							codes[i + 1].opcode = OpCodes.Brfalse_S;
+						else if (codes[i + 1].opcode == OpCodes.Brfalse)
+							codes[i + 1].opcode = OpCodes.Brtrue;
+						else if (codes[i + 1].opcode == OpCodes.Brfalse_S)
+							codes[i + 1].opcode = OpCodes.Brtrue_S;
+						
+						i++;
+					}
 				}
 				return codes.AsEnumerable();
 			}

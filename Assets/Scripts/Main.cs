@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using NeoEditor.Patches;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +32,12 @@ namespace NeoEditor
 				if (value)
 				{
 					harmony.PatchAll(Assembly.GetExecutingAssembly());
+					if(typeof(scrCamera).GetMethod("SetupRTCam", AccessTools.all) != null)
+					{
+						harmony.Patch(typeof(scrCamera).GetMethod("SetupRTCam", AccessTools.all),
+							prefix: typeof(CameraPatch.ForceSetupRTCam).GetMethod("Prefix", AccessTools.all),
+							postfix: typeof(CameraPatch.ForceSetupRTCam).GetMethod("Postfix", AccessTools.all));
+					}
 				}
 				else
 				{
