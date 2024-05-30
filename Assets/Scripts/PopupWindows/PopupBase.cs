@@ -13,6 +13,7 @@ namespace NeoEditor.PopupWindows
         public virtual void ClosePopup()
         {
             NeoEditor.Instance.showingPopup = false;
+            gameObject.SetActive(false);
         }
     }
 }

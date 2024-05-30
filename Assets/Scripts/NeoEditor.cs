@@ -85,7 +85,7 @@ namespace NeoEditor
 
         public float playbackSpeed;
 
-        public bool showingPopup;
+        public bool showingPopup = false;
 
         public bool paused => scrController.instance.paused;
 
@@ -255,8 +255,11 @@ namespace NeoEditor
             {
                 tabContainers[i].SetActive(i == (int)tab);
                 tabButtons[i].interactable = i != (int)tab;
+                if (i == (int)tab)
+                    tabs[i]?.OnActive();
+                else
+                    tabs[i]?.OnInactive();
             }
-            //
         }
 
         public void TogglePauseGame()
@@ -284,6 +287,7 @@ namespace NeoEditor
             {
                 customLevel.ResetScene(true);
                 customLevel.isLoading = false;
+                customLevel.UpdateDecorationObjects(true);
                 GCS.useUnlockKeyLimiter = true;
                 customLevel.Play(scrubTo, false);
                 GCS.useUnlockKeyLimiter = false;
@@ -295,6 +299,9 @@ namespace NeoEditor
             }
 
             GameObject.Find("Error Meter(Clone)")?.SetActive(false);
+
+            foreach (var tab in tabs)
+                tab?.OnPlayLevel();
         }
 
         public void Pause()
@@ -442,6 +449,7 @@ namespace NeoEditor
                     popup.ClosePopup();
                 }
             );
+            popup.gameObject.SetActive(true);
         }
 
         public void ShowNotificationPopup(
@@ -459,13 +467,12 @@ namespace NeoEditor
             Action callbackAction = null
         )
         {
-            ShowNotificationPopupBase(confirmPopup, text, title, callbackAction);
+            ShowNotificationPopupBase(confirmPopupLarge, text, title, callbackAction);
         }
 
         public void OpenLevel()
         {
             StartCoroutine(OpenLevelCo());
-            customLevel.ReloadAssets();
 
             //DrawFloorOffsetLines();
         }
@@ -814,6 +821,9 @@ namespace NeoEditor
             //this.CloseAllPanels(null);
             //yield return null;
             //this.ShowImageLoadResult();
+
+            foreach (var tab in tabs)
+                tab?.OnOpenLevel();
             yield break;
         }
     }

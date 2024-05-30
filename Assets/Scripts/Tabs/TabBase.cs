@@ -8,5 +8,19 @@ namespace NeoEditor.Tabs
     public class TabBase : MonoBehaviour
     {
         public virtual void InitTab(Dictionary<string, LevelEventInfo> levelEventsInfo) { }
+
+        public virtual void OnOpenLevel() { }
+
+        public virtual void OnPlayLevel() { }
+
+        public virtual void OnRemakePath() { }
+
+        public virtual void OnLevelChanged() { }
+
+        public virtual void OnActive() { }
+
+        public virtual void OnInactive() { }
+
+        public virtual void SelectEvent(LevelEvent levelEvent) { }
     }
 }

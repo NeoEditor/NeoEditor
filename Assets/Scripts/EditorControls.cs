@@ -48,6 +48,9 @@ namespace NeoEditor
 
         void Update()
         {
+#if UNITY_EDITOR
+            return;
+#endif
             NeoEditor editor = NeoEditor.Instance;
 
             speed.SetActive(RDInput.holdingControl && editor.paused);
