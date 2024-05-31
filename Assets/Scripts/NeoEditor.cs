@@ -175,12 +175,12 @@ namespace NeoEditor
             //floorConnectors = GameObject.Find("Floor Connector Lines");
             floorConnectors = new GameObject("Floor Connector Lines");
 
+            var dictionary = GCS
+                .settingsInfo.Concat(GCS.levelEventsInfo)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             for (int i = 0; i < 7; i++)
             {
                 int tab = i;
-                var dictionary = GCS
-                    .settingsInfo.Concat(GCS.levelEventsInfo)
-                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
                 tabs[i]?.InitTab(dictionary);
                 tabButtons[i].onClick.AddListener(() => SelectTab((EditorTab)tab));
             }
