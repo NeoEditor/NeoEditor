@@ -74,6 +74,5 @@ crashlytics-build.properties
 .vsconfig
 
 /[Tt]hunderKit/*
-/[Pp]rojectSettings/*
 /[Pp]ackages/*
 /[Aa]ssets/[Tt]hunderKitSettings/*
