@@ -152,7 +152,7 @@ namespace NeoEditor.Inspector.Timeline
                 if (floor.midSpin)
                     continue;
 
-                float posX = TimeToBeat(floor.entryTime) * width * scale;
+                float posX = GetLinePosX(floor);
                 if (posX < scrollWidth)
                 {
                     var lineData = CreateLineData(floor, i);
@@ -241,22 +241,6 @@ namespace NeoEditor.Inspector.Timeline
         {
             NeoEditor editor = NeoEditor.Instance;
 
-            VerticalLineData CreateLine(scrFloor floor, VerticalLineData prev)
-            {
-                if (floor.midSpin)
-                    return new VerticalLineData(floor.seqID, prev.x, null, null);
-                var line = vPool.Get();
-                var num = floorNumPool.Get();
-                float posX = TimeToBeat(floor.entryTime) * width * scale;
-                line.transform.LocalMoveX(posX);
-                num.transform.LocalMoveX(posX + scroll.content.anchoredPosition.x);
-                num.text.text = floor.seqID.ToString();
-
-                line.SetActive(true);
-                num.gameObject.SetActive(true);
-                return new VerticalLineData(floor.seqID, posX, line, num);
-            }
-
             Vector2 pos = position * (content.sizeDelta - scrollRT.rect.size);
             Vector2 dir = prevScrollPos - pos;
 
@@ -292,25 +276,11 @@ namespace NeoEditor.Inspector.Timeline
 
                 firstLineShowingOnScreenIdx += frontLinesToRemove;
 
-                //var first = vLines.First.Value;
-                //while (first.x < pos.x)
-                //{
-                //    // 화면 왼쪽으로 나간 line들을 언로드
-                //    if (first.obj != null)
-                //        vPool.Release(first.obj);
-                //    if (first.num != null)
-                //        floorNumPool.Release(first.num);
-                //    vLines.RemoveFirst();
-
-                //    if (vLines.Count < 1) break;
-                //    first = vLines.First.Value;
-                //}
-
                 lastLineShowingOnScreenIdx = firstLineShowingOnScreenIdx + vLines.Count - 1;
                 for (int i = lastLineShowingOnScreenIdx + 1; i < editor.floors.Count; i++)
                 {
                     var floor = editor.floors[i];
-                    float posX = TimeToBeat(floor.entryTime) * width * scale;
+                    float posX = GetLinePosX(floor);
                     if (posX < pos.x)
                     {
                         // 너무 긴 길이를 건너뛰어서 vLines list에 아무것도 없을 경우 (pos.x 변경 전과 후 지점에서 겹치는 line이 없을 경우)
@@ -327,17 +297,6 @@ namespace NeoEditor.Inspector.Timeline
 
                     lastLineShowingOnScreenIdx++;
                 }
-
-                //var last = vLines.Last.Value;
-                //while (last.x < pos.x + scrollRT.rect.width)
-                //{
-                //    if (last.id + 1 >= editor.floors.Count)
-                //        break;
-
-                //    var floor = editor.floors[last.id + 1];
-                //    vLines.AddLast(CreateLine(floor, last));
-                //    last = vLines.Last.Value;
-                //}
             }
 
             // prevScrollPos > (current) pos
@@ -366,24 +325,11 @@ namespace NeoEditor.Inspector.Timeline
 
                 lastLineShowingOnScreenIdx -= backLinesToRemove;
 
-                //var last = vLines.Last.Value;
-                //while (last.x > pos.x + scrollRT.rect.width)
-                //{
-                //    if (last.obj != null)
-                //        vPool.Release(last.obj);
-                //    if (last.num != null)
-                //        floorNumPool.Release(last.num);
-                //    vLines.RemoveLast();
-
-                //    if (vLines.Count < 1) break;
-                //    last = vLines.Last.Value;
-                //}
-
                 firstLineShowingOnScreenIdx = lastLineShowingOnScreenIdx - vLines.Count + 1;
                 for (int i = firstLineShowingOnScreenIdx - 1; i >= 0; i--)
                 {
                     var floor = editor.floors[i];
-                    float posX = TimeToBeat(floor.entryTime) * width * scale;
+                    float posX = GetLinePosX(floor);
                     if (posX > pos.x + scrollRT.rect.width)
                     {
                         lastLineShowingOnScreenIdx = i - 1;
@@ -398,17 +344,6 @@ namespace NeoEditor.Inspector.Timeline
 
                     firstLineShowingOnScreenIdx--;
                 }
-
-                //var first = vLines.First.Value;
-                //while (first.x > pos.x)
-                //{
-                //    if (first.id + -1 < 0)
-                //        break;
-
-                //    var floor = editor.floors[first.id - 1];
-                //    vLines.AddFirst(CreateLine(floor, last));
-                //    first = vLines.First.Value;
-                //}
             }
             prevScrollPos = pos;
 
@@ -448,7 +383,7 @@ namespace NeoEditor.Inspector.Timeline
                 
             var line = vPool.Get();
             var num = floorNumPool.Get();
-            float posX = TimeToBeat(floor.entryTime) * width * scale;
+            float posX = GetLinePosX(floor);
             line.transform.LocalMoveX(posX);
             num.transform.LocalMoveX(posX + scroll.content.anchoredPosition.x);
             num.text.text = floor.seqID.ToString();
