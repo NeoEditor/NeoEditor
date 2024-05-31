@@ -33,5 +33,25 @@ namespace NeoEditor.Patches
                     gameView.texture = Assets.GameRenderer;
             }
         }
+
+        [HarmonyPatch(typeof(ffxCustomBackgroundPlus), "StartEffect")]
+        public static class ApplyBackgroundColor
+        {
+            public static void Postfix(ffxCustomBackgroundPlus __instance)
+            {
+                NeoEditor.Instance.BGcamstaticCopy.backgroundColor = __instance.color;
+            }
+        }
+
+        [HarmonyPatch(typeof(scnGame), "SetBackground")]
+        public static class ApplyBackgroundColorAtStart
+        {
+            public static void Postfix(scnGame __instance)
+            {
+                NeoEditor.Instance.BGcamstaticCopy.backgroundColor = __instance
+                    .levelData
+                    .backgroundColor;
+            }
+        }
     }
 }

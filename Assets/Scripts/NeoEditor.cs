@@ -92,8 +92,8 @@ namespace NeoEditor
         private bool shouldScrub = true;
         private int scrubTo = 0;
 
-        private Camera BGcamCopy;
-        private Camera BGcamstaticCopy;
+        public Camera BGcamCopy;
+        public Camera BGcamstaticCopy;
 
         private readonly Color grayColor = new Color(0.42352942f, 0.42352942f, 0.42352942f);
         private readonly Color lineGreen = new Color(0.4f, 1f, 0.4f, 1f);
