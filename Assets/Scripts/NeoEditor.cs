@@ -15,7 +15,6 @@ using SFB;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using static scnEditor;
 
 namespace NeoEditor
 {
@@ -84,6 +83,7 @@ namespace NeoEditor
         private GameObject floorConnectors;
 
         public float playbackSpeed;
+        private float prevPlaySpeed = 1f;
 
         public bool showingPopup = false;
 
@@ -271,7 +271,11 @@ namespace NeoEditor
         public void PlayPause()
         {
             if (paused)
+            {
+                if (prevPlaySpeed != (RDInput.holdingControl ? playbackSpeed : 1f))
+                    ScrubTo(scrController.instance.currentSeqID);
                 Play();
+            }
             else
                 Pause();
         }
@@ -291,6 +295,7 @@ namespace NeoEditor
                 GCS.useUnlockKeyLimiter = true;
                 customLevel.Play(scrubTo, false);
                 GCS.useUnlockKeyLimiter = false;
+                prevPlaySpeed = RDInput.holdingControl ? playbackSpeed : 1f;
                 shouldScrub = false;
             }
             else
@@ -362,6 +367,8 @@ namespace NeoEditor
         {
             shouldScrub = true;
             scrubTo = seqID;
+            if (paused)
+                scrController.instance.currentSeqID = scrubTo;
         }
 
         public void ShowPopup(bool show, string type)

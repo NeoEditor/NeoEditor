@@ -2,12 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace NeoEditor
 {
-    public class EditorControls : MonoBehaviour
+    public class EditorControls : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         public TextMeshProUGUI time;
 
@@ -26,8 +28,7 @@ namespace NeoEditor
         public Slider slider;
 
         private bool changingSlider;
-
-        //Slider
+        private bool isPointerHover;
 
         void Start()
         {
@@ -48,13 +49,10 @@ namespace NeoEditor
 
         void Update()
         {
-#if UNITY_EDITOR
-            return;
-#endif
             NeoEditor editor = NeoEditor.Instance;
 
-            speed.SetActive(RDInput.holdingControl && editor.paused);
-            if (RDInput.holdingControl && editor.paused)
+            speed.SetActive(RDInput.holdingControl && editor.paused && isPointerHover);
+            if (RDInput.holdingControl && editor.paused && isPointerHover)
             {
                 Vector2 mouseScrollDelta = RDInput.mouseScrollDelta;
                 if (Mathf.Abs(mouseScrollDelta.y) > 0.05f)
@@ -69,7 +67,7 @@ namespace NeoEditor
                     }
                 }
             }
-            //TODO: Update time and slider.
+
             scrConductor conductor = scrConductor.instance;
             if (conductor.song.clip)
             {
@@ -86,6 +84,16 @@ namespace NeoEditor
             {
                 time.text = "";
             }
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            isPointerHover = true;
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            isPointerHover = false;
         }
 
         void ShiftSpeed(int direction)
