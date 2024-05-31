@@ -40,6 +40,9 @@ namespace NeoEditor.Inspector.Timeline
         private bool changingScroll = false;
         private Vector2 prevScrollPos = Vector2.zero;
 
+        private int firstLineShowingOnScreenIdx = -1;
+        private int lastLineShowingOnScreenIdx = -1;
+
         private LevelEventType[] ignoreEvents = new LevelEventType[]
         {
             LevelEventType.None,
@@ -142,24 +145,26 @@ namespace NeoEditor.Inspector.Timeline
                 vPool.Release(line.obj);
             vLines.Clear();
 
-            foreach (var floor in floors)
+            for (int i = 0; i < floors.Count; i++)
             {
+                var floor = floors[i];
+
                 if (floor.midSpin)
                     continue;
 
                 float posX = TimeToBeat(floor.entryTime) * width * scale;
                 if (posX < scrollWidth)
                 {
-                    var line = vPool.Get();
-                    var num = floorNumPool.Get();
-                    line.transform.LocalMoveX(posX);
-                    num.transform.LocalMoveX(posX + scroll.content.anchoredPosition.x);
-                    num.text.text = floor.seqID.ToString();
+                    var lineData = CreateLineData(floor, i);
+                    vLines.AddLast(lineData);
 
-                    line.SetActive(true);
-                    num.gameObject.SetActive(true);
-                    vLines.AddLast(new VerticalLineData(floor.seqID, posX, line, num));
+                    //nextLineIdxToShow++;
+                    lastLineShowingOnScreenIdx++;
                 }
+                //if (nextLineIdxToShow < 0)
+                //    nextLineIdxToShow = 0;
+                if (lastLineShowingOnScreenIdx >= 0)
+                    firstLineShowingOnScreenIdx = 0;
             }
 
             foreach (var levelEvent in editor.events)
@@ -255,61 +260,207 @@ namespace NeoEditor.Inspector.Timeline
             Vector2 pos = position * (content.sizeDelta - scrollRT.rect.size);
             Vector2 dir = prevScrollPos - pos;
 
+            Main.Entry.Logger.Log("dir: " + dir);
+
+            // prevScrollPos < (current) pos
+            // scrolled to the right
             if (dir.x < 0)
             {
-                var first = vLines.First.Value;
-                while (first.x < pos.x)
+                int frontLinesToRemove = 0;
+                foreach(var line in vLines)
                 {
-                    if (first.obj != null)
-                        vPool.Release(first.obj);
-                    if (first.num != null)
-                        floorNumPool.Release(first.num);
-                    vLines.RemoveFirst();
-                    first = vLines.First.Value;
+                    if (line.x < pos.x)
+                    {
+                        // 화면 왼쪽으로 나간 line들을 언로드
+                        if (line.obj != null)
+                            vPool.Release(line.obj);
+                        if (line.num != null)
+                            floorNumPool.Release(line.num);
+
+                        frontLinesToRemove++;
+                    }
+                    else break;
                 }
-                var last = vLines.Last.Value;
-                while (last.x < pos.x + scrollRT.rect.width)
+
+                Main.Entry.Logger.Log("[TimelinePanel.OnValueChanged] lines to remove from start: " + frontLinesToRemove);
+                for (int i = 0; i < frontLinesToRemove; i++)
                 {
-                    if (last.id + 1 >= editor.floors.Count)
+                    // foreach 안에서 list item을 앞에서부터 삭제하는 것이 불가능하므로
+                    // 삭제할 line 개수를 센 다음 따로 루프돌려서 삭제
+                    vLines.RemoveFirst();
+                }
+
+                firstLineShowingOnScreenIdx += frontLinesToRemove;
+
+                //var first = vLines.First.Value;
+                //while (first.x < pos.x)
+                //{
+                //    // 화면 왼쪽으로 나간 line들을 언로드
+                //    if (first.obj != null)
+                //        vPool.Release(first.obj);
+                //    if (first.num != null)
+                //        floorNumPool.Release(first.num);
+                //    vLines.RemoveFirst();
+
+                //    if (vLines.Count < 1) break;
+                //    first = vLines.First.Value;
+                //}
+
+                lastLineShowingOnScreenIdx = firstLineShowingOnScreenIdx + vLines.Count - 1;
+                for (int i = lastLineShowingOnScreenIdx + 1; i < editor.floors.Count; i++)
+                {
+                    var floor = editor.floors[i];
+                    float posX = TimeToBeat(floor.entryTime) * width * scale;
+                    if (posX < pos.x)
+                    {
+                        // 너무 긴 길이를 건너뛰어서 vLines list에 아무것도 없을 경우 (pos.x 변경 전과 후 지점에서 겹치는 line이 없을 경우)
+                        // 루프를 순차적으로 돌면서 처음으로 표시되어야 할 line을 찾기
+                        firstLineShowingOnScreenIdx = i + 1;
+                        lastLineShowingOnScreenIdx = firstLineShowingOnScreenIdx;
+                        continue;
+                    }
+                    if (posX > pos.x + scrollRT.rect.width)
                         break;
 
-                    var floor = editor.floors[last.id + 1];
-                    vLines.AddLast(CreateLine(floor, last));
-                    last = vLines.Last.Value;
+                    Main.Entry.Logger.Log("[TimelinePanel.OnValueChanged] adding floor idx " + i);
+                    vLines.AddLast(CreateLineData(floor, i));
+
+                    lastLineShowingOnScreenIdx++;
                 }
+
+                //var last = vLines.Last.Value;
+                //while (last.x < pos.x + scrollRT.rect.width)
+                //{
+                //    if (last.id + 1 >= editor.floors.Count)
+                //        break;
+
+                //    var floor = editor.floors[last.id + 1];
+                //    vLines.AddLast(CreateLine(floor, last));
+                //    last = vLines.Last.Value;
+                //}
             }
+
+            // prevScrollPos > (current) pos
+            // scrolled to the left
             else if (dir.x > 0)
             {
-                var last = vLines.Last.Value;
-                while (last.x > pos.x + scrollRT.rect.width)
+                int backLinesToRemove = 0;
+                foreach (var line in vLines.Reverse())
                 {
-                    if (last.obj != null)
-                        vPool.Release(last.obj);
-                    if (last.num != null)
-                        floorNumPool.Release(last.num);
-                    vLines.RemoveLast();
-                    last = vLines.Last.Value;
+                    if (line.x > pos.x + scrollRT.rect.width)
+                    {
+                        if (line.obj != null)
+                            vPool.Release(line.obj);
+                        if (line.num != null)
+                            floorNumPool.Release(line.num);
+
+                        backLinesToRemove++;
+                    }
                 }
-                var first = vLines.First.Value;
-                while (first.x > pos.x)
+
+                Main.Entry.Logger.Log("[TimelinePanel.OnValueChanged] lines to remove from end: " + backLinesToRemove);
+                for (int i = 0; i < backLinesToRemove; i++)
                 {
-                    if (first.id + -1 < 0)
+                    vLines.RemoveLast();
+                }
+
+                lastLineShowingOnScreenIdx -= backLinesToRemove;
+
+                //var last = vLines.Last.Value;
+                //while (last.x > pos.x + scrollRT.rect.width)
+                //{
+                //    if (last.obj != null)
+                //        vPool.Release(last.obj);
+                //    if (last.num != null)
+                //        floorNumPool.Release(last.num);
+                //    vLines.RemoveLast();
+
+                //    if (vLines.Count < 1) break;
+                //    last = vLines.Last.Value;
+                //}
+
+                firstLineShowingOnScreenIdx = lastLineShowingOnScreenIdx - vLines.Count + 1;
+                for (int i = firstLineShowingOnScreenIdx - 1; i >= 0; i--)
+                {
+                    var floor = editor.floors[i];
+                    float posX = TimeToBeat(floor.entryTime) * width * scale;
+                    if (posX > pos.x + scrollRT.rect.width)
+                    {
+                        lastLineShowingOnScreenIdx = i - 1;
+                        firstLineShowingOnScreenIdx = lastLineShowingOnScreenIdx;
+                        continue;
+                    }
+                    if (posX < pos.x)
                         break;
 
-                    var floor = editor.floors[first.id - 1];
-                    vLines.AddFirst(CreateLine(floor, last));
-                    first = vLines.First.Value;
+                    Main.Entry.Logger.Log("[TimelinePanel.OnValueChanged] adding floor idx " + i);
+                    vLines.AddFirst(CreateLineData(floor, i));
+
+                    firstLineShowingOnScreenIdx--;
                 }
+
+                //var first = vLines.First.Value;
+                //while (first.x > pos.x)
+                //{
+                //    if (first.id + -1 < 0)
+                //        break;
+
+                //    var floor = editor.floors[first.id - 1];
+                //    vLines.AddFirst(CreateLine(floor, last));
+                //    first = vLines.First.Value;
+                //}
             }
             prevScrollPos = pos;
 
             //if (!changingScroll && dir.x != 0)
             //    followPlayhead = false;
+
+            Main.Entry.Logger.Log("Update Complete! cnt = " + vLines.Count + ", firstIdx = " + firstLineShowingOnScreenIdx + ", lastIdx = " + lastLineShowingOnScreenIdx);
         }
 
         float TimeToBeat(double time)
         {
             return (float)(time / scrConductor.instance.crotchet);
+        }
+
+        private VerticalLineData CreateLineData(scrFloor floor, int floorIdx)
+        {
+            NeoEditor editor = NeoEditor.Instance;
+
+            if (floor.midSpin)
+            {
+                // find first previous floor which is not a midspin
+                // NOTE: can throw exception when no non-midspin floor exist before floorIdx
+                // But that situation should not occur since valid chart data always starts with non-midspin floor
+                scrFloor prevNormalFloor = null;
+                for (int i = floorIdx - 1; i >= 0; i--)
+                {
+                    if (!editor.floors[i].midSpin)
+                    {
+                        prevNormalFloor = editor.floors[i];
+                        break;
+                    }
+                }
+                var prevLineX = GetLinePosX(prevNormalFloor);
+
+                return new VerticalLineData(floor.seqID, prevLineX, null, null);
+            }
+                
+            var line = vPool.Get();
+            var num = floorNumPool.Get();
+            float posX = TimeToBeat(floor.entryTime) * width * scale;
+            line.transform.LocalMoveX(posX);
+            num.transform.LocalMoveX(posX + scroll.content.anchoredPosition.x);
+            num.text.text = floor.seqID.ToString();
+
+            line.SetActive(true);
+            num.gameObject.SetActive(true);
+            return new VerticalLineData(floor.seqID, posX, line, num);
+        }
+
+        private float GetLinePosX(scrFloor floor)
+        {
+            return TimeToBeat(floor.entryTime) * width * scale;
         }
     }
 }
