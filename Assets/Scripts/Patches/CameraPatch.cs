@@ -39,6 +39,8 @@ namespace NeoEditor.Patches
         {
             public static void Postfix(ffxCustomBackgroundPlus __instance)
             {
+                if (NeoEditor.Instance == null)
+                    return;
                 NeoEditor.Instance.BGcamstaticCopy.backgroundColor = __instance.color;
             }
         }
@@ -48,6 +50,8 @@ namespace NeoEditor.Patches
         {
             public static void Postfix(scnGame __instance)
             {
+                if (NeoEditor.Instance == null)
+                    return;
                 NeoEditor.Instance.BGcamstaticCopy.backgroundColor = __instance
                     .levelData
                     .backgroundColor;
