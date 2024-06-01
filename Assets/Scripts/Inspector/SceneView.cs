@@ -49,7 +49,7 @@ namespace NeoEditor.Inspector
 
                 Vector2 mouseScrollDelta = RDInput.mouseScrollDelta;
                 if (Mathf.Abs(mouseScrollDelta.y) > 0.05f)
-                    ZoomCamera(mouseScrollDelta.y);
+                    ZoomCamera(mouseScrollDelta.y, !Persistence.editorUseLegacyZoom);
             }
             prevMousePos = Input.mousePosition;
         }
