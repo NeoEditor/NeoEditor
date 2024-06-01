@@ -95,6 +95,11 @@ namespace NeoEditor
         public Camera BGcamCopy;
         public Camera BGcamstaticCopy;
 
+        public float camUserSizeTarget = 1f;
+        public float camUserSize = 1f;
+        public float scrollSpeed;
+        public Tween anchorZoomTween;
+
         private readonly Color grayColor = new Color(0.42352942f, 0.42352942f, 0.42352942f);
         private readonly Color lineGreen = new Color(0.4f, 1f, 0.4f, 1f);
         private readonly Color lineYellow = new Color(1f, 1f, 0.4f, 1f);
@@ -158,8 +163,8 @@ namespace NeoEditor
             mainCamera.cullingMask =
                 camera.camobj.cullingMask & ~(1 << LayerMask.NameToLayer("Flash"));
 
-            BGcamCopy = Instantiate(camera.BGcam, camera.transform);
-            BGcamstaticCopy = Instantiate(camera.Bgcamstatic, camera.transform);
+            BGcamCopy = Instantiate(camera.BGcam, mainCamera.transform);
+            BGcamstaticCopy = Instantiate(camera.Bgcamstatic, mainCamera.transform);
             BGcamCopy.targetTexture = Assets.SceneRenderer;
             BGcamstaticCopy.targetTexture = Assets.SceneRenderer;
 
