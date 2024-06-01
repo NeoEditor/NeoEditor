@@ -167,6 +167,7 @@ namespace NeoEditor
             BGcamstaticCopy = Instantiate(camera.Bgcamstatic, mainCamera.transform);
             BGcamCopy.targetTexture = Assets.SceneRenderer;
             BGcamstaticCopy.targetTexture = Assets.SceneRenderer;
+            BGcamCopy.GetComponent<scrMatchCameraSize>().enabled = false;
 
             foreach (var gameView in gameViews)
                 gameView.texture = Assets.GameRenderer;

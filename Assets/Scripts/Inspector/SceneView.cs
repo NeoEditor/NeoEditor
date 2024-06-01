@@ -22,6 +22,7 @@ namespace NeoEditor.Inspector
         void Update()
         {
             NeoEditor editor = NeoEditor.Instance;
+            UpdateSize();
 
             if (isPointerHover)
             {
@@ -89,7 +90,7 @@ namespace NeoEditor.Inspector
                 editor.camUserSize =
                     (editor.camUserSizeTarget - startSizeMultiplier) * progress
                     + startSizeMultiplier;
-                editor.mainCamera.orthographicSize = 5f * editor.camUserSize;
+                UpdateSize();
                 Transform transform = editor.mainCamera.transform;
                 Vector3 position = transform.position;
                 position += vector - (Vector3)GetWorldPoint(startMousePos);
@@ -109,6 +110,14 @@ namespace NeoEditor.Inspector
                 out localPosition
             );
             return editor.mainCamera.ViewportToWorldPoint(localPosition) / rectTransform.rect.size;
+        }
+
+        private void UpdateSize()
+        {
+            NeoEditor editor = NeoEditor.Instance;
+            editor.mainCamera.orthographicSize = 5f * editor.camUserSize;
+            editor.BGcamCopy.orthographicSize = 5f * editor.camUserSize;
+            //editor.BGcamstaticCopy.orthographicSize = 5f * editor.camUserSize;
         }
     }
 }
