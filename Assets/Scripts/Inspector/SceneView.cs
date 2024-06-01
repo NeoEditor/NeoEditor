@@ -19,19 +19,6 @@ namespace NeoEditor.Inspector
         private bool isPointerHover;
         private Vector2 prevMousePos;
 
-        public void OnDrag(PointerEventData eventData)
-        {
-            NeoEditor editor = NeoEditor.Instance;
-
-            //editor.CopyCamObj.transform.position -= (Vector3)scaledMousePosition;
-            //Vector3 textureToWorld = new Vector3(
-            //    -2 * scaledMousePosition.x,
-            //    0,
-            //    -2 * scaledMousePosition.y
-            //);
-            //textureToWorld;
-        }
-
         void Update()
         {
             NeoEditor editor = NeoEditor.Instance;
@@ -120,11 +107,6 @@ namespace NeoEditor.Inspector
                 mousePosition,
                 null,
                 out localPosition
-            );
-            Main.Entry.Logger.Log(
-                (
-                    editor.mainCamera.ViewportToWorldPoint(localPosition) / rectTransform.rect.size
-                ).ToString()
             );
             return editor.mainCamera.ViewportToWorldPoint(localPosition) / rectTransform.rect.size;
         }

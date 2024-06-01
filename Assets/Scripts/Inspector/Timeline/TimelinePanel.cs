@@ -244,14 +244,12 @@ namespace NeoEditor.Inspector.Timeline
             Vector2 pos = position * (content.sizeDelta - scrollRT.rect.size);
             Vector2 dir = prevScrollPos - pos;
 
-            Main.Entry.Logger.Log("dir: " + dir);
-
             // prevScrollPos < (current) pos
             // scrolled to the right
             if (dir.x < 0)
             {
                 int frontLinesToRemove = 0;
-                foreach(var line in vLines)
+                foreach (var line in vLines)
                 {
                     if (line.x < pos.x)
                     {
@@ -263,10 +261,10 @@ namespace NeoEditor.Inspector.Timeline
 
                         frontLinesToRemove++;
                     }
-                    else break;
+                    else
+                        break;
                 }
 
-                Main.Entry.Logger.Log("[TimelinePanel.OnValueChanged] lines to remove from start: " + frontLinesToRemove);
                 for (int i = 0; i < frontLinesToRemove; i++)
                 {
                     // foreach 안에서 list item을 앞에서부터 삭제하는 것이 불가능하므로
@@ -292,13 +290,11 @@ namespace NeoEditor.Inspector.Timeline
                     if (posX > pos.x + scrollRT.rect.width)
                         break;
 
-                    Main.Entry.Logger.Log("[TimelinePanel.OnValueChanged] adding floor idx " + i);
                     vLines.AddLast(CreateLineData(floor, i));
 
                     lastLineShowingOnScreenIdx++;
                 }
             }
-
             // prevScrollPos > (current) pos
             // scrolled to the left
             else if (dir.x > 0)
@@ -317,7 +313,6 @@ namespace NeoEditor.Inspector.Timeline
                     }
                 }
 
-                Main.Entry.Logger.Log("[TimelinePanel.OnValueChanged] lines to remove from end: " + backLinesToRemove);
                 for (int i = 0; i < backLinesToRemove; i++)
                 {
                     vLines.RemoveLast();
@@ -339,7 +334,6 @@ namespace NeoEditor.Inspector.Timeline
                     if (posX < pos.x)
                         break;
 
-                    Main.Entry.Logger.Log("[TimelinePanel.OnValueChanged] adding floor idx " + i);
                     vLines.AddFirst(CreateLineData(floor, i));
 
                     firstLineShowingOnScreenIdx--;
@@ -349,8 +343,6 @@ namespace NeoEditor.Inspector.Timeline
 
             //if (!changingScroll && dir.x != 0)
             //    followPlayhead = false;
-
-            Main.Entry.Logger.Log("Update Complete! cnt = " + vLines.Count + ", firstIdx = " + firstLineShowingOnScreenIdx + ", lastIdx = " + lastLineShowingOnScreenIdx);
         }
 
         float TimeToBeat(double time)
@@ -380,7 +372,7 @@ namespace NeoEditor.Inspector.Timeline
 
                 return new VerticalLineData(floor.seqID, prevLineX, null, null);
             }
-                
+
             var line = vPool.Get();
             var num = floorNumPool.Get();
             float posX = GetLinePosX(floor);
