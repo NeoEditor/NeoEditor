@@ -160,8 +160,8 @@ namespace NeoEditor
 
             mainCamera.targetTexture = Assets.SceneRenderer;
             mainCamera.cullingMask = camera.camobj.cullingMask;
-            mainCamera.cullingMask =
-                camera.camobj.cullingMask & ~(1 << LayerMask.NameToLayer("Flash"));
+            mainCamera.cullingMask |= 1 << LayerMask.NameToLayer("Foreground");
+            mainCamera.cullingMask |= 1 << 26;
 
             BGcamCopy = Instantiate(camera.BGcam, mainCamera.transform);
             BGcamstaticCopy = Instantiate(camera.Bgcamstatic, mainCamera.transform);

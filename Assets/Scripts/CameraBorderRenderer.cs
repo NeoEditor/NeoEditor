@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace NeoEditor
 {
-    public class LockToCameraScale : MonoBehaviour
+    public class CameraBorderRenderer : MonoBehaviour
     {
         public SpriteRenderer spriteRenderer;
 
@@ -16,6 +16,7 @@ namespace NeoEditor
             spriteX = spriteRenderer.sprite.bounds.size.x;
             spriteY = spriteRenderer.sprite.bounds.size.y;
             transform.SetParent(scrCamera.instance.camobj.transform, true);
+            gameObject.layer = 26;
         }
 
         void Update()
