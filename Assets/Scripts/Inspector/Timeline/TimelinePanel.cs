@@ -182,25 +182,29 @@ namespace NeoEditor.Inspector.Timeline
                 Vector2 position = new Vector2(TimeToBeat(floor.entryTime) * width, -25);
                 float bpm = editor.customLevel.levelData.bpm;
                 object f;
-                bool b = levelEvent.data.TryGetValue("angleOffset", out f);
+                bool valueExist = levelEvent.data.TryGetValue("angleOffset", out f);
 
-                position += new Vector2((b ? (float)f : 0) / 180f * (1 / floor.speed) * width, 0);
+                position += new Vector2((valueExist ? (float)f : 0) / 180f * (1 / floor.speed) * width, 0);
                 obj.transform.LocalMoveX(position.x);
 
-                b = levelEvent.data.TryGetValue("duration", out f);
+                valueExist = levelEvent.data.TryGetValue("duration", out f);
                 obj.GetComponent<RectTransform>()
                     .SizeDeltaX(
-                        b ? Mathf.Max((float)f * width * (1 / floor.speed), height) : height
+                        valueExist ? Mathf.Max((float)f * width * (1 / floor.speed), height) : height
                     );
             }
 
             scrConductor conductor = scrConductor.instance;
+            float timelineWidth = TimeToBeat(floors.Last().entryTime + conductor.crotchet * 4) * width;
+            
             content
                 .GetComponent<RectTransform>()
-                .SizeDeltaX(
-                    TimeToBeat(floors[floors.Count - 1].entryTime + conductor.crotchet * 4) * width
-                );
+                .SizeDeltaX(timelineWidth);
             content.GetComponent<RectTransform>().SizeDeltaY(1000f);
+
+            floorNumBar
+                .GetComponent<RectTransform>()
+                .SizeDeltaX(timelineWidth);
         }
 
         public void SelectEvent(TimelineEvent timelineEvent)
@@ -339,10 +343,14 @@ namespace NeoEditor.Inspector.Timeline
                     firstLineShowingOnScreenIdx--;
                 }
             }
-            prevScrollPos = pos;
 
             //if (!changingScroll && dir.x != 0)
             //    followPlayhead = false;
+
+            floorNumBar.LocalMoveX(-pos.x);
+
+            prevScrollPos = pos;
+            Main.Entry.Logger.Log("Update Complete! cnt = " + vLines.Count + ", firstIdx = " + firstLineShowingOnScreenIdx + ", lastIdx = " + lastLineShowingOnScreenIdx);
         }
 
         float TimeToBeat(double time)
@@ -377,7 +385,7 @@ namespace NeoEditor.Inspector.Timeline
             var num = floorNumPool.Get();
             float posX = GetLinePosX(floor);
             line.transform.LocalMoveX(posX);
-            num.transform.LocalMoveX(posX + scroll.content.anchoredPosition.x);
+            num.transform.LocalMoveX(posX);
             num.text.text = floor.seqID.ToString();
 
             line.SetActive(true);
