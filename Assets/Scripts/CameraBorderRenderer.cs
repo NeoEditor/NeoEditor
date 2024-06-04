@@ -23,7 +23,7 @@ namespace NeoEditor
         {
             float screenY = scrCamera.instance.camobj.orthographicSize * 2;
             float screenX = screenY / Screen.height * Screen.width;
-            float scale = 4f / 0.03f;
+            float scale = 8f / 0.03f;
             spriteRenderer.size = new Vector2(
                 screenX / spriteX / scale + 0.02f,
                 screenY / spriteY / scale + 0.02f
