@@ -187,7 +187,7 @@ namespace NeoEditor
             for (int i = 0; i < 7; i++)
             {
                 int tab = i;
-                tabs[i]?.InitTab(dictionary);
+                tabs[i].InitTab(dictionary);
                 tabButtons[i].onClick.AddListener(() => SelectTab((EditorTab)tab));
             }
 
@@ -262,9 +262,9 @@ namespace NeoEditor
                 tabContainers[i].SetActive(i == (int)tab);
                 tabButtons[i].interactable = i != (int)tab;
                 if (i == (int)tab)
-                    tabs[i]?.OnActive();
+                    tabs[i].OnActive();
                 else
-                    tabs[i]?.OnInactive();
+                    tabs[i].OnInactive();
             }
         }
 
@@ -312,7 +312,7 @@ namespace NeoEditor
             GameObject.Find("Error Meter(Clone)")?.SetActive(false);
 
             foreach (var tab in tabs)
-                tab?.OnPlayLevel();
+                tab.OnPlayLevel();
         }
 
         public void Pause()
@@ -335,7 +335,7 @@ namespace NeoEditor
             //this.UpdateSongAndLevelSettings();
             customLevel.ReloadAssets(true, true);
 
-            //this.UpdateDecorationObjects();
+            //UpdateDecorationObjects();
             customLevel.UpdateDecorationObjects(true);
         }
 
@@ -487,7 +487,7 @@ namespace NeoEditor
         {
             StartCoroutine(OpenLevelCo());
 
-            //DrawFloorOffsetLines();
+            DrawFloorOffsetLines();
         }
 
         public scrFloor NextFloor(scrFloor floor)
@@ -682,6 +682,15 @@ namespace NeoEditor
             return text;
         }
 
+        public void UpdateSongAndLevelSettings()
+        {
+            //var dictionary = GCS
+            //    .settingsInfo.Concat(GCS.levelEventsInfo)
+            //    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            //for (int i = 0; i < 7; i++)
+            //    tabs[i].InitTab(dictionary);
+        }
+
         private IEnumerator OpenLevelCo(string definedLevelPath = null)
         {
             ClearAllFloorOffsets();
@@ -746,7 +755,6 @@ namespace NeoEditor
                         yield break;
                     }
                     string text3 = FindAdofaiLevelOnDirectory(availableDirectoryName);
-                    //string text3 = null;
                     if (text3 == null)
                     {
                         ShowNotificationPopup(
@@ -808,7 +816,7 @@ namespace NeoEditor
                 RemakePath(true, true);
                 //this.lastSelectedFloor = null;
                 //this.SelectFirstFloor();
-                //this.UpdateSongAndLevelSettings();
+                UpdateSongAndLevelSettings();
                 customLevel.ReloadAssets(true, true);
 
                 //this.UpdateDecorationObjects();
@@ -836,7 +844,7 @@ namespace NeoEditor
             //this.ShowImageLoadResult();
 
             foreach (var tab in tabs)
-                tab?.OnOpenLevel();
+                tab.OnOpenLevel();
             yield break;
         }
     }

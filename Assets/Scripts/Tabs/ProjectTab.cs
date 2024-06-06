@@ -21,5 +21,15 @@ namespace NeoEditor.Tabs
             );
             gameView.texture = Assets.GameRenderer;
         }
+
+        public override void OnOpenLevel()
+        {
+            NeoEditor editor = NeoEditor.Instance;
+            project.SetProperties(
+                editor.levelData.songSettings,
+                editor.levelData.levelSettings,
+                editor.levelData.miscSettings
+            );
+        }
     }
 }

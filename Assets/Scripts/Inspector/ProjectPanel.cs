@@ -28,18 +28,25 @@ namespace NeoEditor.Inspector
         )
         {
             NeoEditor editor = NeoEditor.Instance;
+
+            if (songSettings != null)
+                Destroy(songSettings.gameObject);
             songSettings = Instantiate(editor.prefab_inspector, content)
                 .GetComponent<InspectorPanel>();
             songSettings.selectedEvent = editor.events.Find(e =>
                 e.eventType == ADOFAI.LevelEventType.SongSettings
             );
 
+            if (levelSettings != null)
+                Destroy(levelSettings.gameObject);
             levelSettings = Instantiate(editor.prefab_inspector, content)
                 .GetComponent<InspectorPanel>();
             levelSettings.selectedEvent = editor.events.Find(e =>
                 e.eventType == ADOFAI.LevelEventType.LevelSettings
             );
 
+            if (miscSettings != null)
+                Destroy(miscSettings.gameObject);
             miscSettings = Instantiate(editor.prefab_inspector, content)
                 .GetComponent<InspectorPanel>();
             miscSettings.selectedEvent = editor.events.Find(e =>
@@ -60,6 +67,17 @@ namespace NeoEditor.Inspector
             miscSettings.Init(misc);
 
             SelectTab(0);
+        }
+
+        public void SetProperties(
+            ADOFAI.LevelEvent song,
+            ADOFAI.LevelEvent level,
+            ADOFAI.LevelEvent misc
+        )
+        {
+            songSettings.SetProperties(song, false);
+            levelSettings.SetProperties(level, false);
+            miscSettings.SetProperties(misc, false);
         }
 
         public void SelectTab(int index)

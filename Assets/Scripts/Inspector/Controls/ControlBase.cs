@@ -42,39 +42,39 @@ namespace NeoEditor.Inspector.Controls
         {
             if (inspectorPanel.name == "LevelSettings")
             {
-                Property property = inspectorPanel.properties["specialArtistType"];
-                ApprovalLevelBadge approvalLevelBadge = ADOBase
-                    .editor
-                    .settingsPanel
-                    .approvalLevelBadge;
-                bool enabled =
-                    approvalLevelBadge == null
-                    || approvalLevelBadge.approvalLevel == ApprovalLevel.Pending;
-                property.control.SetEnabled(enabled, true);
-                Property property2 = inspectorPanel.properties["artistPermission"];
-                bool enabled2 = false;
-                if (approvalLevelBadge != null)
-                {
-                    if (approvalLevelBadge.approvalLevel == ApprovalLevel.Pending)
-                    {
-                        enabled2 = (
-                            (SpecialArtistType)
-                                ADOBase.editor.settingsPanel.selectedEvent["specialArtistType"]
-                            == SpecialArtistType.None
-                        );
-                    }
-                }
-                else
-                {
-                    enabled2 = true;
-                }
-                property2.control.SetEnabled(enabled2, true);
+                //PropertyPlus property = inspectorPanel.properties["specialArtistType"] as PropertyPlus;
+                //ApprovalLevelBadge approvalLevelBadge = ADOBase
+                //    .editor
+                //    .settingsPanel
+                //    .approvalLevelBadge;
+                //bool enabled =
+                //    approvalLevelBadge == null
+                //    || approvalLevelBadge.approvalLevel == ApprovalLevel.Pending;
+                //property.control.SetEnabled(enabled, true);
+                //PropertyPlus property2 = inspectorPanel.properties["artistPermission"] as PropertyPlus;
+                //bool enabled2 = false;
+                //if (approvalLevelBadge != null)
+                //{
+                //    if (approvalLevelBadge.approvalLevel == ApprovalLevel.Pending)
+                //    {
+                //        enabled2 = (
+                //            (SpecialArtistType)
+                //                ADOBase.editor.settingsPanel.selectedEvent["specialArtistType"]
+                //            == SpecialArtistType.None
+                //        );
+                //    }
+                //}
+                //else
+                //{
+                //    enabled2 = true;
+                //}
+                //property2.control.SetEnabled(enabled2, true);
             }
-            foreach (Property property3 in inspectorPanel.properties.Values)
+            foreach (PropertyPlus property3 in inspectorPanel.properties.Values)
             {
                 if (
-                    !(property3.info.name == "specialArtistType")
-                    && !(property3.info.name == "artistPermission")
+                    property3.info.name != "specialArtistType"
+                    && property3.info.name != "artistPermission"
                 )
                 {
                     property3.control.UpdateEnabled();
@@ -91,14 +91,14 @@ namespace NeoEditor.Inspector.Controls
 
         public virtual void SetEnabled(bool enabled, bool shown = true)
         {
-            Color color = enabled ? Color.white : Color.gray;
-            foreach (TMP_Text tmp_Text in base.GetComponentsInChildren<TMP_Text>())
-            {
-                if (tmp_Text.color != Color.black)
-                {
-                    tmp_Text.color = color;
-                }
-            }
+            //Color color = enabled ? Color.white : Color.gray;
+            //foreach (TMP_Text tmp_Text in base.GetComponentsInChildren<TMP_Text>())
+            //{
+            //    if (tmp_Text.color != Color.black)
+            //    {
+            //        tmp_Text.color = color;
+            //    }
+            //}
             Selectable[] componentsInChildren2 = base.GetComponentsInChildren<Selectable>();
             for (int i = 0; i < componentsInChildren2.Length; i++)
             {
