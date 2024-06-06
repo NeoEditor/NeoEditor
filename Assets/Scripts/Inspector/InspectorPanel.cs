@@ -171,8 +171,7 @@ namespace NeoEditor.Inspector
                         original = editor.prefab_controlBool;
                         break;
                     case PropertyType.Vector2:
-                        continue;
-                        original = ADOBase.gc.prefab_controlVector2;
+                        original = editor.prefab_controlVector2;
                         break;
                     case PropertyType.Tile:
                         continue;
@@ -310,11 +309,11 @@ namespace NeoEditor.Inspector
 
                 if (propertyInfo.type == PropertyType.Vector2)
                 {
-                    //PropertyControl_Vector2 obj2 = property.control as PropertyControl_Vector2;
-                    //TMP_Text tMP_Text = obj2.inputX.placeholder as TMP_Text;
-                    //TMP_Text obj3 = obj2.inputY.placeholder as TMP_Text;
-                    //tMP_Text.text = (propertyInfo.vector2_allowEmpty ? "—" : "");
-                    //obj3.text = (propertyInfo.vector2_allowEmpty ? "—" : "");
+                    Control_Vector2 obj2 = property.control as Control_Vector2;
+                    TMP_Text tMP_Text = obj2.inputX.placeholder as TMP_Text;
+                    TMP_Text obj3 = obj2.inputY.placeholder as TMP_Text;
+                    tMP_Text.text = (propertyInfo.vector2_allowEmpty ? "—" : "");
+                    obj3.text = (propertyInfo.vector2_allowEmpty ? "—" : "");
                 }
 
                 string key2 = "editor." + property.key + ".help";

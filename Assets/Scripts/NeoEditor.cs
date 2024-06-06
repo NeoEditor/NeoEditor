@@ -70,6 +70,7 @@ namespace NeoEditor
         public GameObject prefab_controlLongText;
         public GameObject prefab_controlColor;
         public GameObject prefab_controlFile;
+        public GameObject prefab_controlVector2;
 
         [NonSerialized]
         public Color editingColor = new Color(0.898f, 0.376f, 0.376f, 1f);

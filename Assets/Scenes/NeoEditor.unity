@@ -4771,6 +4771,7 @@ MonoBehaviour:
   prefab_controlLongText: {fileID: 2922194740277733172, guid: 16b9d2b041de0f0408bd88ed0018e7ed, type: 3}
   prefab_controlColor: {fileID: 2922194740277733172, guid: 8b500c54e237868418a6d4464403f9b8, type: 3}
   prefab_controlFile: {fileID: 2922194740277733172, guid: 5d18de9b50a596042a8bf013adad8512, type: 3}
+  prefab_controlVector2: {fileID: 2922194740277733172, guid: 33c8ea38c510b434f8b3e0c093292970, type: 3}
   floorConnectorTex: {fileID: 2800000, guid: 8ed8a1c369cce3e46b960eba261ddae6, type: 3}
   playbackSpeed: 0
   showingPopup: 0
@@ -8414,7 +8415,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 60026305940182749, guid: baad06245eedad14ba44080d30967621, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -4578.362
+      value: -4578.482
       objectReference: {fileID: 0}
     - target: {fileID: 676973587210513213, guid: baad06245eedad14ba44080d30967621, type: 3}
       propertyPath: m_LocalScale.x
