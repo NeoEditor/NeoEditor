@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -314,8 +314,8 @@ namespace NeoEditor.Inspector
                     Control_Vector2 obj2 = property.control as Control_Vector2;
                     TMP_Text tMP_Text = obj2.inputX.placeholder as TMP_Text;
                     TMP_Text obj3 = obj2.inputY.placeholder as TMP_Text;
-                    tMP_Text.text = (propertyInfo.vector2_allowEmpty ? "—" : "");
-                    obj3.text = (propertyInfo.vector2_allowEmpty ? "—" : "");
+                    tMP_Text.text = (propertyInfo.vector2_allowEmpty ? "â€”" : ""); // u+2014
+                    obj3.text = (propertyInfo.vector2_allowEmpty ? "â€”" : "");
                 }
 
                 string key2 = "editor." + property.key + ".help";
