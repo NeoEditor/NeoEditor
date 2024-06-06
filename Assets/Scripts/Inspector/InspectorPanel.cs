@@ -517,7 +517,7 @@ namespace NeoEditor.Inspector
 
                 if (selectedEvent != null)
                 {
-                    //SetupCheckmark(property, control);
+                    SetupCheckmark(property, control);
                 }
 
                 property.control?.OnSelectedEventChanged(levelEvent);
@@ -526,11 +526,33 @@ namespace NeoEditor.Inspector
             if (levelEvent.info.propertiesInfo.ContainsKey("floor"))
             {
                 int num = Mathf.Clamp(levelEvent.floor, 0, ADOBase.editor.floors.Count - 1);
-                Property property2 = properties["floor"];
-                PropertyControl control2 = property2.control;
+                PropertyPlus property2 = properties["floor"] as PropertyPlus;
+                ControlBase control2 = property2.control;
                 control2.text = num.ToString();
-                //SetupCheckmark(property2, control2);
+                SetupCheckmark(property2, control2);
             }
+        }
+
+        public void SetupCheckmark(PropertyPlus property, ControlBase control)
+        {
+            bool flag = selectedEvent?.isFake ?? false;
+            bool flag2 = control.propertyInfo.canBeDisabled || flag;
+            bool value = default(bool);
+            bool flag3 =
+                flag2
+                && selectedEvent.disabled.TryGetValue(control.propertyInfo.name, out value)
+                && value;
+            bool active = (flag ? flag3 : flag2);
+            property.offText.SetActive(flag3);
+            property.enabledCheckmark.SetActive(!flag3);
+            control.gameObject.SetActive(!flag3);
+            property.enabledButton.gameObject.SetActive(value: true);
+            property.enabledButton.GetComponent<RectTransform>().offsetMin = new Vector2(
+                0f,
+                (!flag3) ? 41 : 0
+            );
+            property.enabledCheckmark.transform.parent.gameObject.SetActive(active);
+            property.enabledButton.gameObject.SetActive(active);
         }
 
         void Update() { }
