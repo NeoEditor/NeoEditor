@@ -167,14 +167,14 @@ namespace NeoEditor.Inspector.Controls
                 float y = float.Parse(s2);
                 Vector2 vector = new Vector2(x, y);
                 selectedEvent[propertyInfo.name] = vector;
-                base.ToggleOthersEnabled();
+                ToggleOthersEnabled();
                 if (selectedEvent.eventType == LevelEventType.BackgroundSettings)
                 {
                     ADOBase.customLevel.SetBackground();
                 }
                 else if (selectedEvent.IsDecoration)
                 {
-                    ADOBase.editor.UpdateDecorationObject(selectedEvent);
+                    editor.UpdateDecorationObject(selectedEvent);
                 }
                 if (
                     selectedEvent.eventType == LevelEventType.PositionTrack
@@ -184,15 +184,15 @@ namespace NeoEditor.Inspector.Controls
                     || selectedEvent.eventType == LevelEventType.FreeRoamWarning
                 )
                 {
-                    ADOBase.editor.ApplyEventsToFloors();
-                    if (ADOBase.editor.SelectionIsSingle())
-                    {
-                        ADOBase.editor.floorButtonCanvas.transform.position = ADOBase
-                            .editor
-                            .selectedFloors[0]
-                            .transform
-                            .position;
-                    }
+                    //editor.ApplyEventsToFloors();
+                    //if (ADOBase.editor.SelectionIsSingle())
+                    //{
+                    //    ADOBase.editor.floorButtonCanvas.transform.position = ADOBase
+                    //        .editor
+                    //        .selectedFloors[0]
+                    //        .transform
+                    //        .position;
+                    //}
                 }
             }
         }
