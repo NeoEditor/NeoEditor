@@ -78,7 +78,6 @@ namespace NeoEditor.Inspector
                         original = editor.prefab_controlText;
                         if (propertyInfo.stringDropdown)
                         {
-                            continue;
                             original = ADOBase.gc.prefab_controlToggle;
                             string text2 = propertyInfo.name;
                             if (!(text2 == "component"))
@@ -135,9 +134,8 @@ namespace NeoEditor.Inspector
                         break;
                     case PropertyType.Enum:
                     {
-                        continue;
                         Type enumType = propertyInfo.enumType;
-                        original = ADOBase.gc.prefab_controlToggle;
+                        original = editor.prefab_controlToggle;
                         string[] names = Enum.GetNames(enumType);
                         foreach (string text in names)
                         {
@@ -228,14 +226,18 @@ namespace NeoEditor.Inspector
                 property.control.inspectorPanel = this;
                 property.control.propertyTransform = property.GetComponent<RectTransform>();
 
+                foreach (var str in typeNames)
+                {
+                    Main.Entry.Logger.Log(str);
+                }
                 if (propertyInfo.type == PropertyType.Enum || propertyInfo.stringDropdown)
                 {
-                    //((PropertyControl_Toggle)property.control).EnumSetup(
-                    //    propertyInfo.enumTypeString,
-                    //    typeNames,
-                    //    propertyInfo.type == PropertyType.Enum,
-                    //    localizatedTypeNames
-                    //);
+                    ((Control_Toggle)property.control).EnumSetup(
+                        propertyInfo.enumTypeString,
+                        typeNames,
+                        propertyInfo.type == PropertyType.Enum,
+                        localizatedTypeNames
+                    );
                 }
                 //else if (propertyInfo.type == PropertyType.List && propertyKey == "decorations")
                 //{
@@ -345,7 +347,6 @@ namespace NeoEditor.Inspector
                     );
                 }
 
-                //property.control.Setup(addListener: true);
                 property.control.Setup(addListener: true);
                 //if (property.info.hasRandomValue)
                 //{
@@ -490,20 +491,20 @@ namespace NeoEditor.Inspector
                     default:
                     {
                         string text = levelEvent[item].ToString();
-                        //control.text = (
-                        //(control.propertyInfo.stringDropdown && string.IsNullOrEmpty(text))
-                        //    ? ((PropertyControl_Toggle)control).dropdown.items.First().value
-                        //: text
-                        //);
+                        control.text = (
+                            (control.propertyInfo.stringDropdown && string.IsNullOrEmpty(text))
+                                ? ((Control_Toggle)control).dropdown.items.First().value
+                                : text
+                        );
                         control.text = text;
-                        if (control.propertyInfo.hasRandomValue)
-                        {
-                            control.randomControl.text = levelEvent[
-                                control.propertyInfo.randValueKey
-                            ]
-                                .ToString();
-                            control.SetRandomLayout();
-                        }
+                        //if (control.propertyInfo.hasRandomValue)
+                        //{
+                        //    control.randomControl.text = levelEvent[
+                        //        control.propertyInfo.randValueKey
+                        //    ]
+                        //        .ToString();
+                        //    control.SetRandomLayout();
+                        //}
 
                         break;
                     }
