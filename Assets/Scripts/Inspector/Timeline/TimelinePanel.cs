@@ -87,8 +87,6 @@ namespace NeoEditor.Inspector.Timeline
 
         private LinkedList<VerticalLineData> vLines = new LinkedList<VerticalLineData>();
        
-        //private LinkedList<LevelEventData> currentlyShowingEvents = new LinkedList<LevelEventData>();
-
         private List<LevelEventData> levelEventsDataSortedByStartPos = new List<LevelEventData>();
         private List<LevelEventData> levelEventsDataSortedByEndPos = new List<LevelEventData>();
 
@@ -177,11 +175,8 @@ namespace NeoEditor.Inspector.Timeline
                     var lineData = CreateLineData(floor, i);
                     vLines.AddLast(lineData);
 
-                    //nextLineIdxToShow++;
                     lastLineShowingOnScreenIdx++;
                 }
-                //if (nextLineIdxToShow < 0)
-                //    nextLineIdxToShow = 0;
                 if (lastLineShowingOnScreenIdx >= 0)
                     firstLineShowingOnScreenIdx = 0;
             }
@@ -212,8 +207,6 @@ namespace NeoEditor.Inspector.Timeline
                     levelEventsSortedByStartPosListEndIdx++;
                 }
             }
-            //if (levelEventsSortedByStartPosListEndIdx >= 0)
-            //    levelEventsSortedByStartPosListStartIdx = 0;
 
             levelEventsDataSortedByEndPos.Sort((a, b) => {
                 // sort by event end time, smaller one goes first
@@ -225,14 +218,6 @@ namespace NeoEditor.Inspector.Timeline
                 else
                     return 0;
             });
-            //foreach (var data in levelEventsDataSortedByEndPos)
-            //{
-            //    float endPosX = GetEventPosX(data.evt) + GetEventObjWidth(data.evt);
-            //    if (endPosX > scrollWidth)
-            //        break;
-
-            //    levelEventsSortedByEndPosListStartIdx++;
-            //}
 
             scrConductor conductor = scrConductor.instance;
             float timelineWidth = TimeToBeat(floors.Last().entryTime + conductor.crotchet * 4) * width;
@@ -361,30 +346,6 @@ namespace NeoEditor.Inspector.Timeline
                     levelEventsSortedByEndPosListStartIdx++;
                 }
 
-                //foreach (var eventData in currentlyShowingEvents)
-                //{
-                //    float posX = GetEventPosX(eventData.evt);
-
-                //    if (!eventData.objAvailable && posX < pos.x)
-                //    {
-                //        frontEventsToRemove++;
-                //        continue;
-                //    }
-
-                //    float objWidth = GetEventObjWidth(eventData.evt);
-                //    if (posX + objWidth < pos.x)
-                //    {
-                //        if (eventData.obj != null)
-                //            eventPool.Release(eventData.obj);
-
-                //        frontEventsToRemove++;
-                //    }
-                //    else
-                //        break;
-                //}
-
-                //Main.Entry.Logger.Log("[d] remove events from front: " + frontEventsToRemove);
-
                 // add level events object which is now shown to the right of viewport
                 for (int i = levelEventsSortedByStartPosListEndIdx + 1; i < levelEventsDataSortedByStartPos.Count; i++)
                 {
@@ -407,41 +368,6 @@ namespace NeoEditor.Inspector.Timeline
 
                     levelEventsSortedByStartPosListEndIdx++;
                 }
-
-                //for (int i = 0; i < frontEventsToRemove; i++)
-                //    currentlyShowingEvents.RemoveFirst();
-
-                //firstEventShowingOnScreenIdx += frontEventsToRemove;
-                //lastEventShowingOnScreenIdx = firstEventShowingOnScreenIdx + currentlyShowingEvents.Count - 1;
-
-                //for (int i = lastEventShowingOnScreenIdx + 1; i < editor.events.Count; i++)
-                //{
-                //    var evt = editor.events[i];
-                //    float posX = GetEventPosX(evt);
-                //    float objWidth = GetEventObjWidth(evt);
-
-                //    if (posX + objWidth < pos.x)
-                //    {
-                //        firstEventShowingOnScreenIdx = i + 1;
-                //        lastEventShowingOnScreenIdx = firstEventShowingOnScreenIdx;
-                //        continue;
-                //    }
-                //    if (posX > pos.x + scrollRT.rect.width)
-                //        break;
-
-                //    if (ignoreEvents.Contains(evt.eventType))
-                //    {
-                //        currentlyShowingEvents.AddLast(new LevelEventData(evt));
-                //        lastEventShowingOnScreenIdx++;
-                //        continue;
-                //    }
-
-                //    Main.Entry.Logger.Log("[d] adding event " + i);
-
-                //    var obj = CreateEventObject(evt, posX, objWidth);
-                //    currentlyShowingEvents.AddLast(new LevelEventData(evt, obj));
-                //    lastEventShowingOnScreenIdx++;
-                //}
             }
 
             // prevScrollPos > (current) pos
@@ -509,31 +435,6 @@ namespace NeoEditor.Inspector.Timeline
                     levelEventsSortedByStartPosListEndIdx--;
                 }
 
-                //int backEventsToRemove = 0;
-                //foreach (var eventData in currentlyShowingEvents)
-                //{
-                //    float posX = GetEventPosX(eventData.evt);
-
-                //    if (!eventData.objAvailable && posX > pos.x + scrollRT.rect.width)
-                //    {
-                //        backEventsToRemove++;
-                //        continue;
-                //    }
-
-                //    float objWidth = GetEventObjWidth(eventData.evt);
-                //    if (posX > pos.x + scrollRT.rect.width)
-                //    {
-                //        if (eventData.obj != null)
-                //            eventPool.Release(eventData.obj);
-
-                //        backEventsToRemove++;
-                //    }
-                //    else
-                //        break;
-                //}
-
-                //Main.Entry.Logger.Log("[d] remove events from back: " + backEventsToRemove);
-
                 for (int i = levelEventsSortedByEndPosListStartIdx - 1; i >= 0; i--)
                 {
                     var data = levelEventsDataSortedByEndPos[i];
@@ -555,41 +456,6 @@ namespace NeoEditor.Inspector.Timeline
 
                     levelEventsSortedByEndPosListStartIdx--;
                 }
-
-                //for (int i = 0; i < backEventsToRemove; i++)
-                //    currentlyShowingEvents.RemoveLast();
-
-                //lastEventShowingOnScreenIdx -= backEventsToRemove;
-                //firstEventShowingOnScreenIdx = lastEventShowingOnScreenIdx - currentlyShowingEvents.Count + 1;
-
-                //for (int i = firstEventShowingOnScreenIdx - 1; i >= 0; i--)
-                //{
-                //    var evt = editor.events[i];
-                //    float posX = GetEventPosX(evt);
-                //    float objWidth = GetEventObjWidth(evt);
-
-                //    if (posX > pos.x + scrollRT.rect.width)
-                //    {
-                //        lastEventShowingOnScreenIdx = i - 1;
-                //        firstEventShowingOnScreenIdx = lastEventShowingOnScreenIdx;
-                //        continue;
-                //    }
-                //    if (posX + objWidth < pos.x)
-                //        break;
-
-                //    if (ignoreEvents.Contains(evt.eventType))
-                //    {
-                //        currentlyShowingEvents.AddFirst(new LevelEventData(evt));
-                //        firstEventShowingOnScreenIdx--;
-                //        continue;
-                //    }
-
-                //    Main.Entry.Logger.Log("[d] adding event " + i);
-
-                //    var obj = CreateEventObject(evt, posX, objWidth);
-                //    currentlyShowingEvents.AddFirst(new LevelEventData(evt, obj));
-                //    firstEventShowingOnScreenIdx--;
-                //}
             }
 
             //if (!changingScroll && dir.x != 0)
