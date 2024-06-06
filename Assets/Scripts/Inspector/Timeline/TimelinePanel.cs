@@ -86,6 +86,16 @@ namespace NeoEditor.Inspector.Timeline
         private ObjectPool<FloorNumberText> floorNumPool;
 
         private LinkedList<VerticalLineData> vLines = new LinkedList<VerticalLineData>();
+       
+        //private LinkedList<LevelEventData> currentlyShowingEvents = new LinkedList<LevelEventData>();
+
+        private List<LevelEventData> levelEventsDataSortedByStartPos = new List<LevelEventData>();
+        private List<LevelEventData> levelEventsDataSortedByEndPos = new List<LevelEventData>();
+
+        // level events sorted by startPosX, index of last item showing on viewport (-1 = before first item showing on viewport)
+        private int levelEventsSortedByStartPosListEndIdx = -1;
+        // level events sorted by endPosX, index of first item showing on viewport
+        private int levelEventsSortedByEndPosListStartIdx = 0;
 
         void CreatePool()
         {
@@ -145,6 +155,15 @@ namespace NeoEditor.Inspector.Timeline
                 vPool.Release(line.obj);
             vLines.Clear();
 
+            foreach (var eventData in levelEventsDataSortedByStartPos)
+                if (eventData.obj != null)
+                    eventPool.Release(eventData.obj);
+            levelEventsDataSortedByStartPos.Clear();
+            levelEventsDataSortedByEndPos.Clear();
+
+            levelEventsSortedByStartPosListEndIdx = -1;
+            levelEventsSortedByEndPosListStartIdx = 0;
+
             for (int i = 0; i < floors.Count; i++)
             {
                 var floor = floors[i];
@@ -169,30 +188,51 @@ namespace NeoEditor.Inspector.Timeline
 
             foreach (var levelEvent in editor.events)
             {
+                // get position
+                Vector2 position = new Vector2(GetEventPosX(levelEvent), -25);
+
                 if (ignoreEvents.Contains(levelEvent.eventType))
                     continue;
-                GameObject obj = Instantiate(eventObj, events.transform);
-                scrFloor floor = floors[levelEvent.floor];
 
-                obj.transform.GetChild(0).GetComponent<Image>().sprite = GCS.levelEventIcons[
-                    levelEvent.eventType
-                ];
-                obj.GetComponent<TimelineEvent>().panel = this;
+                float entryTime = (float)floors[levelEvent.floor].entryTime;
+                float duration = GetEventDuration(levelEvent);
+                float objWidth = GetEventObjWidth(duration);
 
-                Vector2 position = new Vector2(TimeToBeat(floor.entryTime) * width, -25);
-                float bpm = editor.customLevel.levelData.bpm;
-                object f;
-                bool valueExist = levelEvent.data.TryGetValue("angleOffset", out f);
+                var eventData = new LevelEventData(entryTime, duration, levelEvent);
+                levelEventsDataSortedByStartPos.Add(eventData);
+                levelEventsDataSortedByEndPos.Add(eventData);
 
-                position += new Vector2((valueExist ? (float)f : 0) / 180f * (1 / floor.speed) * width, 0);
-                obj.transform.LocalMoveX(position.x);
+                if (position.x <= scrollWidth)
+                {
+                    //Main.Entry.Logger.Log("[d] (init phase) adding event | floor " + levelEvent.floor + " type: " + levelEvent.eventType);
 
-                valueExist = levelEvent.data.TryGetValue("duration", out f);
-                obj.GetComponent<RectTransform>()
-                    .SizeDeltaX(
-                        valueExist ? Mathf.Max((float)f * width * (1 / floor.speed), height) : height
-                    );
+                    var obj = CreateEventObject(levelEvent, position.x, objWidth);
+
+                    eventData.obj = obj;
+                    levelEventsSortedByStartPosListEndIdx++;
+                }
             }
+            //if (levelEventsSortedByStartPosListEndIdx >= 0)
+            //    levelEventsSortedByStartPosListStartIdx = 0;
+
+            levelEventsDataSortedByEndPos.Sort((a, b) => {
+                // sort by event end time, smaller one goes first
+                float diff = a.end - b.end;
+                if (diff < 0) 
+                    return -1;
+                else if (diff > 0)
+                    return 1;
+                else
+                    return 0;
+            });
+            //foreach (var data in levelEventsDataSortedByEndPos)
+            //{
+            //    float endPosX = GetEventPosX(data.evt) + GetEventObjWidth(data.evt);
+            //    if (endPosX > scrollWidth)
+            //        break;
+
+            //    levelEventsSortedByEndPosListStartIdx++;
+            //}
 
             scrConductor conductor = scrConductor.instance;
             float timelineWidth = TimeToBeat(floors.Last().entryTime + conductor.crotchet * 4) * width;
@@ -298,7 +338,112 @@ namespace NeoEditor.Inspector.Timeline
 
                     lastLineShowingOnScreenIdx++;
                 }
+
+                // ====
+
+                // remove level events object which is completely hidden to the left of viewport
+                for (int i = levelEventsSortedByEndPosListStartIdx; i < levelEventsDataSortedByEndPos.Count; i++)
+                {
+                    var data = levelEventsDataSortedByEndPos[i];
+                    float endPosX = GetEventPosX(data.evt) + GetEventObjWidth(data.evt);
+
+                    if (endPosX >= pos.x)
+                        break;
+
+                    //Main.Entry.Logger.Log("[d] removing event " + i + " from front side");
+
+                    if (data.obj != null)
+                    {
+                        eventPool.Release(data.obj);
+                        data.obj = null;
+                    }
+
+                    levelEventsSortedByEndPosListStartIdx++;
+                }
+
+                //foreach (var eventData in currentlyShowingEvents)
+                //{
+                //    float posX = GetEventPosX(eventData.evt);
+
+                //    if (!eventData.objAvailable && posX < pos.x)
+                //    {
+                //        frontEventsToRemove++;
+                //        continue;
+                //    }
+
+                //    float objWidth = GetEventObjWidth(eventData.evt);
+                //    if (posX + objWidth < pos.x)
+                //    {
+                //        if (eventData.obj != null)
+                //            eventPool.Release(eventData.obj);
+
+                //        frontEventsToRemove++;
+                //    }
+                //    else
+                //        break;
+                //}
+
+                //Main.Entry.Logger.Log("[d] remove events from front: " + frontEventsToRemove);
+
+                // add level events object which is now shown to the right of viewport
+                for (int i = levelEventsSortedByStartPosListEndIdx + 1; i < levelEventsDataSortedByStartPos.Count; i++)
+                {
+                    var data = levelEventsDataSortedByStartPos[i];
+                    var startPosX = GetEventPosX(data.evt);
+                    var endPosX = startPosX + GetEventObjWidth(data.evt);
+
+                    if (endPosX < pos.x)
+                    {
+                        levelEventsSortedByStartPosListEndIdx = i;
+                        continue;
+                    }
+                    else if (startPosX > pos.x + scrollRT.rect.width)
+                        break;
+
+                    //Main.Entry.Logger.Log("[d] adding event " + i);
+
+                    var obj = CreateEventObject(data.evt, startPosX, endPosX - startPosX);
+                    data.obj = obj;
+
+                    levelEventsSortedByStartPosListEndIdx++;
+                }
+
+                //for (int i = 0; i < frontEventsToRemove; i++)
+                //    currentlyShowingEvents.RemoveFirst();
+
+                //firstEventShowingOnScreenIdx += frontEventsToRemove;
+                //lastEventShowingOnScreenIdx = firstEventShowingOnScreenIdx + currentlyShowingEvents.Count - 1;
+
+                //for (int i = lastEventShowingOnScreenIdx + 1; i < editor.events.Count; i++)
+                //{
+                //    var evt = editor.events[i];
+                //    float posX = GetEventPosX(evt);
+                //    float objWidth = GetEventObjWidth(evt);
+
+                //    if (posX + objWidth < pos.x)
+                //    {
+                //        firstEventShowingOnScreenIdx = i + 1;
+                //        lastEventShowingOnScreenIdx = firstEventShowingOnScreenIdx;
+                //        continue;
+                //    }
+                //    if (posX > pos.x + scrollRT.rect.width)
+                //        break;
+
+                //    if (ignoreEvents.Contains(evt.eventType))
+                //    {
+                //        currentlyShowingEvents.AddLast(new LevelEventData(evt));
+                //        lastEventShowingOnScreenIdx++;
+                //        continue;
+                //    }
+
+                //    Main.Entry.Logger.Log("[d] adding event " + i);
+
+                //    var obj = CreateEventObject(evt, posX, objWidth);
+                //    currentlyShowingEvents.AddLast(new LevelEventData(evt, obj));
+                //    lastEventShowingOnScreenIdx++;
+                //}
             }
+
             // prevScrollPos > (current) pos
             // scrolled to the left
             else if (dir.x > 0)
@@ -342,6 +487,109 @@ namespace NeoEditor.Inspector.Timeline
 
                     firstLineShowingOnScreenIdx--;
                 }
+
+                // ====
+
+                for (int i = levelEventsSortedByStartPosListEndIdx; i >= 0; i--)
+                {
+                    var data = levelEventsDataSortedByStartPos[i];
+                    float startPosX = GetEventPosX(data.evt);
+
+                    if (startPosX <= pos.x + scrollRT.rect.width)
+                        break;
+
+                    //Main.Entry.Logger.Log("[d] removing event " + i + " from back side");
+
+                    if (data.obj != null)
+                    {
+                        eventPool.Release(data.obj);
+                        data.obj = null;
+                    }
+
+                    levelEventsSortedByStartPosListEndIdx--;
+                }
+
+                //int backEventsToRemove = 0;
+                //foreach (var eventData in currentlyShowingEvents)
+                //{
+                //    float posX = GetEventPosX(eventData.evt);
+
+                //    if (!eventData.objAvailable && posX > pos.x + scrollRT.rect.width)
+                //    {
+                //        backEventsToRemove++;
+                //        continue;
+                //    }
+
+                //    float objWidth = GetEventObjWidth(eventData.evt);
+                //    if (posX > pos.x + scrollRT.rect.width)
+                //    {
+                //        if (eventData.obj != null)
+                //            eventPool.Release(eventData.obj);
+
+                //        backEventsToRemove++;
+                //    }
+                //    else
+                //        break;
+                //}
+
+                //Main.Entry.Logger.Log("[d] remove events from back: " + backEventsToRemove);
+
+                for (int i = levelEventsSortedByEndPosListStartIdx - 1; i >= 0; i--)
+                {
+                    var data = levelEventsDataSortedByEndPos[i];
+                    var startPosX = GetEventPosX(data.evt);
+                    var endPosX = startPosX + GetEventObjWidth(data.evt);
+
+                    if (startPosX > pos.x + scrollRT.rect.width)
+                    {
+                        levelEventsSortedByEndPosListStartIdx = i;
+                        continue;
+                    }
+                    else if (endPosX < pos.x)
+                        break;
+
+                    //Main.Entry.Logger.Log("[d] adding event " + i);
+
+                    var obj = CreateEventObject(data.evt, startPosX, endPosX - startPosX);
+                    data.obj = obj;
+
+                    levelEventsSortedByEndPosListStartIdx--;
+                }
+
+                //for (int i = 0; i < backEventsToRemove; i++)
+                //    currentlyShowingEvents.RemoveLast();
+
+                //lastEventShowingOnScreenIdx -= backEventsToRemove;
+                //firstEventShowingOnScreenIdx = lastEventShowingOnScreenIdx - currentlyShowingEvents.Count + 1;
+
+                //for (int i = firstEventShowingOnScreenIdx - 1; i >= 0; i--)
+                //{
+                //    var evt = editor.events[i];
+                //    float posX = GetEventPosX(evt);
+                //    float objWidth = GetEventObjWidth(evt);
+
+                //    if (posX > pos.x + scrollRT.rect.width)
+                //    {
+                //        lastEventShowingOnScreenIdx = i - 1;
+                //        firstEventShowingOnScreenIdx = lastEventShowingOnScreenIdx;
+                //        continue;
+                //    }
+                //    if (posX + objWidth < pos.x)
+                //        break;
+
+                //    if (ignoreEvents.Contains(evt.eventType))
+                //    {
+                //        currentlyShowingEvents.AddFirst(new LevelEventData(evt));
+                //        firstEventShowingOnScreenIdx--;
+                //        continue;
+                //    }
+
+                //    Main.Entry.Logger.Log("[d] adding event " + i);
+
+                //    var obj = CreateEventObject(evt, posX, objWidth);
+                //    currentlyShowingEvents.AddFirst(new LevelEventData(evt, obj));
+                //    firstEventShowingOnScreenIdx--;
+                //}
             }
 
             //if (!changingScroll && dir.x != 0)
@@ -350,7 +598,8 @@ namespace NeoEditor.Inspector.Timeline
             floorNumBar.LocalMoveX(-pos.x);
 
             prevScrollPos = pos;
-            Main.Entry.Logger.Log("Update Complete! cnt = " + vLines.Count + ", firstIdx = " + firstLineShowingOnScreenIdx + ", lastIdx = " + lastLineShowingOnScreenIdx);
+            //Main.Entry.Logger.Log("Update Complete! cnt = " + vLines.Count + ", firstIdx = " + firstLineShowingOnScreenIdx + ", lastIdx = " + lastLineShowingOnScreenIdx);
+            //Main.Entry.Logger.Log("events: startPosSortedIdx = " + levelEventsSortedByStartPosListEndIdx + ", endPosSortedIdx = " + levelEventsSortedByEndPosListStartIdx);
         }
 
         float TimeToBeat(double time)
@@ -393,9 +642,63 @@ namespace NeoEditor.Inspector.Timeline
             return new VerticalLineData(floor.seqID, posX, line, num);
         }
 
+        private GameObject CreateEventObject(LevelEvent levelEvent, float posX, float objWidth)
+        {
+            var obj = eventPool.Get();
+            obj.transform.GetChild(0).GetComponent<Image>().sprite = GCS.levelEventIcons[
+                levelEvent.eventType
+            ];
+            obj.GetComponent<TimelineEvent>().panel = this;
+
+            obj.transform.LocalMoveX(posX);
+            obj.GetComponent<RectTransform>().SizeDeltaX(objWidth);
+
+            return obj;
+        }
+
         private float GetLinePosX(scrFloor floor)
         {
             return TimeToBeat(floor.entryTime) * width * scale;
+        }
+
+        private float GetEventPosX(LevelEvent evt)
+        {
+            NeoEditor editor = NeoEditor.Instance;
+            scrFloor floor = editor.floors[evt.floor];
+
+            float position = TimeToBeat(floor.entryTime) * width * scale;
+
+            object f;
+            bool valueExist = evt.data.TryGetValue("angleOffset", out f);
+            position += (valueExist ? (float)f : 0) / 180f * (1 / floor.speed) * width;
+
+            return position;
+        }
+
+        private float GetEventDuration(LevelEvent evt)
+        {
+            NeoEditor editor = NeoEditor.Instance;
+            scrFloor floor = editor.floors[evt.floor];
+
+            object f;
+            bool valueExist = evt.data.TryGetValue("duration", out f);
+            float duration = valueExist ? (float)f * (1 / floor.speed) : 0;
+
+            return duration;
+        }
+
+        private float GetEventObjWidth(LevelEvent evt)
+        {
+            float duration = GetEventDuration(evt);
+            float objWidth = Mathf.Max(duration * width, height);
+
+            return objWidth;
+        }
+        private float GetEventObjWidth(float duration)
+        {
+            float objWidth = Mathf.Max(duration * width, height);
+
+            return objWidth;
         }
     }
 }
