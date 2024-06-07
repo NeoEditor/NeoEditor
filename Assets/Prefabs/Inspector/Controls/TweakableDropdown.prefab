@@ -38,7 +38,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 10, y: -10}
+  m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &4908698434291479389
 CanvasRenderer:
@@ -122,7 +122,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 4112796702363465471}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.9433333
+  m_Size: 0.54333335
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1455,7 +1455,7 @@ MonoBehaviour:
   suggestiveList: 0
   visibleItemsCount: 6
   itemWidth: 0
-  itemHeight: 30
+  itemHeight: 35
   colorAnimDuration: 0.3
   normalItemBGColor: {r: 0, g: 0, b: 0, a: 0.9019608}
   hoveredItemBGColor: {r: 0.1792453, g: 0.1792453, b: 0.1792453, a: 0.9019608}
@@ -1725,7 +1725,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 300}
+  m_SizeDelta: {x: 0, y: 180}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &3233711697831431300
 CanvasRenderer:
