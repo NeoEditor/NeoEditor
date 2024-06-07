@@ -30,6 +30,7 @@ namespace NeoEditor.Tabs
                 editor.levelData.levelSettings,
                 editor.levelData.miscSettings
             );
+            project.SelectTab(0);
         }
     }
 }

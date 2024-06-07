@@ -68,7 +68,6 @@ namespace NeoEditor.Inspector.Controls
                 List<TweakableDropdownItem> items = dropdown.items;
                 int index = enumValList.IndexOf(value);
                 TweakableDropdownItem targetItem = items[index];
-                Main.Entry.Logger.Log(targetItem.ToString());
                 dropdown.SelectItem(targetItem);
                 settingText = false;
             }

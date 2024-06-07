@@ -226,10 +226,6 @@ namespace NeoEditor.Inspector
                 property.control.inspectorPanel = this;
                 property.control.propertyTransform = property.GetComponent<RectTransform>();
 
-                foreach (var str in typeNames)
-                {
-                    Main.Entry.Logger.Log(str);
-                }
                 if (propertyInfo.type == PropertyType.Enum || propertyInfo.stringDropdown)
                 {
                     ((Control_Toggle)property.control).EnumSetup(

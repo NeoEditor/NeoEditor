@@ -65,8 +65,6 @@ namespace NeoEditor.Inspector
             songSettings.Init(song);
             levelSettings.Init(level);
             miscSettings.Init(misc);
-
-            SelectTab(0);
         }
 
         public void SetProperties(
