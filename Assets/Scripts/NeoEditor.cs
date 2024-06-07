@@ -71,6 +71,7 @@ namespace NeoEditor
         public GameObject prefab_controlColor;
         public GameObject prefab_controlFile;
         public GameObject prefab_controlVector2;
+        public GameObject prefab_controlTile;
         public GameObject prefab_controlToggle;
 
         [NonSerialized]

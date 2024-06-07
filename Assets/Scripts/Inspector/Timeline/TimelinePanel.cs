@@ -86,12 +86,13 @@ namespace NeoEditor.Inspector.Timeline
         private ObjectPool<FloorNumberText> floorNumPool;
 
         private LinkedList<VerticalLineData> vLines = new LinkedList<VerticalLineData>();
-       
+
         private List<LevelEventData> levelEventsDataSortedByStartPos = new List<LevelEventData>();
         private List<LevelEventData> levelEventsDataSortedByEndPos = new List<LevelEventData>();
 
         // level events sorted by startPosX, index of last item showing on viewport (-1 = before first item showing on viewport)
         private int levelEventsSortedByStartPosListEndIdx = -1;
+
         // level events sorted by endPosX, index of first item showing on viewport
         private int levelEventsSortedByEndPosListStartIdx = 0;
 
@@ -208,34 +209,37 @@ namespace NeoEditor.Inspector.Timeline
                 }
             }
 
-            levelEventsDataSortedByEndPos.Sort((a, b) => {
-                // sort by event end time, smaller one goes first
-                float diff = a.end - b.end;
-                if (diff < 0) 
-                    return -1;
-                else if (diff > 0)
-                    return 1;
-                else
-                    return 0;
-            });
+            levelEventsDataSortedByEndPos.Sort(
+                (a, b) =>
+                {
+                    // sort by event end time, smaller one goes first
+                    float diff = a.end - b.end;
+                    if (diff < 0)
+                        return -1;
+                    else if (diff > 0)
+                        return 1;
+                    else
+                        return 0;
+                }
+            );
 
             scrConductor conductor = scrConductor.instance;
-            float timelineWidth = TimeToBeat(floors.Last().entryTime + conductor.crotchet * 4) * width;
-            
-            content
-                .GetComponent<RectTransform>()
-                .SizeDeltaX(timelineWidth);
+            float timelineWidth =
+                TimeToBeat(floors.Last().entryTime + conductor.crotchet * 4) * width;
+
+            content.GetComponent<RectTransform>().SizeDeltaX(timelineWidth);
             content.GetComponent<RectTransform>().SizeDeltaY(1000f);
 
-            floorNumBar
-                .GetComponent<RectTransform>()
-                .SizeDeltaX(timelineWidth);
+            floorNumBar.GetComponent<RectTransform>().SizeDeltaX(timelineWidth);
         }
 
         public void SelectEvent(TimelineEvent timelineEvent)
         {
             if (selectedEvent != null)
+            {
                 selectedEvent.UnselectEvent();
+                tab.UnselectEvent();
+            }
             selectedEvent = timelineEvent;
             tab.SelectEvent(selectedEvent.targetEvent);
         }
@@ -327,7 +331,11 @@ namespace NeoEditor.Inspector.Timeline
                 // ====
 
                 // remove level events object which is completely hidden to the left of viewport
-                for (int i = levelEventsSortedByEndPosListStartIdx; i < levelEventsDataSortedByEndPos.Count; i++)
+                for (
+                    int i = levelEventsSortedByEndPosListStartIdx;
+                    i < levelEventsDataSortedByEndPos.Count;
+                    i++
+                )
                 {
                     var data = levelEventsDataSortedByEndPos[i];
                     float endPosX = GetEventPosX(data.evt) + GetEventObjWidth(data.evt);
@@ -347,7 +355,11 @@ namespace NeoEditor.Inspector.Timeline
                 }
 
                 // add level events object which is now shown to the right of viewport
-                for (int i = levelEventsSortedByStartPosListEndIdx + 1; i < levelEventsDataSortedByStartPos.Count; i++)
+                for (
+                    int i = levelEventsSortedByStartPosListEndIdx + 1;
+                    i < levelEventsDataSortedByStartPos.Count;
+                    i++
+                )
                 {
                     var data = levelEventsDataSortedByStartPos[i];
                     var startPosX = GetEventPosX(data.evt);
@@ -369,7 +381,6 @@ namespace NeoEditor.Inspector.Timeline
                     levelEventsSortedByStartPosListEndIdx++;
                 }
             }
-
             // prevScrollPos > (current) pos
             // scrolled to the left
             else if (dir.x > 0)
@@ -515,6 +526,7 @@ namespace NeoEditor.Inspector.Timeline
                 levelEvent.eventType
             ];
             obj.GetComponent<TimelineEvent>().panel = this;
+            obj.GetComponent<TimelineEvent>().targetEvent = levelEvent;
 
             obj.transform.LocalMoveX(posX);
             obj.GetComponent<RectTransform>().SizeDeltaX(objWidth);
@@ -560,6 +572,7 @@ namespace NeoEditor.Inspector.Timeline
 
             return objWidth;
         }
+
         private float GetEventObjWidth(float duration)
         {
             float objWidth = Mathf.Max(duration * width, height);

@@ -504,6 +504,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   content: {fileID: 5037513421699569997}
+  layout: {fileID: 9020732262729554290}
 --- !u!1 &2521154566828028890
 GameObject:
   m_ObjectHideFlags: 0

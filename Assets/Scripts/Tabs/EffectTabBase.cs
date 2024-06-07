@@ -1,6 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using ADOFAI;
+using NeoEditor.Inspector;
 using NeoEditor.Inspector.Timeline;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,6 +16,7 @@ namespace NeoEditor.Tabs
         public RawImage sceneView;
 
         public RectTransform timelineParent;
+        public EventsPanel events;
         public TimelinePanel timeline;
 
         //public EventPanel inspector;
@@ -21,6 +25,7 @@ namespace NeoEditor.Tabs
 
         public override void InitTab(Dictionary<string, LevelEventInfo> levelEventsInfo)
         {
+            events.Init(GCS.levelEventsInfo.Values.ToList());
             gameView.texture = Assets.GameRenderer;
             sceneView.texture = Assets.SceneRenderer;
         }
@@ -48,7 +53,12 @@ namespace NeoEditor.Tabs
 
         public override void SelectEvent(LevelEvent levelEvent)
         {
-            //inspector.selectasdf
+            events.SetProperties(levelEvent.eventType, levelEvent);
+        }
+
+        internal void UnselectEvent()
+        {
+            events.HidePanel();
         }
     }
 }

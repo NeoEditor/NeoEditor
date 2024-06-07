@@ -41,6 +41,7 @@ namespace NeoEditor.Inspector
         }
 
         public RectTransform content;
+        public LayoutGroup layout;
 
         public Dictionary<string, Property> properties = new Dictionary<string, Property>();
         public LevelEvent selectedEvent;
@@ -78,7 +79,7 @@ namespace NeoEditor.Inspector
                         original = editor.prefab_controlText;
                         if (propertyInfo.stringDropdown)
                         {
-                            original = ADOBase.gc.prefab_controlToggle;
+                            original = editor.prefab_controlToggle;
                             string text2 = propertyInfo.name;
                             if (!(text2 == "component"))
                             {
@@ -172,21 +173,20 @@ namespace NeoEditor.Inspector
                         original = editor.prefab_controlVector2;
                         break;
                     case PropertyType.Tile:
-                        continue;
-                        original = ADOBase.gc.prefab_controlTile;
+                        original = editor.prefab_controlTile;
                         break;
                     case PropertyType.Export:
-                        //if (!SteamIntegration.Instance.initialized)
-                        //{
-                        //    continue;
-                        //}
+                        continue;
+                        if (!SteamIntegration.Instance.initialized)
+                        {
+                            continue;
+                        }
 
-                        //original = ADOBase.gc.prefab_controlExport;
-                        //break;
+                        original = ADOBase.gc.prefab_controlExport;
+                        break;
                         continue;
                     case PropertyType.Rating:
-                        continue;
-                        original = ADOBase.gc.prefab_controlRating;
+                        original = editor.prefab_controlToggle;
                         break;
                     case PropertyType.List:
                         continue;
@@ -216,11 +216,6 @@ namespace NeoEditor.Inspector
                 gameObject2
                     .GetComponent<RectTransform>()
                     .SetParent(property.controlContainer, worldPositionStays: false);
-                //property.control = gameObject2.GetComponent<PropertyControl>();
-                //property.control.propertyInfo = propertyInfo;
-                //property.control.propertiesPanel = this;
-                //property.control.propertyTransform = property.GetComponent<RectTransform>();
-
                 property.control = gameObject2.GetComponent<ControlBase>();
                 property.control.propertyInfo = propertyInfo;
                 property.control.inspectorPanel = this;
@@ -304,6 +299,33 @@ namespace NeoEditor.Inspector
                     obj.goToFloorButton.gameObject.SetActive(value: true);
                     obj.inputField.characterLimit = 10;
                 }
+                else if (propertyInfo.type == PropertyType.Tile)
+                {
+                    Control_Tile obj = property.control as Control_Tile;
+                    obj.inputField.linkFloorIDButton.gameObject.SetActive(value: true);
+                    obj.inputField.goToFloorButton.gameObject.SetActive(value: true);
+                    obj.inputField.inputField.characterLimit = 10;
+                }
+                else if (propertyInfo.type == PropertyType.Rating)
+                {
+                    Control_Toggle obj = property.control as Control_Toggle;
+                    List<string> enumVals = new List<string>();
+                    List<string> labels = new List<string>();
+                    for (int i = 1; i <= 10; i++)
+                    {
+                        enumVals.Add(i.ToString());
+                        string color =
+                            i <= 3
+                                ? "8AFFAB"
+                                : i <= 6
+                                    ? "FFEE6B"
+                                    : i <= 9
+                                        ? "FF4257"
+                                        : "FD8AFF";
+                        labels.Add($"<color=#{color}>☆{i}</color>");
+                    }
+                    obj.EnumSetup("Rating", enumVals, false, enumVals);
+                }
 
                 if (propertyInfo.type == PropertyType.Vector2)
                 {
@@ -377,15 +399,16 @@ namespace NeoEditor.Inspector
                                 && !value;
                             selectedEvent.disabled[propertyKey] = flag;
                             property.offText.SetActive(flag);
-                            property.enabledCheckmark.SetActive(!flag);
+                            //property.enabledCheckmark.SetActive(!flag);
+                            property.enabledButton.image = !flag
+                                ? property.checkImage
+                                : property.checkbgImage;
                             property.control.gameObject.SetActive(!flag);
-                            property.enabledButton.GetComponent<RectTransform>().offsetMin =
-                                new Vector2(0f, flag ? 0f : property.controlContainer.rect.height);
                             if (isFake)
                             {
-                                property.enabledCheckmark.transform.parent.gameObject.SetActive(
-                                    value: false
-                                );
+                                //property.enabledCheckmark.transform.parent.gameObject.SetActive(
+                                //    value: false
+                                //);
                                 property.enabledButton.gameObject.SetActive(value: false);
                                 selectedEvent.ApplyPropertiesToRealEvents();
                             }
@@ -395,6 +418,11 @@ namespace NeoEditor.Inspector
                                 ADOBase.editor.ApplyEventsToFloors();
                             }
                         }
+                        StartCoroutine(
+                            InvokeAtNextFrame(
+                                () => LayoutRebuilder.ForceRebuildLayoutImmediate(content)
+                            )
+                        );
                     }
                 );
                 if (property.info.canBeDisabled)
@@ -431,7 +459,7 @@ namespace NeoEditor.Inspector
 
         public void SetProperties(LevelEvent levelEvent, bool checkIfEnabled = true)
         {
-            this.selectedEvent = levelEvent;
+            selectedEvent = levelEvent;
             foreach (string item in levelEvent.data.Keys.ToList())
             {
                 if (!properties.ContainsKey(item))
@@ -466,8 +494,8 @@ namespace NeoEditor.Inspector
 
                         break;
                     case PropertyType.Tile:
-                        //(control as PropertyControl_Tile).tileValue =
-                        //    levelEvent[item] as Tuple<int, TileRelativeTo>;
+                        (control as Control_Tile).tileValue =
+                            levelEvent[item] as Tuple<int, TileRelativeTo>;
                         break;
                     case PropertyType.FilterProperties:
                     {
@@ -527,6 +555,10 @@ namespace NeoEditor.Inspector
                 control2.text = num.ToString();
                 SetupCheckmark(property2, control2);
             }
+
+            StartCoroutine(
+                InvokeAtNextFrame(() => LayoutRebuilder.ForceRebuildLayoutImmediate(content))
+            );
         }
 
         public void SetupCheckmark(PropertyPlus property, ControlBase control)
@@ -543,12 +575,14 @@ namespace NeoEditor.Inspector
             property.enabledCheckmark.SetActive(!flag3);
             control.gameObject.SetActive(!flag3);
             property.enabledButton.gameObject.SetActive(value: true);
-            property.enabledButton.GetComponent<RectTransform>().offsetMin = new Vector2(
-                0f,
-                (!flag3) ? 41 : 0
-            );
             property.enabledCheckmark.transform.parent.gameObject.SetActive(active);
             property.enabledButton.gameObject.SetActive(active);
+        }
+
+        private IEnumerator InvokeAtNextFrame(Action action)
+        {
+            yield return null;
+            action.Invoke();
         }
 
         void Update() { }
