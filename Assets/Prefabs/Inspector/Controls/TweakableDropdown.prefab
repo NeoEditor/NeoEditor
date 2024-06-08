@@ -790,7 +790,7 @@ GameObject:
   - component: {fileID: 3755645926678433202}
   - component: {fileID: 4179026509523826297}
   m_Layer: 5
-  m_Name: EaseItem
+  m_Name: Item
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
