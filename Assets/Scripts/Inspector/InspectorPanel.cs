@@ -400,9 +400,9 @@ namespace NeoEditor.Inspector
                             selectedEvent.disabled[propertyKey] = flag;
                             property.offText.SetActive(flag);
                             //property.enabledCheckmark.SetActive(!flag);
-                            property.enabledButton.image = !flag
-                                ? property.checkImage
-                                : property.checkbgImage;
+                            property.enabledButton.image.sprite = !flag
+                                ? property.checkSprite
+                                : property.uncheckSprite;
                             property.control.gameObject.SetActive(!flag);
                             if (isFake)
                             {
@@ -572,10 +572,13 @@ namespace NeoEditor.Inspector
                 && value;
             bool active = (flag ? flag3 : flag2);
             property.offText.SetActive(flag3);
-            property.enabledCheckmark.SetActive(!flag3);
+            //property.enabledCheckmark.SetActive(!flag3);
+            property.enabledButton.image.sprite = !flag3
+                ? property.checkSprite
+                : property.uncheckSprite;
             control.gameObject.SetActive(!flag3);
             property.enabledButton.gameObject.SetActive(value: true);
-            property.enabledCheckmark.transform.parent.gameObject.SetActive(active);
+            //property.enabledCheckmark.transform.parent.gameObject.SetActive(active);
             property.enabledButton.gameObject.SetActive(active);
         }
 
