@@ -251,7 +251,7 @@ namespace NeoEditor.Inspector.Timeline
 
         public void SetParent(RectTransform transform)
         {
-            transform.SetParent(transform, false);
+            this.transform.SetParent(transform, false);
         }
 
         void Update()
