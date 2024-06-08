@@ -69,6 +69,7 @@ namespace NeoEditor.Inspector
                 !isDecoration
                 && addFloorControl
                 && !GCS.settingsInfo.Values.Contains(levelEventInfo)
+                && !propertiesInfo.Keys.Contains("floor")
             )
             {
                 Dictionary<string, object> dict = new Dictionary<string, object>
