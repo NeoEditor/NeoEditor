@@ -525,8 +525,10 @@ namespace NeoEditor.Inspector.Timeline
             obj.transform.GetChild(0).GetComponent<Image>().sprite = GCS.levelEventIcons[
                 levelEvent.eventType
             ];
-            obj.GetComponent<TimelineEvent>().panel = this;
-            obj.GetComponent<TimelineEvent>().targetEvent = levelEvent;
+            var timelineEvent = obj.GetComponent<TimelineEvent>();
+            timelineEvent.panel = this;
+            timelineEvent.targetEvent = levelEvent;
+            timelineEvent.button.interactable = (selectedEvent?.targetEvent) != levelEvent;
 
             obj.transform.LocalMoveX(posX);
             obj.GetComponent<RectTransform>().SizeDeltaX(objWidth);
