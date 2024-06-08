@@ -156,9 +156,11 @@ namespace NeoEditor.Inspector.Timeline
 
             foreach (var eventData in levelEventsDataSortedByStartPos)
             {
-                eventData.obj.GetComponent<TimelineEvent>().isRendering = false;
                 if (eventData.obj != null)
+                {
+                    eventData.obj.GetComponent<TimelineEvent>().isRendering = false;
                     eventPool.Release(eventData.obj);
+                }
             }
             levelEventsDataSortedByStartPos.Clear();
             levelEventsDataSortedByEndPos.Clear();
