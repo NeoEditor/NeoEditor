@@ -44,8 +44,6 @@ namespace NeoEditor.Tabs
         {
             timeline.SetParent(timelineParent);
             timeline.parentTab = this;
-            //((RectTransform)timeline.transform).offsetMin = new Vector2(0, 0);
-            //((RectTransform)timeline.transform).offsetMax = new Vector2(0, 0);
             if (needReset)
             {
                 timeline.Init();
