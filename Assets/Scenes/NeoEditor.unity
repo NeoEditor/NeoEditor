@@ -10295,6 +10295,7 @@ MonoBehaviour:
   content: {fileID: 599878499}
   title: {fileID: 1466566130}
   eventTitle: {fileID: 1239978368}
+  parentTab: {fileID: 24885808}
 --- !u!1 &1324361294
 GameObject:
   m_ObjectHideFlags: 0
@@ -17435,6 +17436,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   content: {fileID: 1580117947}
   title: {fileID: 1885042007}
+  parentTab: {fileID: 1224220583}
   songButton: {fileID: 391361829}
   levelButton: {fileID: 562261053}
   miscButton: {fileID: 181970361}

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using ADOFAI;
+using NeoEditor.Tabs;
 using SA.GoogleDoc;
 using TMPro;
 using UnityEngine;
@@ -13,6 +14,7 @@ namespace NeoEditor.Inspector
         public RectTransform content;
         public TextMeshProUGUI title;
         public TextMeshProUGUI eventTitle;
+        public EffectTabBase parentTab;
 
         private Dictionary<LevelEventType, InspectorPanel> inspectors;
         private LevelEventType selectedEventType = LevelEventType.None;
@@ -26,7 +28,8 @@ namespace NeoEditor.Inspector
             {
                 InspectorPanel inspector = Instantiate(editor.prefab_inspector, content)
                     .GetComponent<InspectorPanel>();
-                inspector.Init(info);
+                inspector.Init(info, true);
+                inspector.parentTab = parentTab;
                 inspector.gameObject.SetActive(false);
                 inspectors.Add(info.type, inspector);
             }

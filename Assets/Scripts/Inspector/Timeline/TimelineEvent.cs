@@ -12,6 +12,7 @@ namespace NeoEditor.Inspector.Timeline
         public Button button;
 
         public LevelEvent targetEvent;
+        public bool isRendering;
 
         void Start()
         {

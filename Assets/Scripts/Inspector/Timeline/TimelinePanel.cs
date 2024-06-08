@@ -14,7 +14,7 @@ namespace NeoEditor.Inspector.Timeline
 {
     public class TimelinePanel : MonoBehaviour
     {
-        public EffectTabBase tab;
+        public EffectTabBase parentTab;
 
         public GameObject horizontalLine;
         public GameObject verticalLine;
@@ -155,8 +155,11 @@ namespace NeoEditor.Inspector.Timeline
             vLines.Clear();
 
             foreach (var eventData in levelEventsDataSortedByStartPos)
+            {
+                eventData.obj.GetComponent<TimelineEvent>().isRendering = false;
                 if (eventData.obj != null)
                     eventPool.Release(eventData.obj);
+            }
             levelEventsDataSortedByStartPos.Clear();
             levelEventsDataSortedByEndPos.Clear();
 
@@ -238,10 +241,10 @@ namespace NeoEditor.Inspector.Timeline
             if (selectedEvent != null)
             {
                 selectedEvent.UnselectEvent();
-                tab.UnselectEvent();
+                parentTab.UnselectEvent();
             }
             selectedEvent = timelineEvent;
-            tab.SelectEvent(selectedEvent.targetEvent);
+            parentTab.SelectEvent(selectedEvent.targetEvent);
         }
 
         public void SetParent(RectTransform transform)
@@ -344,7 +347,7 @@ namespace NeoEditor.Inspector.Timeline
                         break;
 
                     //Main.Entry.Logger.Log("[d] removing event " + i + " from front side");
-
+                    data.obj.GetComponent<TimelineEvent>().isRendering = false;
                     if (data.obj != null)
                     {
                         eventPool.Release(data.obj);
@@ -436,7 +439,7 @@ namespace NeoEditor.Inspector.Timeline
                         break;
 
                     //Main.Entry.Logger.Log("[d] removing event " + i + " from back side");
-
+                    data.obj.GetComponent<TimelineEvent>().isRendering = false;
                     if (data.obj != null)
                     {
                         eventPool.Release(data.obj);
@@ -528,6 +531,7 @@ namespace NeoEditor.Inspector.Timeline
             var timelineEvent = obj.GetComponent<TimelineEvent>();
             timelineEvent.panel = this;
             timelineEvent.targetEvent = levelEvent;
+            timelineEvent.isRendering = true;
             timelineEvent.button.interactable = (selectedEvent?.targetEvent) != levelEvent;
 
             obj.transform.LocalMoveX(posX);
@@ -580,6 +584,21 @@ namespace NeoEditor.Inspector.Timeline
             float objWidth = Mathf.Max(duration * width, height);
 
             return objWidth;
+        }
+
+        public void UpdateSelectedEventPos(int seqID)
+        {
+            if (selectedEvent == null || !selectedEvent.isRendering)
+                return;
+            NeoEditor editor = NeoEditor.Instance;
+            scrFloor floor = editor.floors[seqID];
+
+            float position = TimeToBeat(floor.entryTime) * width * scale;
+
+            object f;
+            bool valueExist = selectedEvent.targetEvent.data.TryGetValue("angleOffset", out f);
+            position += (valueExist ? (float)f : 0) / 180f * (1 / floor.speed) * width;
+            selectedEvent.transform.LocalMoveX(position);
         }
     }
 }

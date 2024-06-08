@@ -43,7 +43,7 @@ namespace NeoEditor.Tabs
         public override void OnActive()
         {
             timeline.SetParent(timelineParent);
-            timeline.tab = this;
+            timeline.parentTab = this;
             if (needReset)
             {
                 timeline.Init();

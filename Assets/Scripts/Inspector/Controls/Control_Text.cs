@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using ADOFAI;
+using NeoEditor.Tabs;
 using SA.GoogleDoc;
 using TMPro;
 using UnityEngine;
@@ -128,6 +129,12 @@ namespace NeoEditor.Inspector.Controls
                     {
                         value2 = (int)propertyInfo.value_default;
                     }
+                }
+                if (propertyInfo.type == PropertyType.Int && propertyInfo.name == "floor")
+                {
+                    (inspectorPanel.parentTab as EffectTabBase)?.timeline.UpdateSelectedEventPos(
+                        value2
+                    );
                 }
                 return value2.ToString();
             }

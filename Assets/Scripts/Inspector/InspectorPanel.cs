@@ -7,6 +7,7 @@ using ADOFAI;
 using DG.Tweening;
 using HarmonyLib;
 using NeoEditor.Inspector.Controls;
+using NeoEditor.Tabs;
 using SA.GoogleDoc;
 using TMPro;
 using UnityEngine;
@@ -47,8 +48,9 @@ namespace NeoEditor.Inspector
         public LevelEvent selectedEvent;
 
         public List<PropertySelectable> propertySelectables = new List<PropertySelectable>();
+        public TabBase parentTab;
 
-        public void Init(LevelEventInfo levelEventInfo)
+        public void Init(LevelEventInfo levelEventInfo, bool addFloorControl = false)
         {
             Dictionary<string, ADOFAI.PropertyInfo> propertiesInfo = levelEventInfo.propertiesInfo;
             List<string> dontRenderKeys =
@@ -56,7 +58,39 @@ namespace NeoEditor.Inspector
                 as List<string>;
             NeoEditor editor = NeoEditor.Instance;
 
-            foreach (string propertyKey in propertiesInfo.Keys)
+            bool isDecoration =
+                levelEventInfo.type == LevelEventType.AddDecoration
+                || levelEventInfo.type == LevelEventType.AddText
+                || levelEventInfo.type == LevelEventType.AddObject;
+
+            List<string> keys;
+
+            if (
+                !isDecoration
+                && addFloorControl
+                && !GCS.settingsInfo.Values.Contains(levelEventInfo)
+            )
+            {
+                Dictionary<string, object> dict = new Dictionary<string, object>
+                {
+                    { "name", "floor" },
+                    { "type", "Int" },
+                    { "default", 0 },
+                    { "key", "editor.tileNumber" },
+                    { "canBeDisabled", false }
+                };
+                ADOFAI.PropertyInfo propertyInfo = new ADOFAI.PropertyInfo(dict, levelEventInfo);
+                propertiesInfo.Add("floor", propertyInfo);
+
+                keys = propertiesInfo.Keys.ToList();
+                string floor = keys[keys.Count - 1];
+                keys.Remove(keys[keys.Count - 1]);
+                keys.Insert(0, floor);
+            }
+            else
+                keys = propertiesInfo.Keys.ToList();
+
+            foreach (string propertyKey in keys)
             {
                 if (dontRenderKeys.Contains(propertyKey))
                     continue;
@@ -460,6 +494,7 @@ namespace NeoEditor.Inspector
         public void SetProperties(LevelEvent levelEvent, bool checkIfEnabled = true)
         {
             selectedEvent = levelEvent;
+            NeoEditor editor = NeoEditor.Instance;
             foreach (string item in levelEvent.data.Keys.ToList())
             {
                 if (!properties.ContainsKey(item))
@@ -549,7 +584,7 @@ namespace NeoEditor.Inspector
 
             if (levelEvent.info.propertiesInfo.ContainsKey("floor"))
             {
-                int num = Mathf.Clamp(levelEvent.floor, 0, ADOBase.editor.floors.Count - 1);
+                int num = Mathf.Clamp(levelEvent.floor, 0, editor.floors.Count - 1);
                 PropertyPlus property2 = properties["floor"] as PropertyPlus;
                 ControlBase control2 = property2.control;
                 control2.text = num.ToString();

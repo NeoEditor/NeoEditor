@@ -229,6 +229,8 @@ namespace NeoEditor
                 HarmonyPatchType.Transpiler,
                 Main.Entry.Info.Id
             );
+
+            ADOStartup.SetupLevelEventsInfo();
         }
 
         private void LoadGameScene()
