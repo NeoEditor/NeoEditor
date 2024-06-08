@@ -18,6 +18,9 @@ namespace NeoEditor
         public Button stop;
         public Button play;
 
+        public Sprite playSprite;
+        public Sprite pauseSprite;
+
         public GameObject speed;
         public Button speedDown;
         public Button speedUp;
@@ -51,6 +54,7 @@ namespace NeoEditor
         {
             NeoEditor editor = NeoEditor.Instance;
 
+            play.image.sprite = editor.paused ? playSprite : pauseSprite;
             speed.SetActive(RDInput.holdingControl && editor.paused && isPointerHover);
             if (RDInput.holdingControl && editor.paused && isPointerHover)
             {
