@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 namespace NeoEditor.Inspector
 {
-    public class EventsPanel : MonoBehaviour
+    public class EventPanel : MonoBehaviour
     {
         public RectTransform content;
         public TextMeshProUGUI title;
@@ -19,7 +19,7 @@ namespace NeoEditor.Inspector
         private Dictionary<LevelEventType, InspectorPanel> inspectors;
         private LevelEventType selectedEventType = LevelEventType.None;
 
-        public void Init(List<LevelEventInfo> infos)
+        public virtual void Init(List<LevelEventInfo> infos)
         {
             NeoEditor editor = NeoEditor.Instance;
 
@@ -35,7 +35,7 @@ namespace NeoEditor.Inspector
             }
         }
 
-        public void SetProperties(LevelEventType type, LevelEvent levelEvent)
+        public virtual void SetProperties(LevelEventType type, LevelEvent levelEvent)
         {
             eventTitle.text =
                 type == LevelEventType.None

@@ -16,7 +16,7 @@ namespace NeoEditor.Tabs
         public RawImage sceneView;
 
         public RectTransform timelineParent;
-        public EventsPanel events;
+        public EventPanel events;
         public TimelinePanel timeline;
 
         //public EventPanel inspector;
