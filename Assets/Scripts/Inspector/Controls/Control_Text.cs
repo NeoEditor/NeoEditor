@@ -107,6 +107,13 @@ namespace NeoEditor.Inspector.Controls
                         value = (float)propertyInfo.value_default;
                     }
                 }
+
+                if (propertyInfo.name.Contains("angleOffset"))
+                {
+                    (inspectorPanel.parentTab as EffectTabBase)?.timeline.UpdateSelectedEventPos(
+                        value
+                    );
+                }
                 return value.ToString();
             }
             if (propertyInfo.type == PropertyType.Int || propertyInfo.type == PropertyType.Tile)

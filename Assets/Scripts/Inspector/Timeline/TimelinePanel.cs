@@ -602,5 +602,18 @@ namespace NeoEditor.Inspector.Timeline
             position += (valueExist ? (float)f : 0) / 180f * (1 / floor.speed) * width;
             selectedEvent.transform.LocalMoveX(position);
         }
+
+        public void UpdateSelectedEventPos(float angleOffset)
+        {
+            if (selectedEvent == null || !selectedEvent.isRendering)
+                return;
+            NeoEditor editor = NeoEditor.Instance;
+            scrFloor floor = editor.floors[selectedEvent.targetEvent.floor];
+
+            float position = TimeToBeat(floor.entryTime) * width * scale;
+
+            position += angleOffset / 180f * (1 / floor.speed) * width;
+            selectedEvent.transform.LocalMoveX(position);
+        }
     }
 }
