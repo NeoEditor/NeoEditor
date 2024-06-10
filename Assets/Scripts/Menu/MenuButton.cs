@@ -22,5 +22,6 @@ namespace NeoEditor.Menu
         public Sprite uncheck;
 
         public MenuItem info;
+        public bool isChecked = false;
     }
 }

@@ -20,6 +20,7 @@ namespace NeoEditor.Tabs
                 levelEventsInfo["MiscSettings"]
             );
             gameView.texture = Assets.GameRenderer;
+            OnOpenLevel();
         }
 
         public override void OnOpenLevel()

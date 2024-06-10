@@ -187,12 +187,6 @@ namespace NeoEditor
             var dictionary = GCS
                 .settingsInfo.Concat(GCS.levelEventsInfo)
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-            for (int i = 0; i < 7; i++)
-            {
-                int tab = i;
-                tabs[i].InitTab(dictionary);
-                tabButtons[i].onClick.AddListener(() => SelectTab((EditorTab)tab));
-            }
 
             SelectTab(EditorTab.Project);
 
@@ -201,7 +195,14 @@ namespace NeoEditor
 
             FloorMesh.UpdateAllRequired();
 
-            OpenLevel();
+            for (int i = 0; i < 7; i++)
+            {
+                int tab = i;
+                tabs[i].InitTab(dictionary);
+                tabButtons[i].onClick.AddListener(() => SelectTab((EditorTab)tab));
+            }
+
+            //OpenLevel();
 
             scrController.instance.paused = true;
             GameObject.Find("Error Meter(Clone)")?.SetActive(false);

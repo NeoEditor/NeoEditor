@@ -62,6 +62,16 @@ namespace NeoEditor.Menu
                         AddSubMenu(sub, subContent, depth + 1);
                     }
                 }
+                else if (menu is ActionMenuItem)
+                {
+                    button.button.onClick.AddListener(() => (menu as ActionMenuItem).action());
+                }
+                else if (menu is ToggleMenuItem)
+                {
+                    button.button.onClick.AddListener(
+                        () => (menu as ToggleMenuItem).action(!button.isChecked)
+                    );
+                }
             }
         }
 
@@ -80,7 +90,16 @@ namespace NeoEditor.Menu
             var file = new MenuItem("File", "");
             file.AddSubMenu(new ActionMenuItem("New", "Ctrl + N", () => { }));
             file.AddSubMenu(new SeparatorMenuItem());
-            file.AddSubMenu(new ActionMenuItem("Open", "Ctrl + O", () => { }));
+            file.AddSubMenu(
+                new ActionMenuItem(
+                    "Open",
+                    "Ctrl + O",
+                    () =>
+                    {
+                        NeoEditor.Instance.OpenLevel();
+                    }
+                )
+            );
             file.AddSubMenu(new ActionMenuItem("Open Recent", "Ctrl + Shift + O", () => { }));
             file.AddSubMenu(new ActionMenuItem("Open URL", "Ctrl + U", () => { }));
             file.AddSubMenu(new SeparatorMenuItem());
