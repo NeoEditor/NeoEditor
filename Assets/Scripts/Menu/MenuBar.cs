@@ -47,6 +47,7 @@ namespace NeoEditor.Menu
                 MenuButton button = Instantiate(menuButtonTemplate, content.rect);
                 button.text.text = menu.text;
                 button.shortcut.text = menu.shortcut;
+                button.checkbox.gameObject.SetActive(menu is ToggleMenuItem);
                 button.gameObject.SetActive(true);
                 if (menu is EntryMenuItem)
                 {
@@ -130,6 +131,15 @@ namespace NeoEditor.Menu
             edit.AddSubMenu(new SeparatorMenuItem());
             edit.AddSubMenu(new ActionMenuItem("Select All", "Ctrl + A", () => { }));
             AddMenu(edit);
+
+            var view = new MenuItem("View", "");
+            var zoom = view.AddSubMenu(new EntryMenuItem("Zoom"));
+            zoom.AddSubMenu(new ActionMenuItem("Zoom In", "Ctrl + Plus", () => { }));
+            zoom.AddSubMenu(new ActionMenuItem("Zoom Out", "Ctrl + Minus", () => { }));
+            zoom.AddSubMenu(new ActionMenuItem("Restore Default Zoom", "Ctrl + 0", () => { }));
+            view.AddSubMenu(new SeparatorMenuItem());
+
+            AddMenu(view);
         }
 
         void Update() { }
