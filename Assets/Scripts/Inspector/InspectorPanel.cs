@@ -11,6 +11,7 @@ using NeoEditor.Tabs;
 using SA.GoogleDoc;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace NeoEditor.Inspector
@@ -43,6 +44,7 @@ namespace NeoEditor.Inspector
 
         public RectTransform content;
         public LayoutGroup layout;
+        public RectTransform viewport;
 
         public Dictionary<string, Property> properties = new Dictionary<string, Property>();
         public LevelEvent selectedEvent;
@@ -50,8 +52,11 @@ namespace NeoEditor.Inspector
         public List<PropertySelectable> propertySelectables = new List<PropertySelectable>();
         public TabBase parentTab;
 
+        private EventSystem eventSystem;
+
         public void Init(LevelEventInfo levelEventInfo, bool addFloorControl = false)
         {
+            eventSystem = EventSystem.current;
             Dictionary<string, ADOFAI.PropertyInfo> propertiesInfo = levelEventInfo.propertiesInfo;
             List<string> dontRenderKeys =
                 typeof(PropertiesPanel).GetField("dontRenderKeys", AccessTools.all).GetValue(null)
@@ -624,6 +629,105 @@ namespace NeoEditor.Inspector
             action.Invoke();
         }
 
-        void Update() { }
+        void Update()
+        {
+            if (!Input.GetKeyDown(KeyCode.Tab))
+            {
+                return;
+            }
+            if (
+                propertySelectables == null
+                || propertySelectables.Count == 0
+                || eventSystem == null
+                || eventSystem.currentSelectedGameObject == null
+            )
+            {
+                return;
+            }
+
+            Selectable currentSel =
+                eventSystem.currentSelectedGameObject.GetComponent<Selectable>();
+            int num = propertySelectables.FindIndex(
+                (PropertySelectable ps) => ps.selectable == currentSel
+            );
+            if (currentSel == null || num < 0)
+            {
+                return;
+            }
+
+            bool holdingControl = RDInput.holdingControl;
+            bool holdingShift = RDInput.holdingShift;
+            int num2 = num;
+            int num3 = 0;
+            bool flag;
+            PropertySelectable propertySelectable;
+            ControlBase control;
+            bool flag2;
+            do
+            {
+                flag = false;
+                flag2 = false;
+                num2 = ((holdingControl || holdingShift) ? (num2 - 1) : (num2 + 1));
+                num2 = (
+                    (num2 >= 0)
+                        ? (num2 % propertySelectables.Count)
+                        : (propertySelectables.Count - 1)
+                );
+                propertySelectable = propertySelectables[num2];
+                control = propertySelectable.control;
+                flag2 = propertySelectable.isPropertyCheckbox;
+                if (control.propertyInfo.canBeDisabled || selectedEvent.isFake)
+                {
+                    flag = selectedEvent.disabled[control.propertyInfo.name];
+                }
+
+                num3++;
+                if (num3 > 999)
+                {
+                    num2 = num;
+                    break;
+                }
+            } while (!control.propertyInfo.CheckIfEnabled(selectedEvent) || (flag && !flag2));
+            Selectable selectable = propertySelectables[num2].selectable;
+            if (flag2)
+            {
+                selectable.targetGraphic = (
+                    flag
+                        ? propertySelectable.propertyRef.checkbgImage
+                        : propertySelectable.propertyRef.checkImage
+                );
+            }
+
+            RectTransform propertyTransform = control.propertyTransform;
+            if (!IsControlFullyVisible(propertyTransform))
+            {
+                float num4 = content.anchoredPosition.y;
+                float num5 = propertyTransform.anchoredPosition.y;
+                float num6 = (
+                    (num5 > 0f - num4)
+                        ? num5
+                        : (num5 - propertyTransform.rect.height + viewport.rect.height)
+                );
+                content.SetAnchorPosY(0f - num6);
+            }
+
+            if (selectable.TryGetComponent<InputField>(out var component))
+            {
+                component.OnPointerClick(new PointerEventData(eventSystem));
+            }
+            eventSystem.SetSelectedGameObject(
+                selectable.gameObject,
+                new BaseEventData(eventSystem)
+            );
+        }
+
+        private bool IsControlFullyVisible(RectTransform rt)
+        {
+            float y = content.anchoredPosition.y;
+            float y2 = rt.anchoredPosition.y;
+            float height = rt.rect.height;
+            float height2 = this.viewport.rect.height;
+            return y2 <= -y && y2 - height > -height2 - y;
+        }
     }
 }
