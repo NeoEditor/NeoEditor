@@ -259,7 +259,7 @@ namespace NeoEditor.Inspector.Timeline
                 TimeToBeat(floors.Last().entryTime + conductor.crotchet * 4) * width;
 
             content.GetComponent<RectTransform>().SizeDeltaX(timelineWidth);
-            content.GetComponent<RectTransform>().SizeDeltaY(1000f);
+            content.GetComponent<RectTransform>().SizeDeltaY((timelineRowEndPosX.Count + 2) * height);
 
             floorNumBar.GetComponent<RectTransform>().SizeDeltaX(timelineWidth);
         }
@@ -563,7 +563,7 @@ namespace NeoEditor.Inspector.Timeline
             timelineEvent.button.interactable = (selectedEvent?.targetEvent) != levelEvent;
 
             obj.transform.LocalMoveX(posX);
-            obj.transform.LocalMoveY(timelineRow * height);
+            obj.transform.LocalMoveY(-timelineRow * height);
             obj.GetComponent<RectTransform>().SizeDeltaX(objWidth);
 
             return obj;
