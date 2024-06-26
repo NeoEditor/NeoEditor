@@ -187,6 +187,10 @@ namespace NeoEditor.Inspector.Timeline
                     firstLineShowingOnScreenIdx = 0;
             }
 
+            // last LevelEvent's end time on each timeline row
+            // used to calculate the optimal row for next LevelEvent
+            List<float> timelineRowEndPosX = new List<float>();
+
             foreach (var levelEvent in editor.events)
             {
                 // get position
@@ -199,7 +203,29 @@ namespace NeoEditor.Inspector.Timeline
                 float duration = GetEventDuration(levelEvent);
                 float objWidth = GetEventObjWidth(duration);
 
-                var eventData = new LevelEventData(entryTime, duration, levelEvent);
+                // get the optimal timeline row
+                int optimalRow = -1;
+                float eventEndPosX = position.x + objWidth;
+                for (int i = 0; i < timelineRowEndPosX.Count; i++)
+                {
+                    // Main.Entry.Logger.Log(string.Format("i: {0} endPosX: {1} curPosX: {2}", i, timelineRowEndPosX[i], position.x));
+                    if (timelineRowEndPosX[i] < position.x)
+                    {
+                        optimalRow = i;
+                        timelineRowEndPosX[i] = eventEndPosX;
+                        break;
+                    }
+                }
+                if (optimalRow < 0)
+                {
+                    // no optimal row found, create a new row and place it
+                    optimalRow = timelineRowEndPosX.Count;
+                    timelineRowEndPosX.Add(eventEndPosX);
+                }
+
+                Main.Entry.Logger.Log(string.Format("floor {0}: {1} {2} {3} // row: {4}", levelEvent.floor, levelEvent.eventType, position.x, eventEndPosX, optimalRow));
+
+                var eventData = new LevelEventData(entryTime, duration, optimalRow, levelEvent);
                 levelEventsDataSortedByStartPos.Add(eventData);
                 levelEventsDataSortedByEndPos.Add(eventData);
 
@@ -207,7 +233,7 @@ namespace NeoEditor.Inspector.Timeline
                 {
                     //Main.Entry.Logger.Log("[d] (init phase) adding event | floor " + levelEvent.floor + " type: " + levelEvent.eventType);
 
-                    var obj = CreateEventObject(levelEvent, position.x, objWidth);
+                    var obj = CreateEventObject(levelEvent, position.x, eventData.timelineRow, objWidth);
 
                     eventData.obj = obj;
                     levelEventsSortedByStartPosListEndIdx++;
@@ -380,7 +406,7 @@ namespace NeoEditor.Inspector.Timeline
 
                     //Main.Entry.Logger.Log("[d] adding event " + i);
 
-                    var obj = CreateEventObject(data.evt, startPosX, endPosX - startPosX);
+                    var obj = CreateEventObject(data.evt, startPosX, data.timelineRow, endPosX - startPosX);
                     data.obj = obj;
 
                     levelEventsSortedByStartPosListEndIdx++;
@@ -467,7 +493,7 @@ namespace NeoEditor.Inspector.Timeline
 
                     //Main.Entry.Logger.Log("[d] adding event " + i);
 
-                    var obj = CreateEventObject(data.evt, startPosX, endPosX - startPosX);
+                    var obj = CreateEventObject(data.evt, startPosX, data.timelineRow, endPosX - startPosX);
                     data.obj = obj;
 
                     levelEventsSortedByEndPosListStartIdx--;
@@ -524,7 +550,7 @@ namespace NeoEditor.Inspector.Timeline
             return new VerticalLineData(floor.seqID, posX, line, num);
         }
 
-        private GameObject CreateEventObject(LevelEvent levelEvent, float posX, float objWidth)
+        private GameObject CreateEventObject(LevelEvent levelEvent, float posX, int timelineRow, float objWidth)
         {
             var obj = eventPool.Get();
             obj.transform.GetChild(0).GetComponent<Image>().sprite = GCS.levelEventIcons[
@@ -537,6 +563,7 @@ namespace NeoEditor.Inspector.Timeline
             timelineEvent.button.interactable = (selectedEvent?.targetEvent) != levelEvent;
 
             obj.transform.LocalMoveX(posX);
+            obj.transform.LocalMoveY(timelineRow * height);
             obj.GetComponent<RectTransform>().SizeDeltaX(objWidth);
 
             return obj;
