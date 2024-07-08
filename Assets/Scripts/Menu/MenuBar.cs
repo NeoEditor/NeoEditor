@@ -96,7 +96,6 @@ namespace NeoEditor.Menu
 				NeoEditor.Instance.OpenLevel();
 			}));
 			file.AddSubMenu(new ActionMenuItem("Open Recent", "Ctrl + Shift + O", () => { }));
-            file.AddSubMenu(new ActionMenuItem("Open URL", "Ctrl + U", () => { }));
             file.AddSubMenu(new SeparatorMenuItem());
 			file.AddSubMenu(new ActionMenuItem("Save", "Ctrl + S", () =>
 			{
