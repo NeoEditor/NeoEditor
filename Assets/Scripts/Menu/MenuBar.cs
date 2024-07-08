@@ -6,7 +6,7 @@ using UnityEngine.PlayerLoop;
 
 namespace NeoEditor.Menu
 {
-    public class MenuBar : MonoBehaviour
+    public class MenuBar : ADOBase
     {
         public MenuButton menuBarButtonTemplate;
         public MenuButton menuButtonTemplate;
@@ -108,7 +108,7 @@ namespace NeoEditor.Menu
 			file.AddSubMenu(new SeparatorMenuItem());
             file.AddSubMenu(new ActionMenuItem("Help", "Ctrl + H", () => { }));
             file.AddSubMenu(new ActionMenuItem("Preference", "Ctrl + Shift + I", () => { }));
-            file.AddSubMenu(new ActionMenuItem("Exit", "", () => { }));
+            file.AddSubMenu(new ActionMenuItem("Exit", "", controller.QuitToMainMenu));
             AddMenu(file);
 
             var edit = new MenuItem("Edit", "");
