@@ -1,6 +1,7 @@
 using ADOFAI;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -56,7 +57,7 @@ namespace NeoEditor.Inspector.Media
 				{
 					foreach (var property in fileProperties[evt.eventType])
 					{
-						if (!files.ContainsKey((string)evt[property.name]) && 
+						if (!files.ContainsKey((string)evt[property.name]) &&
 							!((string)evt[property.name]).IsNullOrEmpty())
 							files.Add((string)evt[property.name], property.fileType switch
 							{
@@ -75,10 +76,20 @@ namespace NeoEditor.Inspector.Media
 				var item = Instantiate(itemPrefab, content.transform);
 				bool hasImage = editor.customLevel.imgHolder.customSprites.ContainsKey(file.Key);
 
-				item.SetMediaItem(file.Value, file.Key, hasImage ?
+				if (file.Value == MediaType.Image && !hasImage)
+				{
+					LoadResult result;
+					editor.customLevel.imgHolder
+						.AddSprite(file.Key, Path.Combine(Path.GetDirectoryName(ADOBase.levelPath), file.Key), out result);
+					if (result == LoadResult.Successful) hasImage = true;
+				}
+
+				Sprite sprite = hasImage ?
 					editor.customLevel.imgHolder.customSprites[file.Key]
-					.GetSprite(scrExtImgHolder.ImageOptions.None) : 
-					null);
+					.GetSprite(scrExtImgHolder.ImageOptions.None) :
+					null;
+
+				item.SetMediaItem(file.Value, file.Key, sprite);
 				items.Add(item);
 			}
 
