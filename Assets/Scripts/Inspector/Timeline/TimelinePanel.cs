@@ -150,8 +150,13 @@ namespace NeoEditor.Inspector.Timeline
             float scrollWidth = scrollRT.rect.width;
             float scrollHeight = scrollRT.rect.height;
 
+            // release all loaded objects
+
             foreach (var line in vLines)
+            {
                 vPool.Release(line.obj);
+                floorNumPool.Release(line.num);
+            }
             vLines.Clear();
 
             foreach (var eventData in levelEventsDataSortedByStartPos)
@@ -167,6 +172,8 @@ namespace NeoEditor.Inspector.Timeline
 
             levelEventsSortedByStartPosListEndIdx = -1;
             levelEventsSortedByEndPosListStartIdx = 0;
+
+            // loop level floors(tiles) and register verticalLine
 
             for (int i = 0; i < floors.Count; i++)
             {
@@ -190,6 +197,8 @@ namespace NeoEditor.Inspector.Timeline
             // last LevelEvent's end time on each timeline row
             // used to calculate the optimal row for next LevelEvent
             List<float> timelineRowEndPosX = new List<float>();
+
+            // loop level floors(tiles) and register level events 
 
             foreach (var levelEvent in editor.events)
             {
