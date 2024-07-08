@@ -92,7 +92,9 @@ namespace NeoEditor
 
         public bool paused => scrController.instance.paused;
 
-        private bool shouldScrub = true;
+		public string filename { get; private set; }
+
+		private bool shouldScrub = true;
         private int scrubTo = 0;
 
         public Camera BGcamCopy;
@@ -102,8 +104,8 @@ namespace NeoEditor
         public float camUserSize = 1f;
         public float scrollSpeed;
         public Tween anchorZoomTween;
-
-        private readonly Color grayColor = new Color(0.42352942f, 0.42352942f, 0.42352942f);
+		private bool unsavedChanges;
+		private readonly Color grayColor = new Color(0.42352942f, 0.42352942f, 0.42352942f);
         private readonly Color lineGreen = new Color(0.4f, 1f, 0.4f, 1f);
         private readonly Color lineYellow = new Color(1f, 1f, 0.4f, 1f);
         private readonly Color linePurple = new Color(0.75f, 0.5f, 1f, 1f);
@@ -496,7 +498,36 @@ namespace NeoEditor
             DrawFloorOffsetLines();
         }
 
-        public scrFloor NextFloor(scrFloor floor)
+		public void SaveLevel()
+		{
+			if (!string.IsNullOrEmpty(ADOBase.levelPath))
+			{
+				try
+				{
+					string data = levelData.Encode();
+					RDFile.WriteAllText(ADOBase.levelPath, data);
+					//ShowNotification(RDString.Get("editor.notification.levelSaved"));
+					unsavedChanges = false;
+				}
+				catch (Exception ex)
+				{
+					ShowNotificationPopup(RDString.Get("editor.notification.savingFailed"));
+					Debug.Log("Failed saving at path " + ADOBase.levelPath + ": " + ex.Message);
+					return;
+				}
+			}
+			else
+			{
+				SaveLevelAs();
+			}
+		}
+
+		public void SaveLevelAs(bool newLevel = false)
+		{
+			StartCoroutine(SaveLevelAsCo(newLevel));
+		}
+
+		public scrFloor NextFloor(scrFloor floor)
         {
             List<scrFloor> floors = this.floors;
             int num = floors.IndexOf(floor) + 1;
@@ -697,7 +728,18 @@ namespace NeoEditor
             //    tabs[i].InitTab(dictionary);
         }
 
-        private IEnumerator OpenLevelCo(string definedLevelPath = null)
+		private void RefreshFilenameText()
+		{
+			string text = (string.IsNullOrEmpty(ADOBase.levelPath) ? RDString.Get("editor.levelNotSaved") : Path.GetFileName(ADOBase.levelPath));
+			if (unsavedChanges)
+			{
+				text += "*";
+			}
+
+			filename = text;
+		}
+
+		private IEnumerator OpenLevelCo(string definedLevelPath = null)
         {
             ClearAllFloorOffsets();
             //this.redoStates.Clear();
@@ -853,5 +895,29 @@ namespace NeoEditor
                 tab.OnOpenLevel();
             yield break;
         }
-    }
+
+		private IEnumerator SaveLevelAsCo(bool newLevel = false)
+		{
+			string defaultName = ((newLevel || string.IsNullOrEmpty(customLevel.levelPath)) ? "level" : Path.GetFileNameWithoutExtension(customLevel.levelPath));
+			StandaloneFileBrowser.SaveFilePanelAsync(RDString.Get("editor.dialog.saveLevel"), Persistence.GetLastUsedFolder(), defaultName, "adofai", delegate (string levelPath)
+			{
+				if (!string.IsNullOrEmpty(levelPath))
+				{
+					string text = SanitizeLevelPath(levelPath);
+					if (!text.EndsWith(".adofai"))
+					{
+						text += ".adofai";
+					}
+
+					customLevel.levelPath = text;
+					RefreshFilenameText();
+					Persistence.UpdateLastUsedFolder(levelPath);
+					Persistence.UpdateLastOpenedLevel(levelPath);
+					DiscordController.instance?.UpdatePresence();
+					SaveLevel();
+				}
+			});
+            yield break;
+		}
+	}
 }

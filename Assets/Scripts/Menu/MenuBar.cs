@@ -98,9 +98,15 @@ namespace NeoEditor.Menu
 			file.AddSubMenu(new ActionMenuItem("Open Recent", "Ctrl + Shift + O", () => { }));
             file.AddSubMenu(new ActionMenuItem("Open URL", "Ctrl + U", () => { }));
             file.AddSubMenu(new SeparatorMenuItem());
-            file.AddSubMenu(new ActionMenuItem("Save", "Ctrl + S", () => { }));
-            file.AddSubMenu(new ActionMenuItem("Save As", "Ctrl + Shift + S", () => { }));
-            file.AddSubMenu(new SeparatorMenuItem());
+			file.AddSubMenu(new ActionMenuItem("Save", "Ctrl + S", () =>
+			{
+				NeoEditor.Instance.SaveLevel();
+			}));
+			file.AddSubMenu(new ActionMenuItem("Save As", "Ctrl + Shift + S", () =>
+			{
+				NeoEditor.Instance.SaveLevelAs();
+			}));
+			file.AddSubMenu(new SeparatorMenuItem());
             file.AddSubMenu(new ActionMenuItem("Help", "Ctrl + H", () => { }));
             file.AddSubMenu(new ActionMenuItem("Preference", "Ctrl + Shift + I", () => { }));
             file.AddSubMenu(new ActionMenuItem("Exit", "", () => { }));
