@@ -55,15 +55,19 @@ namespace NeoEditor
                 return true;
             };
 
-            modEntry.OnGUI = (entry) =>
+            modEntry.OnShowGUI = (entry) =>
             {
-                if (GUILayout.Button("fjkdslla;"))
-                    ADOBase.LoadScene("NeoEditor");
-                if (GUILayout.Button("R"))
-                {
-                    //scnNewEditor.instance.customLevel.RemakePath();
-                    //scnNewEditor.instance.customLevel.ResetScene();
-                }
+                modEntry.Info.DisplayName = "NeoEditor (Ctrl + Alt + E)";
+            };
+
+			modEntry.OnGUI = (entry) =>
+			{
+                GUILayout.Label("Ctrl + Alt + E to open NeoEditor.");
+			};
+
+			modEntry.OnHideGUI = (entry) =>
+            {
+                modEntry.Info.DisplayName = "NeoEditor";
             };
         }
     }
