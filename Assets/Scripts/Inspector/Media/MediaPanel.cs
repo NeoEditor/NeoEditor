@@ -79,6 +79,7 @@ namespace NeoEditor.Inspector.Media
 					editor.customLevel.imgHolder.customSprites[file.Key]
 					.GetSprite(scrExtImgHolder.ImageOptions.None) : 
 					null);
+				items.Add(item);
 			}
 
 			//foreach (var sprite in editor.customLevel.imgHolder.customSprites)
