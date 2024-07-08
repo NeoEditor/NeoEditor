@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ADOFAI.Editor;
 using UnityEngine;
 
 namespace NeoEditor.Menu
@@ -13,7 +14,7 @@ namespace NeoEditor.Menu
 
         public ToggleMenuItem(
             string text,
-            string shortcut,
+            EditorKeybind shortcut,
             Action<bool> action,
             Func<GameObject, bool> onActive = null
         )

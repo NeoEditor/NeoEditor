@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ADOFAI.Editor;
 using UnityEngine;
 
 namespace NeoEditor.Menu
@@ -10,10 +11,20 @@ namespace NeoEditor.Menu
     public class ActionMenuItem : MenuItem
     {
         public Action action;
+        
+        public ActionMenuItem(
+            string text,
+            Action action,
+            Func<GameObject, bool> onActive = null
+        )
+            : base(text, onActive)
+        {
+            this.action = action;
+        }
 
         public ActionMenuItem(
             string text,
-            string shortcut,
+            EditorKeybind shortcut,
             Action action,
             Func<GameObject, bool> onActive = null
         )

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using ADOFAI.Editor;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 
@@ -15,6 +16,7 @@ namespace NeoEditor.Menu
 
         public RectTransform menubar;
 
+        private List<MenuButton> menus = new();
         private List<MenuContent> contents = new List<MenuContent>();
 
         public void AddMenu(MenuItem root)
@@ -33,6 +35,7 @@ namespace NeoEditor.Menu
 
             menu.button.onClick.AddListener(() => ShowMenu(content));
 
+            menus.Add(menu);
             contents.Add(content);
         }
 
@@ -46,7 +49,7 @@ namespace NeoEditor.Menu
             {
                 MenuButton button = Instantiate(menuButtonTemplate, content.rect);
                 button.text.text = menu.text;
-                button.shortcut.text = menu.shortcut;
+                button.shortcut.text = menu.shortcutText;
                 button.checkbox.gameObject.SetActive(menu is ToggleMenuItem);
                 button.gameObject.SetActive(true);
                 if (menu is EntryMenuItem)
@@ -88,60 +91,76 @@ namespace NeoEditor.Menu
 
         void Start()
         {
-            var file = new MenuItem("File", "");
-            file.AddSubMenu(new ActionMenuItem("New", "Ctrl + N", () => { }));
+            var file = new MenuItem("File");
+            file.AddSubMenu(new ActionMenuItem("New", new EditorKeybind(KeyModifier.Control, KeyCode.N), () => { }));
             file.AddSubMenu(new SeparatorMenuItem());
-			file.AddSubMenu(new ActionMenuItem("Open", "Ctrl + O", () =>
+			file.AddSubMenu(new ActionMenuItem("Open", new EditorKeybind(KeyModifier.Control, KeyCode.O), () =>
 			{
 				NeoEditor.Instance.OpenLevel();
 			}));
-			file.AddSubMenu(new ActionMenuItem("Open Recent", "Ctrl + Shift + O", () => { }));
+            file.AddSubMenu(new ActionMenuItem("Open Recent",
+                new EditorKeybind(KeyModifier.Control | KeyModifier.Shift, KeyCode.O), () => { }));
             file.AddSubMenu(new SeparatorMenuItem());
-			file.AddSubMenu(new ActionMenuItem("Save", "Ctrl + S", () =>
+			file.AddSubMenu(new ActionMenuItem("Save", new EditorKeybind(KeyModifier.Control, KeyCode.S), () =>
 			{
 				NeoEditor.Instance.SaveLevel();
 			}));
-			file.AddSubMenu(new ActionMenuItem("Save As", "Ctrl + Shift + S", () =>
+			file.AddSubMenu(new ActionMenuItem("Save As",
+                new EditorKeybind(KeyModifier.Control | KeyModifier.Shift, KeyCode.S), () =>
 			{
 				NeoEditor.Instance.SaveLevelAs();
 			}));
 			file.AddSubMenu(new SeparatorMenuItem());
-            file.AddSubMenu(new ActionMenuItem("Help", "Ctrl + H", () => { }));
-            file.AddSubMenu(new ActionMenuItem("Preference", "Ctrl + Shift + I", () => { }));
-            file.AddSubMenu(new ActionMenuItem("Exit", "", controller.QuitToMainMenu));
+            file.AddSubMenu(new ActionMenuItem("Help", new EditorKeybind(KeyModifier.Control, KeyCode.H), () => { }));
+            file.AddSubMenu(new ActionMenuItem("Preference", 
+                new EditorKeybind(KeyModifier.Control | KeyModifier.Shift, KeyCode.I), () => { }));
+            file.AddSubMenu(new ActionMenuItem("Exit", new EditorKeybind(KeyModifier.Control, KeyCode.Q), controller.QuitToMainMenu));
             AddMenu(file);
 
-            var edit = new MenuItem("Edit", "");
-            edit.AddSubMenu(new ActionMenuItem("Undo", "Ctrl + Z", () => { }));
-            edit.AddSubMenu(new ActionMenuItem("Redo", "Ctrl + Shift + Z", () => { }));
+            var edit = new MenuItem("Edit");
+            edit.AddSubMenu(new ActionMenuItem("Undo", new EditorKeybind(KeyModifier.Control, KeyCode.Z), () => { }));
+            edit.AddSubMenu(new ActionMenuItem("Redo", 
+                new EditorKeybind(KeyModifier.Control | KeyModifier.Shift, KeyCode.Z), () => { }));
             edit.AddSubMenu(new SeparatorMenuItem());
-            edit.AddSubMenu(new ActionMenuItem("Cut", "Ctrl + X", () => { }));
-            edit.AddSubMenu(new ActionMenuItem("Copy", "Ctrl + C", () => { }));
-            edit.AddSubMenu(new ActionMenuItem("Paste", "Ctrl + V", () => { }));
-            edit.AddSubMenu(new ActionMenuItem("Delete", "Del", () => { }));
+            edit.AddSubMenu(new ActionMenuItem("Cut", new EditorKeybind(KeyModifier.Control, KeyCode.X), () => { }));
+            edit.AddSubMenu(new ActionMenuItem("Copy", new EditorKeybind(KeyModifier.Control, KeyCode.C), () => { }));
+            edit.AddSubMenu(new ActionMenuItem("Paste", new EditorKeybind(KeyModifier.Control, KeyCode.V), () => { }));
+            edit.AddSubMenu(new ActionMenuItem("Delete", new EditorKeybind(KeyModifier.None, KeyCode.Delete), () => { }));
             edit.AddSubMenu(new SeparatorMenuItem());
             var find = edit.AddSubMenu(new EntryMenuItem("Find"));
-            find.AddSubMenu(new ActionMenuItem("Floor", "Ctrl + F", () => { }));
-            find.AddSubMenu(new ActionMenuItem("Event", "Ctrl + Shift + F", () => { }));
-            find.AddSubMenu(new ActionMenuItem("Decoration", "Ctrl + Alt + F", () => { }));
+            find.AddSubMenu(new ActionMenuItem("Floor", new EditorKeybind(KeyModifier.Control, KeyCode.F), () => { }));
+            find.AddSubMenu(new ActionMenuItem("Event", new EditorKeybind(KeyModifier.Control | KeyModifier.Shift, KeyCode.F), () => { }));
+            find.AddSubMenu(new ActionMenuItem("Decoration", new EditorKeybind(KeyModifier.Control | KeyModifier.Alt, KeyCode.F), () => { }));
             var replace = edit.AddSubMenu(new EntryMenuItem("Replace"));
-            replace.AddSubMenu(new ActionMenuItem("Event", "Ctrl + Shift + H", () => { }));
-            replace.AddSubMenu(new ActionMenuItem("Decoration", "Ctrl + Alt + H", () => { }));
+            replace.AddSubMenu(new ActionMenuItem("Event", new EditorKeybind(KeyModifier.Control | KeyModifier.Shift, KeyCode.H), () => { }));
+            replace.AddSubMenu(new ActionMenuItem("Decoration", new EditorKeybind(KeyModifier.Control | KeyModifier.Alt, KeyCode.H), () => { }));
             edit.AddSubMenu(new SeparatorMenuItem());
-            edit.AddSubMenu(new ActionMenuItem("Select All", "Ctrl + A", () => { }));
+            edit.AddSubMenu(new ActionMenuItem("Select All", new EditorKeybind(KeyModifier.Control, KeyCode.A), () => { }));
             AddMenu(edit);
 
-            var view = new MenuItem("View", "");
+            var view = new MenuItem("View");
             var zoom = view.AddSubMenu(new EntryMenuItem("Zoom"));
-            zoom.AddSubMenu(new ActionMenuItem("Zoom In", "Ctrl + Plus", () => { }));
-            zoom.AddSubMenu(new ActionMenuItem("Zoom Out", "Ctrl + Minus", () => { }));
-            zoom.AddSubMenu(new ActionMenuItem("Restore Default Zoom", "Ctrl + 0", () => { }));
+            zoom.AddSubMenu(new ActionMenuItem("Zoom In", new EditorKeybind(KeyModifier.Control, KeyCode.Plus), () => { }));
+            zoom.AddSubMenu(new ActionMenuItem("Zoom Out", new EditorKeybind(KeyModifier.Control, KeyCode.Minus), () => { }));
+            zoom.AddSubMenu(new ActionMenuItem("Restore Default Zoom", new EditorKeybind(KeyModifier.Control, KeyCode.Alpha0), () => { }));
             view.AddSubMenu(new SeparatorMenuItem());
 
             AddMenu(view);
         }
 
-        void Update() { }
+        void Update()
+        {
+            foreach(var menu in menus)
+            foreach (var sub in menu.info.subMenus)
+            {
+                if (!sub.shortcut.IsPressed()) continue;
+
+                if (sub is ActionMenuItem item)
+                {
+                    item.action();
+                }
+            }
+        }
 
         public void GenerateUI() { }
     }

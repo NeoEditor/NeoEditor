@@ -9,6 +9,6 @@ namespace NeoEditor.Menu
     public class SeparatorMenuItem : MenuItem
     {
         public SeparatorMenuItem()
-            : base("", "") { }
+            : base("") { }
     }
 }
