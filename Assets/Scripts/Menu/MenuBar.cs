@@ -91,17 +91,11 @@ namespace NeoEditor.Menu
             var file = new MenuItem("File", "");
             file.AddSubMenu(new ActionMenuItem("New", "Ctrl + N", () => { }));
             file.AddSubMenu(new SeparatorMenuItem());
-            file.AddSubMenu(
-                new ActionMenuItem(
-                    "Open",
-                    "Ctrl + O",
-                    () =>
-                    {
-                        NeoEditor.Instance.OpenLevel();
-                    }
-                )
-            );
-            file.AddSubMenu(new ActionMenuItem("Open Recent", "Ctrl + Shift + O", () => { }));
+			file.AddSubMenu(new ActionMenuItem("Open", "Ctrl + O", () =>
+			{
+				NeoEditor.Instance.OpenLevel();
+			}));
+			file.AddSubMenu(new ActionMenuItem("Open Recent", "Ctrl + Shift + O", () => { }));
             file.AddSubMenu(new ActionMenuItem("Open URL", "Ctrl + U", () => { }));
             file.AddSubMenu(new SeparatorMenuItem());
             file.AddSubMenu(new ActionMenuItem("Save", "Ctrl + S", () => { }));
