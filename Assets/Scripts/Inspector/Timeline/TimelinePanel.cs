@@ -249,11 +249,33 @@ namespace NeoEditor.Inspector.Timeline
                 }
             }
 
+            levelEventsDataSortedByStartPos.Sort(
+                (a, b) =>
+                {
+                    // sort by event start position x, smaller one goes first
+                    var diff = GetEventPosX(a.evt) - GetEventPosX(b.evt);
+                    if (diff < 0)
+                        return -1;
+                    else if (diff > 0)
+                        return 1;
+                    else
+                        return 0;
+                }
+            );
+
             levelEventsDataSortedByEndPos.Sort(
                 (a, b) =>
                 {
-                    // sort by event end time, smaller one goes first
-                    float diff = a.end - b.end;
+                    var aStartPosX = GetEventPosX(a.evt);
+                    var aObjWidth = GetEventObjWidth(a.evt);
+                    var aEndPosX = aStartPosX + aObjWidth;
+
+                    var bStartPosX = GetEventPosX(b.evt);
+                    var bObjWidth = GetEventObjWidth(b.evt);
+                    var bEndPosX = bStartPosX + bObjWidth;
+
+                    // sort by event end position x, smaller one goes first
+                    float diff = aEndPosX - bEndPosX;
                     if (diff < 0)
                         return -1;
                     else if (diff > 0)
@@ -378,8 +400,14 @@ namespace NeoEditor.Inspector.Timeline
                 )
                 {
                     var data = levelEventsDataSortedByEndPos[i];
-                    float endPosX = GetEventPosX(data.evt) + GetEventObjWidth(data.evt);
+                    float startPosX = GetEventPosX(data.evt);
+                    float endPosX = startPosX + GetEventObjWidth(data.evt);
 
+                    if (startPosX > prevScrollPos.x + scrollRT.rect.width)
+                    {
+                        levelEventsSortedByEndPosListStartIdx++;
+                        continue;
+                    }
                     if (endPosX >= pos.x)
                         break;
 
@@ -471,7 +499,13 @@ namespace NeoEditor.Inspector.Timeline
                 {
                     var data = levelEventsDataSortedByStartPos[i];
                     float startPosX = GetEventPosX(data.evt);
+                    float endPosX = startPosX + GetEventObjWidth(data.evt);
 
+                    if (endPosX < prevScrollPos.x)
+                    {
+                        levelEventsSortedByStartPosListEndIdx--;
+                        continue;
+                    }
                     if (startPosX <= pos.x + scrollRT.rect.width)
                         break;
 
