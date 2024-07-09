@@ -151,18 +151,20 @@ namespace NeoEditor.Inspector.Timeline
 
             // release all loaded objects
 
+            Main.Entry.Logger.Log("[d] TimelinePanel#Init() called. Releasing objects to pool...");
+
             foreach (var line in vLines)
             {
                 // verticalLine obj and floorNum obj can be null
                 // when floor is midspin
                 if (line.obj != null)
                 {
-                vPool.Release(line.obj);
+                    vPool.Release(line.obj);
                 }
                 if (line.num != null)
                 {
-                floorNumPool.Release(line.num);
-            }
+                    floorNumPool.Release(line.num);
+                }
             }
             vLines.Clear();
 
@@ -176,6 +178,9 @@ namespace NeoEditor.Inspector.Timeline
                     eventData.obj = null;
                 }
             }
+
+            //Main.Entry.Logger.Log(string.Format("[d] eventPool CountAll: {0} active: {1} inactive: {2}", eventPool.CountAll, eventPool.CountActive, eventPool.CountInactive));
+
             levelEventsDataSortedByStartPos.Clear();
             levelEventsDataSortedByEndPos.Clear();
 
@@ -261,6 +266,8 @@ namespace NeoEditor.Inspector.Timeline
                 }
             }
 
+            //Main.Entry.Logger.Log("[d] [init] events: startPosSortedIdx = " + levelEventsSortedByStartPosListEndIdx + ", endPosSortedIdx = " + levelEventsSortedByEndPosListStartIdx);
+
             levelEventsDataSortedByStartPos.Sort(
                 (a, b) =>
                 {
@@ -307,6 +314,7 @@ namespace NeoEditor.Inspector.Timeline
             floorNumBar.GetComponent<RectTransform>().SizeDeltaX(timelineWidth);
 
             prevScrollPos = Vector2.zero;
+            // move scroll position after initialization completed ( Init() then OnValueChanged() )
             scroll.content.anchoredPosition = Vector2.zero;
         }
 
@@ -353,6 +361,8 @@ namespace NeoEditor.Inspector.Timeline
 
             Vector2 pos = position * (content.sizeDelta - scrollRT.rect.size);
             Vector2 dir = prevScrollPos - pos;
+
+            //Main.Entry.Logger.Log("[d] [OnValueChanged] (before) events: startPosSortedIdx = " + levelEventsSortedByStartPosListEndIdx + ", endPosSortedIdx = " + levelEventsSortedByEndPosListStartIdx);
 
             // prevScrollPos < (current) pos
             // scrolled to the right
@@ -456,7 +466,7 @@ namespace NeoEditor.Inspector.Timeline
                     else if (startPosX > pos.x + scrollRT.rect.width)
                         break;
 
-                    //Main.Entry.Logger.Log("[d] adding event " + i);
+                    //Main.Entry.Logger.Log("[d] adding event " + i + " to the back side");
 
                     var obj = CreateEventObject(data.evt, startPosX, data.timelineRow, endPosX - startPosX);
                     data.obj = obj;
@@ -549,7 +559,7 @@ namespace NeoEditor.Inspector.Timeline
                     else if (endPosX < pos.x)
                         break;
 
-                    //Main.Entry.Logger.Log("[d] adding event " + i);
+                    //Main.Entry.Logger.Log("[d] adding event " + i + " to the front side");
 
                     var obj = CreateEventObject(data.evt, startPosX, data.timelineRow, endPosX - startPosX);
                     data.obj = obj;
@@ -565,7 +575,7 @@ namespace NeoEditor.Inspector.Timeline
 
             prevScrollPos = pos;
             //Main.Entry.Logger.Log("Update Complete! cnt = " + vLines.Count + ", firstIdx = " + firstLineShowingOnScreenIdx + ", lastIdx = " + lastLineShowingOnScreenIdx);
-            //Main.Entry.Logger.Log("events: startPosSortedIdx = " + levelEventsSortedByStartPosListEndIdx + ", endPosSortedIdx = " + levelEventsSortedByEndPosListStartIdx);
+            //Main.Entry.Logger.Log("[d] [OnValueChanged] (after) events: startPosSortedIdx = " + levelEventsSortedByStartPosListEndIdx + ", endPosSortedIdx = " + levelEventsSortedByEndPosListStartIdx);
         }
 
         float TimeToBeat(double time)
@@ -624,6 +634,7 @@ namespace NeoEditor.Inspector.Timeline
             obj.transform.LocalMoveY(-timelineRow * height);
             obj.GetComponent<RectTransform>().SizeDeltaX(objWidth);
 
+            //Main.Entry.Logger.Log(string.Format("[d] CreateEventObject: floor {0} {1}, posX: {2}", levelEvent.floor, levelEvent.eventType, posX));
             return obj;
         }
 
