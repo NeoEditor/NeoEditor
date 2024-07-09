@@ -146,7 +146,6 @@ namespace NeoEditor.Inspector.Timeline
 
             var floors = editor.floors;
 
-            scroll.content.anchoredPosition = Vector2.zero;
             float scrollWidth = scrollRT.rect.width;
             float scrollHeight = scrollRT.rect.height;
 
@@ -165,6 +164,8 @@ namespace NeoEditor.Inspector.Timeline
                 {
                     eventData.obj.GetComponent<TimelineEvent>().isRendering = false;
                     eventPool.Release(eventData.obj);
+
+                    eventData.obj = null;
                 }
             }
             levelEventsDataSortedByStartPos.Clear();
@@ -296,6 +297,9 @@ namespace NeoEditor.Inspector.Timeline
             content.GetComponent<RectTransform>().SizeDeltaY((timelineRowEndPosX.Count + 2) * height);
 
             floorNumBar.GetComponent<RectTransform>().SizeDeltaX(timelineWidth);
+
+            prevScrollPos = Vector2.zero;
+            scroll.content.anchoredPosition = Vector2.zero;
         }
 
         public void SelectEvent(TimelineEvent timelineEvent)
