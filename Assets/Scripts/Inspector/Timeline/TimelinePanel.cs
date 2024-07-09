@@ -153,8 +153,16 @@ namespace NeoEditor.Inspector.Timeline
 
             foreach (var line in vLines)
             {
+                // verticalLine obj and floorNum obj can be null
+                // when floor is midspin
+                if (line.obj != null)
+                {
                 vPool.Release(line.obj);
+                }
+                if (line.num != null)
+                {
                 floorNumPool.Release(line.num);
+            }
             }
             vLines.Clear();
 
