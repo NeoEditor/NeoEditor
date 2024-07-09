@@ -39,15 +39,15 @@ namespace NeoEditor.Inspector
 			EventInspectorPanel select = Instantiate(editor.prefab_eventInspector, content)
 				.GetComponent<EventInspectorPanel>();
             select.Init(infos.Select((i) => i.type).ToList());
+            select.parentTab = parentTab;
             eventSelector = select;
             select.gameObject.SetActive(false);
-
-            SetSelector();
 		}
 
         public virtual void SetProperties(LevelEventType type, LevelEvent levelEvent)
         {
-            eventTitle.text =
+			eventSelector.gameObject.SetActive(false);
+			eventTitle.text =
                 type == LevelEventType.None
                     ? ""
                     : RDString.Get("editor." + type.ToString(), null, LangSection.Translations);
@@ -65,8 +65,9 @@ namespace NeoEditor.Inspector
             selectedEvent = null;
         }
 
-        public void HidePanel()
+        public virtual void HidePanel()
         {
+            eventTitle.text = "";
 			if (selectedEventType == LevelEventType.None)
 				eventSelector.gameObject.SetActive(false);
 			else
