@@ -175,6 +175,9 @@ namespace NeoEditor.Inspector.Timeline
 
             // loop level floors(tiles) and register verticalLine
 
+            firstLineShowingOnScreenIdx = -1;
+            lastLineShowingOnScreenIdx = -1;
+
             for (int i = 0; i < floors.Count; i++)
             {
                 var floor = floors[i];
