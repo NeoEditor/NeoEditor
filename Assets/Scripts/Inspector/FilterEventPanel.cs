@@ -27,5 +27,17 @@ namespace NeoEditor.Inspector
 			if (filterEvent == null || filterEvent.eventType != LevelEventType.SetFilter)
 				return;
 		}
+
+		public override void SetProperties(LevelEventType type, LevelEvent levelEvent)
+		{
+			base.SetProperties(type, levelEvent);
+			switchToAdvanced.gameObject.SetActive(type == LevelEventType.SetFilter);
+		}
+
+		public override void HidePanel()
+		{
+			base.HidePanel();
+			switchToAdvanced.gameObject.SetActive(false);
+		}
 	}
 }
