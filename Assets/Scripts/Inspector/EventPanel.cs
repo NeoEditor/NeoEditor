@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using ADOFAI;
 using NeoEditor.Tabs;
 using SA.GoogleDoc;
@@ -16,8 +17,10 @@ namespace NeoEditor.Inspector
         public TextMeshProUGUI eventTitle;
         public EffectTabBase parentTab;
 
-        private Dictionary<LevelEventType, InspectorPanel> inspectors;
-        private LevelEventType selectedEventType = LevelEventType.None;
+        protected Dictionary<LevelEventType, InspectorPanel> inspectors;
+        protected EventInspectorPanel eventSelector;
+        protected LevelEventType selectedEventType = LevelEventType.None;
+        protected LevelEvent selectedEvent;
 
         public virtual void Init(List<LevelEventInfo> infos)
         {
@@ -33,7 +36,14 @@ namespace NeoEditor.Inspector
                 inspector.gameObject.SetActive(false);
                 inspectors.Add(info.type, inspector);
             }
-        }
+			EventInspectorPanel select = Instantiate(editor.prefab_eventInspector, content)
+				.GetComponent<EventInspectorPanel>();
+            select.Init(infos.Select((i) => i.type).ToList());
+            eventSelector = select;
+            select.gameObject.SetActive(false);
+
+            SetSelector();
+		}
 
         public virtual void SetProperties(LevelEventType type, LevelEvent levelEvent)
         {
@@ -44,11 +54,23 @@ namespace NeoEditor.Inspector
             selectedEventType = type;
             inspectors[type].gameObject.SetActive(true);
             inspectors[type].SetProperties(levelEvent);
+            selectedEvent = levelEvent;
+        }
+
+        public virtual void SetSelector()
+        {
+            eventTitle.text = "Select Event";
+            selectedEventType = LevelEventType.None;
+            eventSelector.gameObject.SetActive(true);
+            selectedEvent = null;
         }
 
         public void HidePanel()
         {
-            inspectors[selectedEventType].gameObject.SetActive(false);
-        }
-    }
+			if (selectedEventType == LevelEventType.None)
+				eventSelector.gameObject.SetActive(false);
+			else
+				inspectors[selectedEventType].gameObject.SetActive(false);
+		}
+	}
 }

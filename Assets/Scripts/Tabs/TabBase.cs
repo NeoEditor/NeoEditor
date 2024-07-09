@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using ADOFAI;
@@ -22,5 +23,7 @@ namespace NeoEditor.Tabs
         public virtual void OnInactive() { }
 
         public virtual void SelectEvent(LevelEvent levelEvent) { }
-    }
+
+		public virtual void AddEvent(LevelEventType type) { }
+	}
 }

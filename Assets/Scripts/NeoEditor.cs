@@ -64,6 +64,8 @@ namespace NeoEditor
         public ConfirmPopup confirmPopupLarge;
 
         public GameObject prefab_inspector;
+        public GameObject prefab_eventInspector;
+        public GameObject prefab_eventButton;
         public GameObject prefab_property;
         public GameObject prefab_controlBool;
         public GameObject prefab_controlText;
