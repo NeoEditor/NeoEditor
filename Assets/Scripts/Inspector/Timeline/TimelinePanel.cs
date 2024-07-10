@@ -4,15 +4,15 @@ using System.Collections.Generic;
 using System.Linq;
 using ADOFAI;
 using NeoEditor.Tabs;
-using OggVorbisEncoder.Setup;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Pool;
 using UnityEngine.UI;
 
 namespace NeoEditor.Inspector.Timeline
 {
-    public class TimelinePanel : MonoBehaviour
+    public class TimelinePanel : MonoBehaviour, IPointerClickHandler
     {
         public EffectTabBase parentTab;
 
@@ -621,14 +621,15 @@ namespace NeoEditor.Inspector.Timeline
         private GameObject CreateEventObject(LevelEvent levelEvent, float posX, int timelineRow, float objWidth)
         {
             var obj = eventPool.Get();
-            obj.transform.GetChild(0).GetComponent<Image>().sprite = GCS.levelEventIcons[
-                levelEvent.eventType
-            ];
+            if (levelEvent == null)
+                obj.transform.GetChild(0).gameObject.SetActive(false);
+            else
+                obj.transform.GetChild(0).GetComponent<Image>().sprite = GCS.levelEventIcons[levelEvent.eventType];
             var timelineEvent = obj.GetComponent<TimelineEvent>();
             timelineEvent.panel = this;
             timelineEvent.targetEvent = levelEvent;
             timelineEvent.isRendering = true;
-            timelineEvent.button.interactable = (selectedEvent?.targetEvent) != levelEvent;
+            timelineEvent.button.interactable = levelEvent == null ? false : (selectedEvent?.targetEvent) != levelEvent;
 
             obj.transform.LocalMoveX(posX);
             obj.transform.LocalMoveY(-timelineRow * height);
@@ -711,5 +712,57 @@ namespace NeoEditor.Inspector.Timeline
             position += angleOffset / 180f * (1 / floor.speed) * width;
             selectedEvent.transform.LocalMoveX(position);
         }
-    }
+
+        public void AddNewLevelEvent(float x, int row, float entryTime)
+        {
+            Main.Entry.Logger.Log($"x: {x}, row: {row}, entryTime: {entryTime}");
+			NeoEditor editor = NeoEditor.Instance;
+
+            float objWidth = height * scale;
+			float eventEndPosX = x + objWidth;
+
+			var eventData = new LevelEventData(entryTime, 0f, row, null);
+			levelEventsDataSortedByStartPos.Add(eventData);
+			levelEventsDataSortedByEndPos.Add(eventData);
+
+
+			var obj = CreateEventObject(null, x, eventData.timelineRow, objWidth);
+
+			eventData.obj = obj;
+			levelEventsSortedByStartPosListEndIdx++;
+
+            parentTab.SetEventSelector();
+		}
+
+		public void OnPointerClick(PointerEventData eventData)
+		{
+            NeoEditor editor = NeoEditor.Instance;
+            var floors = editor.floors;
+
+            Vector2 localPos;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(content, eventData.position, null, out localPos);
+
+            //find floor
+            float posX = -1f;
+            int floor = -1;
+            VerticalLineData prevLine = vLines.First.Value;
+            foreach (VerticalLineData line in vLines)
+            {
+                if (localPos.x < line.x)
+                {
+                    posX = prevLine.x;
+                    floor = prevLine.id;
+                    break;
+                }
+                prevLine = line;
+            }
+            
+            if (floor == -1)
+                return;
+
+            int posY = Mathf.FloorToInt(-localPos.y / (height * scale));
+
+            AddNewLevelEvent(posX, posY, (float)floors[floor].entryTime);
+		}
+	}
 }
