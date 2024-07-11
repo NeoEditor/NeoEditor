@@ -43,7 +43,17 @@ namespace NeoEditor.Inspector.Timeline
         private int firstLineShowingOnScreenIdx = -1;
         private int lastLineShowingOnScreenIdx = -1;
 
-        private LevelEventType[] ignoreEvents = new LevelEventType[]
+		public static readonly Color DefaultEventColor = new Color(0.690196f, 0.690196f, 0.690196f);
+		public static readonly Color SoundEventColor = new Color(1f, 0.196078f, 0.196078f);
+		public static readonly Color PlanetEventColor = new Color(0.196078f, 0.470588f, 1f);
+		public static readonly Color TrackEventColor = new Color(1f, 0.870588f, 0.415686f);
+		public static readonly Color DecorationEventColor = new Color(0.435294f, 0.933333f, 0.423529f);
+		public static readonly Color CameraEventColor = new Color(1f, 0.415686f, 0.941176f);
+		public static readonly Color FilterEventColor = new Color(0.368627f, 0.886274f, 1f);
+		public static readonly Color ModifierEventColor = new Color(1f, 0.709803f, 0.368627f);
+		public static readonly Color CommentEventColor = new Color(0.760784f, 0.368627f, 1f);
+
+		private LevelEventType[] ignoreEvents = new LevelEventType[]
         {
             LevelEventType.None,
             LevelEventType.SetSpeed,
@@ -78,7 +88,48 @@ namespace NeoEditor.Inspector.Timeline
             LevelEventType.AddObject
         };
 
-        private TimelineEvent selectedEvent;
+		private Dictionary<LevelEventType, Color> eventColors = new Dictionary<LevelEventType, Color>()
+		{
+			{ LevelEventType.None, DefaultEventColor },
+			{ LevelEventType.SetHitsound, SoundEventColor },
+			{ LevelEventType.PlaySound, SoundEventColor },
+			{ LevelEventType.SetHoldSound, SoundEventColor },
+			{ LevelEventType.SetPlanetRotation, PlanetEventColor },
+			{ LevelEventType.ScalePlanets, PlanetEventColor },
+			{ LevelEventType.ScaleRadius, PlanetEventColor },
+			{ LevelEventType.ScaleMargin, PlanetEventColor },
+			{ LevelEventType.ChangeTrack, TrackEventColor },
+			{ LevelEventType.ColorTrack, TrackEventColor },
+			{ LevelEventType.AnimateTrack, TrackEventColor },
+			{ LevelEventType.RecolorTrack, TrackEventColor },
+			{ LevelEventType.MoveTrack, TrackEventColor },
+			{ LevelEventType.PositionTrack, TrackEventColor },
+			{ LevelEventType.Hide, TrackEventColor },
+			{ LevelEventType.AddDecoration, DecorationEventColor },
+			{ LevelEventType.AddText, DecorationEventColor },
+			{ LevelEventType.AddObject, DecorationEventColor },
+			{ LevelEventType.MoveDecorations, DecorationEventColor },
+			{ LevelEventType.SetText, DecorationEventColor },
+			{ LevelEventType.SetObject, DecorationEventColor },
+			{ LevelEventType.SetDefaultText, DecorationEventColor },
+			{ LevelEventType.MoveCamera, CameraEventColor },
+			{ LevelEventType.ShakeScreen, CameraEventColor },
+			{ LevelEventType.ScreenTile, CameraEventColor },
+			{ LevelEventType.ScreenScroll, CameraEventColor },
+			{ LevelEventType.CustomBackground, FilterEventColor },
+			{ LevelEventType.Flash, FilterEventColor },
+			{ LevelEventType.SetFilter, FilterEventColor },
+			{ LevelEventType.SetFilterAdvanced, FilterEventColor },
+			{ LevelEventType.HallOfMirrors, FilterEventColor },
+			{ LevelEventType.Bloom, FilterEventColor },
+            { (LevelEventType)61, FilterEventColor }, // Set Frame Rate
+            { LevelEventType.RepeatEvents, ModifierEventColor },
+			{ LevelEventType.SetConditionalEvents, ModifierEventColor },
+			{ LevelEventType.EditorComment, CommentEventColor },
+			{ LevelEventType.Bookmark, CommentEventColor }
+		};
+
+		private TimelineEvent selectedEvent;
 
         private ObjectPool<GameObject> hPool;
         private ObjectPool<GameObject> vPool;
@@ -624,7 +675,8 @@ namespace NeoEditor.Inspector.Timeline
             obj.transform.GetChild(0).GetComponent<Image>().sprite = GCS.levelEventIcons[
                 levelEvent.eventType
             ];
-            var timelineEvent = obj.GetComponent<TimelineEvent>();
+			obj.GetComponent<Image>().color = eventColors[levelEvent.eventType];
+			var timelineEvent = obj.GetComponent<TimelineEvent>();
             timelineEvent.panel = this;
             timelineEvent.targetEvent = levelEvent;
             timelineEvent.isRendering = true;
