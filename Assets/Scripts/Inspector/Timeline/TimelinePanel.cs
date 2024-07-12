@@ -4,15 +4,15 @@ using System.Collections.Generic;
 using System.Linq;
 using ADOFAI;
 using NeoEditor.Tabs;
-using OggVorbisEncoder.Setup;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Pool;
 using UnityEngine.UI;
 
 namespace NeoEditor.Inspector.Timeline
 {
-    public class TimelinePanel : MonoBehaviour
+    public class TimelinePanel : MonoBehaviour, IPointerClickHandler
     {
         public EffectTabBase parentTab;
 
@@ -43,92 +43,6 @@ namespace NeoEditor.Inspector.Timeline
         private int firstLineShowingOnScreenIdx = -1;
         private int lastLineShowingOnScreenIdx = -1;
 
-		public static readonly Color DefaultEventColor = new Color(0.690196f, 0.690196f, 0.690196f);
-		public static readonly Color SoundEventColor = new Color(1f, 0.196078f, 0.196078f);
-		public static readonly Color PlanetEventColor = new Color(0.196078f, 0.470588f, 1f);
-		public static readonly Color TrackEventColor = new Color(1f, 0.870588f, 0.415686f);
-		public static readonly Color DecorationEventColor = new Color(0.435294f, 0.933333f, 0.423529f);
-		public static readonly Color CameraEventColor = new Color(1f, 0.415686f, 0.941176f);
-		public static readonly Color FilterEventColor = new Color(0.368627f, 0.886274f, 1f);
-		public static readonly Color ModifierEventColor = new Color(1f, 0.709803f, 0.368627f);
-		public static readonly Color CommentEventColor = new Color(0.760784f, 0.368627f, 1f);
-
-		private LevelEventType[] ignoreEvents = new LevelEventType[]
-        {
-            LevelEventType.None,
-            LevelEventType.SetSpeed,
-            LevelEventType.Twirl,
-            LevelEventType.Checkpoint,
-            LevelEventType.LevelSettings,
-            LevelEventType.SongSettings,
-            LevelEventType.TrackSettings,
-            LevelEventType.BackgroundSettings,
-            LevelEventType.CameraSettings,
-            LevelEventType.MiscSettings,
-            LevelEventType.EventSettings,
-            LevelEventType.DecorationSettings,
-            LevelEventType.AddDecoration,
-            LevelEventType.AddText,
-            LevelEventType.Hold,
-            LevelEventType.CallMethod,
-            LevelEventType.AddComponent,
-            LevelEventType.MultiPlanet,
-            LevelEventType.FreeRoam,
-            LevelEventType.FreeRoamTwirl,
-            LevelEventType.FreeRoamRemove,
-            LevelEventType.FreeRoamWarning,
-            LevelEventType.Pause,
-            LevelEventType.AutoPlayTiles,
-            LevelEventType.ScaleMargin,
-            LevelEventType.ScaleRadius,
-            LevelEventType.Multitap,
-            LevelEventType.TileDimensions,
-            LevelEventType.KillPlayer,
-            LevelEventType.SetFloorIcon,
-            LevelEventType.AddObject
-        };
-
-		private Dictionary<LevelEventType, Color> eventColors = new Dictionary<LevelEventType, Color>()
-		{
-			{ LevelEventType.None, DefaultEventColor },
-			{ LevelEventType.SetHitsound, SoundEventColor },
-			{ LevelEventType.PlaySound, SoundEventColor },
-			{ LevelEventType.SetHoldSound, SoundEventColor },
-			{ LevelEventType.SetPlanetRotation, PlanetEventColor },
-			{ LevelEventType.ScalePlanets, PlanetEventColor },
-			{ LevelEventType.ScaleRadius, PlanetEventColor },
-			{ LevelEventType.ScaleMargin, PlanetEventColor },
-			{ LevelEventType.ChangeTrack, TrackEventColor },
-			{ LevelEventType.ColorTrack, TrackEventColor },
-			{ LevelEventType.AnimateTrack, TrackEventColor },
-			{ LevelEventType.RecolorTrack, TrackEventColor },
-			{ LevelEventType.MoveTrack, TrackEventColor },
-			{ LevelEventType.PositionTrack, TrackEventColor },
-			{ LevelEventType.Hide, TrackEventColor },
-			{ LevelEventType.AddDecoration, DecorationEventColor },
-			{ LevelEventType.AddText, DecorationEventColor },
-			{ LevelEventType.AddObject, DecorationEventColor },
-			{ LevelEventType.MoveDecorations, DecorationEventColor },
-			{ LevelEventType.SetText, DecorationEventColor },
-			{ LevelEventType.SetObject, DecorationEventColor },
-			{ LevelEventType.SetDefaultText, DecorationEventColor },
-			{ LevelEventType.MoveCamera, CameraEventColor },
-			{ LevelEventType.ShakeScreen, CameraEventColor },
-			{ LevelEventType.ScreenTile, CameraEventColor },
-			{ LevelEventType.ScreenScroll, CameraEventColor },
-			{ LevelEventType.CustomBackground, FilterEventColor },
-			{ LevelEventType.Flash, FilterEventColor },
-			{ LevelEventType.SetFilter, FilterEventColor },
-			{ LevelEventType.SetFilterAdvanced, FilterEventColor },
-			{ LevelEventType.HallOfMirrors, FilterEventColor },
-			{ LevelEventType.Bloom, FilterEventColor },
-            { (LevelEventType)61, FilterEventColor }, // Set Frame Rate
-            { LevelEventType.RepeatEvents, ModifierEventColor },
-			{ LevelEventType.SetConditionalEvents, ModifierEventColor },
-			{ LevelEventType.EditorComment, CommentEventColor },
-			{ LevelEventType.Bookmark, CommentEventColor }
-		};
-
 		private TimelineEvent selectedEvent;
 
         private ObjectPool<GameObject> hPool;
@@ -146,6 +60,9 @@ namespace NeoEditor.Inspector.Timeline
 
         // level events sorted by endPosX, index of first item showing on viewport
         private int levelEventsSortedByEndPosListStartIdx = 0;
+
+        private int selectingEventFloor = -1;
+        private LevelEventData selectingTargetEvent;
 
         void CreatePool()
         {
@@ -238,6 +155,16 @@ namespace NeoEditor.Inspector.Timeline
             levelEventsSortedByStartPosListEndIdx = -1;
             levelEventsSortedByEndPosListStartIdx = 0;
 
+            // release temporary levelevent object
+            if (selectingTargetEvent != null)
+            {
+                eventPool.Release(selectingTargetEvent.obj);
+                selectingTargetEvent.obj = null;
+            }
+
+            selectingTargetEvent = null;
+            selectingEventFloor = -1;
+
             // loop level floors(tiles) and register verticalLine
 
             firstLineShowingOnScreenIdx = -1;
@@ -266,14 +193,14 @@ namespace NeoEditor.Inspector.Timeline
             // used to calculate the optimal row for next LevelEvent
             List<float> timelineRowEndPosX = new List<float>();
 
-            // loop level floors(tiles) and register level events 
+            // loop level floors(tiles) and register level events
 
             foreach (var levelEvent in editor.events)
             {
                 // get position
                 Vector2 position = new Vector2(GetEventPosX(levelEvent), -25);
 
-                if (ignoreEvents.Contains(levelEvent.eventType))
+                if (NeoConstants.TimelineIgnoreEvents.Contains(levelEvent.eventType))
                     continue;
 
                 float entryTime = (float)floors[levelEvent.floor].entryTime;
@@ -672,15 +599,22 @@ namespace NeoEditor.Inspector.Timeline
         private GameObject CreateEventObject(LevelEvent levelEvent, float posX, int timelineRow, float objWidth)
         {
             var obj = eventPool.Get();
-            obj.transform.GetChild(0).GetComponent<Image>().sprite = GCS.levelEventIcons[
-                levelEvent.eventType
-            ];
-			obj.GetComponent<Image>().color = eventColors[levelEvent.eventType];
-			var timelineEvent = obj.GetComponent<TimelineEvent>();
+            if (levelEvent == null)
+            {
+                obj.transform.GetChild(0).gameObject.SetActive(false);
+                obj.GetComponent<Image>().color = NeoConstants.DefaultEventColor;
+
+			}
+            else
+            {
+                obj.transform.GetChild(0).GetComponent<Image>().sprite = GCS.levelEventIcons[levelEvent.eventType];
+                obj.GetComponent<Image>().color = NeoConstants.EventColors[levelEvent.eventType];
+            }
+            var timelineEvent = obj.GetComponent<TimelineEvent>();
             timelineEvent.panel = this;
             timelineEvent.targetEvent = levelEvent;
             timelineEvent.isRendering = true;
-            timelineEvent.button.interactable = (selectedEvent?.targetEvent) != levelEvent;
+            timelineEvent.button.interactable = levelEvent == null ? false : (selectedEvent?.targetEvent) != levelEvent;
 
             obj.transform.LocalMoveX(posX);
             obj.transform.LocalMoveY(-timelineRow * height);
@@ -763,5 +697,124 @@ namespace NeoEditor.Inspector.Timeline
             position += angleOffset / 180f * (1 / floor.speed) * width;
             selectedEvent.transform.LocalMoveX(position);
         }
-    }
+
+        public void AddNewEventObject(int floor, float x, int row, float entryTime)
+        {
+            float objWidth = height * scale;
+
+			var eventData = new LevelEventData(entryTime, 0f, row, null);
+
+			var obj = CreateEventObject(null, x, eventData.timelineRow, objWidth);
+
+            eventData.obj = obj;
+
+            if (selectingTargetEvent != null)
+            {
+                eventPool.Release(selectingTargetEvent.obj);
+                selectingTargetEvent.obj = null;
+            }
+
+            selectingEventFloor = floor;
+            selectingTargetEvent = eventData;
+            parentTab.SetEventSelector();
+		}
+
+		public void ApplySelector(LevelEventType type)
+		{
+            if (selectingEventFloor < 0) return;
+            NeoEditor editor = NeoEditor.Instance;
+            var levelEvent = editor.AddEvent(selectingEventFloor, type);
+
+            // craete new LevelEventData and copy gameobject
+            var eventData = new LevelEventData(selectingTargetEvent.start, 0f, selectingTargetEvent.timelineRow, levelEvent);
+            eventData.obj = selectingTargetEvent.obj;
+
+            // change TimelineEvent gameobject icon
+            var timelineEvent = eventData.obj.GetComponent<TimelineEvent>();
+            timelineEvent.transform.GetChild(0).GetComponent<Image>().sprite = GCS.levelEventIcons[levelEvent.eventType];
+            timelineEvent.transform.GetChild(0).gameObject.SetActive(true);
+            timelineEvent.targetEvent = levelEvent;
+
+            levelEventsDataSortedByStartPos.Add(eventData);
+			levelEventsDataSortedByEndPos.Add(eventData);
+
+			levelEventsDataSortedByStartPos.InsertionSort(
+				(a, b) =>
+				{
+					// sort by event start position x, smaller one goes first
+					var diff = GetEventPosX(a.evt) - GetEventPosX(b.evt);
+					if (diff < 0)
+						return -1;
+					else if (diff > 0)
+						return 1;
+					else
+						return 0;
+				}
+			);
+
+			levelEventsDataSortedByEndPos.InsertionSort(
+				(a, b) =>
+				{
+					var aStartPosX = GetEventPosX(a.evt);
+					var aObjWidth = GetEventObjWidth(a.evt);
+					var aEndPosX = aStartPosX + aObjWidth;
+
+					var bStartPosX = GetEventPosX(b.evt);
+					var bObjWidth = GetEventObjWidth(b.evt);
+					var bEndPosX = bStartPosX + bObjWidth;
+
+					// sort by event end position x, smaller one goes first
+					float diff = aEndPosX - bEndPosX;
+					if (diff < 0)
+						return -1;
+					else if (diff > 0)
+						return 1;
+					else
+						return 0;
+				}
+			);
+			levelEventsSortedByStartPosListEndIdx++;
+
+            selectingEventFloor = -1;
+            selectingTargetEvent = null;
+
+            SelectEvent(timelineEvent);
+		}
+
+		public void OnPointerClick(PointerEventData eventData)
+        {
+            NeoEditor editor = NeoEditor.Instance;
+            var floors = editor.floors;
+
+            Vector2 localPos;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                content,
+                eventData.position,
+                null,
+                out localPos
+            );
+
+            //find floor
+            float posX = -1f;
+            int floor = -1;
+            VerticalLineData prevLine = vLines.First.Value;
+            foreach (VerticalLineData line in vLines)
+            {
+                if (localPos.x < line.x)
+                {
+                    posX = prevLine.x;
+                    floor = prevLine.id;
+                    break;
+                }
+                prevLine = line;
+            }
+
+            if (floor == -1)
+                return;
+
+            int posY = Mathf.FloorToInt(-localPos.y / (height * scale));
+
+            AddNewEventObject(floor, posX, posY, (float)floors[floor].entryTime);
+        }
+	}
 }

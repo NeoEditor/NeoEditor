@@ -64,6 +64,9 @@ namespace NeoEditor
         public ConfirmPopup confirmPopupLarge;
 
         public GameObject prefab_inspector;
+        public GameObject prefab_eventInspector;
+        public GameObject prefab_inspectorTabButton;
+        public GameObject prefab_eventButton;
         public GameObject prefab_property;
         public GameObject prefab_controlBool;
         public GameObject prefab_controlText;
@@ -737,6 +740,14 @@ namespace NeoEditor
 			}
 
 			filename = text;
+		}
+
+        public LevelEvent AddEvent(int floor, LevelEventType type)
+        {
+            LevelEvent levelEvent = new LevelEvent(floor, type);
+			events.Add(levelEvent);
+
+            return levelEvent;
 		}
 
 		private IEnumerator OpenLevelCo(string definedLevelPath = null)

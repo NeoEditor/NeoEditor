@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using ADOFAI;
 using NeoEditor.Tabs;
 using SA.GoogleDoc;
@@ -14,10 +16,13 @@ namespace NeoEditor.Inspector
         public RectTransform content;
         public TextMeshProUGUI title;
         public TextMeshProUGUI eventTitle;
+        public SelectorPanel selectorPanel;
         public EffectTabBase parentTab;
+        public LevelEventCategory[] categories;
 
-        private Dictionary<LevelEventType, InspectorPanel> inspectors;
-        private LevelEventType selectedEventType = LevelEventType.None;
+        protected Dictionary<LevelEventType, InspectorPanel> inspectors;
+        protected LevelEventType selectedEventType = LevelEventType.None;
+        protected LevelEvent selectedEvent;
 
         public virtual void Init(List<LevelEventInfo> infos)
         {
@@ -28,27 +33,45 @@ namespace NeoEditor.Inspector
             {
                 InspectorPanel inspector = Instantiate(editor.prefab_inspector, content)
                     .GetComponent<InspectorPanel>();
-                inspector.Init(info, true);
                 inspector.parentTab = parentTab;
+                inspector.Init(info, true);
                 inspector.gameObject.SetActive(false);
                 inspectors.Add(info.type, inspector);
             }
-        }
+
+            selectorPanel.parentTab = parentTab;
+            selectorPanel.Init(categories);
+            selectorPanel.title = eventTitle;
+		}
 
         public virtual void SetProperties(LevelEventType type, LevelEvent levelEvent)
         {
-            eventTitle.text =
+            selectorPanel.gameObject.SetActive(false);
+			eventTitle.text =
                 type == LevelEventType.None
                     ? ""
                     : RDString.Get("editor." + type.ToString(), null, LangSection.Translations);
             selectedEventType = type;
             inspectors[type].gameObject.SetActive(true);
             inspectors[type].SetProperties(levelEvent);
+            selectedEvent = levelEvent;
         }
 
-        public void HidePanel()
+        public virtual void SetSelector()
         {
-            inspectors[selectedEventType].gameObject.SetActive(false);
+            eventTitle.text = "Select Event";
+            selectedEventType = LevelEventType.None;
+            selectorPanel.gameObject.SetActive(true);
+            selectedEvent = null;
         }
-    }
+
+        public virtual void HidePanel()
+        {
+            eventTitle.text = "";
+			if (selectedEventType == LevelEventType.None)
+                selectorPanel.gameObject.SetActive(false);
+			else
+				inspectors[selectedEventType].gameObject.SetActive(false);
+		}
+	}
 }

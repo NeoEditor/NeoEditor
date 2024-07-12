@@ -60,5 +60,16 @@ namespace NeoEditor.Tabs
         {
             events.HidePanel();
         }
-    }
+
+        public virtual void SetEventSelector()
+        {
+            UnselectEvent();
+            events.SetSelector();
+        }
+
+		public override void AddEvent(LevelEventType type)
+		{
+			timeline.ApplySelector(type);
+		}
+	}
 }
