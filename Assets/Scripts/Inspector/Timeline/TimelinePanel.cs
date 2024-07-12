@@ -718,7 +718,10 @@ namespace NeoEditor.Inspector.Timeline
             NeoEditor editor = NeoEditor.Instance;
             var levelEvent = editor.AddEvent(selectingEventFloor, type);
 
+            // craete new LevelEventData and copy gameobject
             var eventData = new LevelEventData(selectingTargetEvent.start, 0f, selectingTargetEvent.timelineRow, levelEvent);
+            eventData.obj = selectingTargetEvent.obj;
+
 			levelEventsDataSortedByStartPos.Add(eventData);
 			levelEventsDataSortedByEndPos.Add(eventData);
 
@@ -760,6 +763,9 @@ namespace NeoEditor.Inspector.Timeline
 			levelEventsSortedByStartPosListEndIdx++;
 
             selectingEventFloor = -1;
+            selectingTargetEvent = null;
+
+            parentTab.SelectEvent(levelEvent);
 		}
 
 		public void OnPointerClick(PointerEventData eventData)
