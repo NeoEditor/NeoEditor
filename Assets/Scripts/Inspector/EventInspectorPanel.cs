@@ -24,6 +24,9 @@ namespace NeoEditor.Inspector
             NeoEditor editor = NeoEditor.Instance;
             foreach (LevelEventType type in events)
             {
+				if (NeoConstants.SelectorIgnoreEvents.Contains(type)
+					|| NeoConstants.TimelineIgnoreEvents.Contains(type))
+					continue;
 				CreateEventButton button = Instantiate(editor.prefab_eventButton, content)
 				.GetComponent<CreateEventButton>();
 				button.button.onClick.AddListener(() =>
