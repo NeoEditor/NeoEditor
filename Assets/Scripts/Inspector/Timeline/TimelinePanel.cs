@@ -155,6 +155,16 @@ namespace NeoEditor.Inspector.Timeline
             levelEventsSortedByStartPosListEndIdx = -1;
             levelEventsSortedByEndPosListStartIdx = 0;
 
+            // release temporary levelevent object
+            if (selectingTargetEvent != null)
+            {
+                eventPool.Release(selectingTargetEvent.obj);
+                selectingTargetEvent.obj = null;
+            }
+
+            selectingTargetEvent = null;
+            selectingEventFloor = -1;
+
             // loop level floors(tiles) and register verticalLine
 
             firstLineShowingOnScreenIdx = -1;
