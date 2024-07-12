@@ -691,6 +691,12 @@ namespace NeoEditor.Inspector.Timeline
 
             eventData.obj = obj;
 
+            if (selectingTargetEvent != null)
+            {
+                eventPool.Release(selectingTargetEvent.obj);
+                selectingTargetEvent.obj = null;
+            }
+
             selectingEventFloor = floor;
             selectingTargetEvent = eventData;
             parentTab.SetEventSelector();
@@ -701,9 +707,6 @@ namespace NeoEditor.Inspector.Timeline
             if (selectingEventFloor < 0) return;
             NeoEditor editor = NeoEditor.Instance;
             var levelEvent = editor.AddEvent(selectingEventFloor, type);
-
-            eventPool.Release(selectingTargetEvent.obj);
-            //CreateEventObject(levelEvent, )
 
             var eventData = new LevelEventData(selectingTargetEvent.start, 0f, selectingTargetEvent.timelineRow, levelEvent);
 			levelEventsDataSortedByStartPos.Add(eventData);
