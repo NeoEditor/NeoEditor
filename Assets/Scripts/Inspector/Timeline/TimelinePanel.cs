@@ -726,6 +726,7 @@ namespace NeoEditor.Inspector.Timeline
             var timelineEvent = eventData.obj.GetComponent<TimelineEvent>();
             timelineEvent.transform.GetChild(0).GetComponent<Image>().sprite = GCS.levelEventIcons[levelEvent.eventType];
             timelineEvent.transform.GetChild(0).gameObject.SetActive(true);
+            timelineEvent.targetEvent = levelEvent;
 
             levelEventsDataSortedByStartPos.Add(eventData);
 			levelEventsDataSortedByEndPos.Add(eventData);
@@ -770,7 +771,7 @@ namespace NeoEditor.Inspector.Timeline
             selectingEventFloor = -1;
             selectingTargetEvent = null;
 
-            parentTab.SelectEvent(levelEvent);
+            SelectEvent(timelineEvent);
 		}
 
 		public void OnPointerClick(PointerEventData eventData)
