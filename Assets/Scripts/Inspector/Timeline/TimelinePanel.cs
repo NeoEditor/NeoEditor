@@ -722,7 +722,12 @@ namespace NeoEditor.Inspector.Timeline
             var eventData = new LevelEventData(selectingTargetEvent.start, 0f, selectingTargetEvent.timelineRow, levelEvent);
             eventData.obj = selectingTargetEvent.obj;
 
-			levelEventsDataSortedByStartPos.Add(eventData);
+            // change TimelineEvent gameobject icon
+            var timelineEvent = eventData.obj.GetComponent<TimelineEvent>();
+            timelineEvent.transform.GetChild(0).GetComponent<Image>().sprite = GCS.levelEventIcons[levelEvent.eventType];
+            timelineEvent.transform.GetChild(0).gameObject.SetActive(true);
+
+            levelEventsDataSortedByStartPos.Add(eventData);
 			levelEventsDataSortedByEndPos.Add(eventData);
 
 			levelEventsDataSortedByStartPos.InsertionSort(
