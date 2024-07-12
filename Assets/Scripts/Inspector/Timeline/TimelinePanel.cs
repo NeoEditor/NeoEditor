@@ -733,7 +733,8 @@ namespace NeoEditor.Inspector.Timeline
             var timelineEvent = eventData.obj.GetComponent<TimelineEvent>();
             timelineEvent.transform.GetChild(0).GetComponent<Image>().sprite = GCS.levelEventIcons[levelEvent.eventType];
             timelineEvent.transform.GetChild(0).gameObject.SetActive(true);
-            timelineEvent.targetEvent = levelEvent;
+			timelineEvent.GetComponent<Image>().color = NeoConstants.EventColors[levelEvent.eventType];
+			timelineEvent.targetEvent = levelEvent;
 
             levelEventsDataSortedByStartPos.Add(eventData);
 			levelEventsDataSortedByEndPos.Add(eventData);
