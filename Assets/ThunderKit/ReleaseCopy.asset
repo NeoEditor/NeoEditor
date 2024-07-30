@@ -32,7 +32,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a3695521163bdd74fa2845bbd3438240, type: 3}
-  m_Name: BuildAndCopy
+  m_Name: ReleaseCopy
   m_EditorClassIdentifier: 
   Data:
   - {fileID: 6406035660248619728}
@@ -53,4 +53,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Active: 1
   OverrideManifest: 0
-  targetpipeline: {fileID: 11400000, guid: 5086be44a6a16874cb8eca35f821dcc9, type: 2}
+  targetpipeline: {fileID: 11400000, guid: 4ffc1dc3d93645d4bb720b0d932c16c8, type: 2}

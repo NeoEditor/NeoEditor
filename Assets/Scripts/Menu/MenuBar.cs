@@ -116,12 +116,14 @@ namespace NeoEditor.Menu
             file.AddSubMenu(new ActionMenuItem("Help", new EditorKeybind(KeyModifier.Control, KeyCode.H), () => { }));
             file.AddSubMenu(new ActionMenuItem("Preference", 
                 new EditorKeybind(KeyModifier.Control | KeyModifier.Shift, KeyCode.I), () => { }));
+#if DEBUG
             file.AddSubMenu(new ActionMenuItem("Serialize Layout", () =>
             {
                 var byteArr = PanelSerialization.SerializeCanvasToArray(NeoEditor.Instance.panelCanvas);
                 Main.Entry.Logger.Log($"--- arr length: {byteArr.Length} ---");
                 Main.Entry.Logger.Log($"--- {Convert.ToBase64String(byteArr)} ---");
             }));
+#endif
             file.AddSubMenu(new ActionMenuItem("Exit", new EditorKeybind(KeyModifier.Control, KeyCode.Q), controller.QuitToMainMenu));
             AddMenu(file);
 
