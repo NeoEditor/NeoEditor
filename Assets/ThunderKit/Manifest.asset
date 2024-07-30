@@ -40,6 +40,11 @@ MonoBehaviour:
     assets:
     - {fileID: 8400000, guid: 34314749a38907b418eea589b07b27be, type: 2}
     - {fileID: 8400000, guid: eedcff35bba17404c9dd78e5f50dfd4c, type: 2}
+  - assetBundleName: dp_asset
+    assets:
+    - {fileID: 1726343141212444, guid: 5c4342897b6a5d94c9c583ef61af55f2, type: 3}
+    - {fileID: 1726343141212444, guid: 55332d0ddeee7454095367b476b6813f, type: 3}
+    - {fileID: 1818210840912162, guid: 020fbf96414a1a847aeb92aaea52178e, type: 3}
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -75,6 +80,7 @@ MonoBehaviour:
   - <StagingRoot>
   definitions:
   - {fileID: 5897886265953266890, guid: fa12daa6ec0fc6e498e1f126956cc7d3, type: 3}
+  - {fileID: 5897886265953266890, guid: 47588e3d37f573d458b0eaa6cc8109c2, type: 3}
 --- !u!114 &8865512037302858118
 MonoBehaviour:
   m_ObjectHideFlags: 0

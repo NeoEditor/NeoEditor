@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using ADOFAI;
 using DG.Tweening;
+using DynamicPanels;
 using HarmonyLib;
 using NeoEditor.Patches;
 using NeoEditor.PopupWindows;
@@ -31,6 +32,19 @@ namespace NeoEditor
             Export
         }
 
+        public enum PanelType
+        {
+            GameView,
+            SceneView,
+            Inspector,
+            Project,
+            File,
+            Hierarchy,
+            Preview,
+            Media,
+            Timeline
+        }
+
         public static NeoEditor Instance { get; private set; }
 
         public LevelData levelData => customLevel.levelData;
@@ -46,6 +60,19 @@ namespace NeoEditor
         public Button[] tabButtons;
         public RawImage[] gameViews;
         public RawImage[] sceneViews;
+
+        public DynamicPanelsCanvas panelCanvas;
+		public RectTransform gameViewPanelContent;
+		public RectTransform sceneViewPanelContent;
+		public RectTransform inspectorPanelContent;
+		public RectTransform projectPanelContent;
+		public RectTransform filePanelContent;
+		public RectTransform hierarchyPanelContent;
+		public RectTransform previewPanelContent;
+		public RectTransform mediaPanelContent;
+		public RectTransform timelinePanelContent;
+        public List<Panel> panels;
+		public Dictionary<PanelType, PanelTab> panelTabs;
 
         public Camera mainCamera;
         public Camera uiCamera;
@@ -193,6 +220,10 @@ namespace NeoEditor
                 .settingsInfo.Concat(GCS.levelEventsInfo)
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
+            //PanelSerialization.DeserializeCanvasFromArray(panelCanvas, Convert.FromBase64String("AAEAAAD/////AQAAAAAAAAAMAgAAAExEeW5hbWljUGFuZWxzLlJ1bnRpbWUsIFZlcnNpb249MC4wLjAuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1udWxsBQEAAAAxRHluYW1pY1BhbmVscy5QYW5lbFNlcmlhbGl6YXRpb24rU2VyaWFsaXplZENhbnZhcwQAAAAGYWN0aXZlDHVzZUZyZWVTcGFjZQ5yb290UGFuZWxHcm91cBR1bmFuY2hvcmVkUGFuZWxHcm91cAAABAQBATVEeW5hbWljUGFuZWxzLlBhbmVsU2VyaWFsaXphdGlvbitTZXJpYWxpemVkUGFuZWxHcm91cAIAAAA1RHluYW1pY1BhbmVscy5QYW5lbFNlcmlhbGl6YXRpb24rU2VyaWFsaXplZFBhbmVsR3JvdXACAAAAAgAAAAEACQMAAAAJBAAAAAUDAAAANUR5bmFtaWNQYW5lbHMuUGFuZWxTZXJpYWxpemF0aW9uK1NlcmlhbGl6ZWRQYW5lbEdyb3VwAwAAAApob3Jpem9udGFsCGNoaWxkcmVuBHNpemUABAQBNUR5bmFtaWNQYW5lbHMuUGFuZWxTZXJpYWxpemF0aW9uK0lTZXJpYWxpemVkRWxlbWVudFtdAgAAADJEeW5hbWljUGFuZWxzLlBhbmVsU2VyaWFsaXphdGlvbitTZXJpYWxpemVkVmVjdG9yMgIAAAACAAAAAQkFAAAABfr///8yRHluYW1pY1BhbmVscy5QYW5lbFNlcmlhbGl6YXRpb24rU2VyaWFsaXplZFZlY3RvcjICAAAAAXgBeQAACwsCAAAAAADwRADgg0QBBAAAAAMAAAAACQcAAAAB+P////r///8AAEhCAABIQgcFAAAAAAEAAAABAAAABDNEeW5hbWljUGFuZWxzLlBhbmVsU2VyaWFsaXphdGlvbitJU2VyaWFsaXplZEVsZW1lbnQCAAAACQkAAAAHBwAAAAABAAAAAQAAAAQzRHluYW1pY1BhbmVscy5QYW5lbFNlcmlhbGl6YXRpb24rSVNlcmlhbGl6ZWRFbGVtZW50AgAAAAkKAAAAAQkAAAADAAAAAAkLAAAAAfT////6////AADwRADgg0QFCgAAADVEeW5hbWljUGFuZWxzLlBhbmVsU2VyaWFsaXphdGlvbitTZXJpYWxpemVkRHVtbXlQYW5lbAEAAAAEc2l6ZQQyRHluYW1pY1BhbmVscy5QYW5lbFNlcmlhbGl6YXRpb24rU2VyaWFsaXplZFZlY3RvcjICAAAAAgAAAAHz////+v///wAASEIAAEhCBwsAAAAAAQAAAAIAAAAEM0R5bmFtaWNQYW5lbHMuUGFuZWxTZXJpYWxpemF0aW9uK0lTZXJpYWxpemVkRWxlbWVudAIAAAAJDgAAAAkPAAAABQ4AAAAwRHluYW1pY1BhbmVscy5QYW5lbFNlcmlhbGl6YXRpb24rU2VyaWFsaXplZFBhbmVsBAAAAAlhY3RpdmVUYWIEdGFicwxmbG9hdGluZ1NpemUEc2l6ZQAEBAQINUR5bmFtaWNQYW5lbHMuUGFuZWxTZXJpYWxpemF0aW9uK1NlcmlhbGl6ZWRQYW5lbFRhYltdAgAAADJEeW5hbWljUGFuZWxzLlBhbmVsU2VyaWFsaXphdGlvbitTZXJpYWxpemVkVmVjdG9yMgIAAAAyRHluYW1pY1BhbmVscy5QYW5lbFNlcmlhbGl6YXRpb24rU2VyaWFsaXplZFZlY3RvcjICAAAAAgAAAAAAAAAJEAAAAAHv////+v///wAA8EQAgM9DAe7////6////AADwRACAz0MBDwAAAAMAAAABCRMAAAAB7P////r///8AAPBEAAAgRAcQAAAAAAEAAAABAAAABDNEeW5hbWljUGFuZWxzLlBhbmVsU2VyaWFsaXphdGlvbitTZXJpYWxpemVkUGFuZWxUYWICAAAACRUAAAAHEwAAAAABAAAAAwAAAAQzRHluYW1pY1BhbmVscy5QYW5lbFNlcmlhbGl6YXRpb24rSVNlcmlhbGl6ZWRFbGVtZW50AgAAAAkWAAAACRcAAAAJGAAAAAUVAAAAM0R5bmFtaWNQYW5lbHMuUGFuZWxTZXJpYWxpemF0aW9uK1NlcmlhbGl6ZWRQYW5lbFRhYgEAAAACaWQBAgAAAAoBFgAAAA4AAAAAAAAACRkAAAAB5v////r///8AAPBDAAAgRAHl////+v///wAA8EMAACBEARcAAAADAAAAAAkcAAAAAeP////6////AADwQwAAIEQBGAAAAA4AAAAAAAAACR4AAAAB4f////r///8AAHBEAAAgRAHg////+v///wAAcEQAACBEBxkAAAAAAQAAAAEAAAAEM0R5bmFtaWNQYW5lbHMuUGFuZWxTZXJpYWxpemF0aW9uK1NlcmlhbGl6ZWRQYW5lbFRhYgIAAAAJIQAAAAccAAAAAAEAAAACAAAABDNEeW5hbWljUGFuZWxzLlBhbmVsU2VyaWFsaXphdGlvbitJU2VyaWFsaXplZEVsZW1lbnQCAAAACSIAAAAJIwAAAAceAAAAAAEAAAACAAAABDNEeW5hbWljUGFuZWxzLlBhbmVsU2VyaWFsaXphdGlvbitTZXJpYWxpemVkUGFuZWxUYWICAAAACSQAAAAJJQAAAAEhAAAAFQAAAAoBIgAAAA4AAAAAAAAACSYAAAAB2f////r///8AAPBDAAAqQwHY////+v///wAA8EMAACpDASMAAAAOAAAAAAAAAAkpAAAAAdb////6////AADwQwAA60MB1f////r///8AAPBDAADrQwEkAAAAFQAAAAoBJQAAABUAAAAKByYAAAAAAQAAAAEAAAAEM0R5bmFtaWNQYW5lbHMuUGFuZWxTZXJpYWxpemF0aW9uK1NlcmlhbGl6ZWRQYW5lbFRhYgIAAAAJLAAAAAcpAAAAAAEAAAABAAAABDNEeW5hbWljUGFuZWxzLlBhbmVsU2VyaWFsaXphdGlvbitTZXJpYWxpemVkUGFuZWxUYWICAAAACS0AAAABLAAAABUAAAAKAS0AAAAVAAAACgs="));
+            //panelCanvas.ForceRebuildLayoutImmediate();
+            InitializeLayout();
+
             SelectTab(EditorTab.Project);
 
             customLevel.RemakePath();
@@ -277,6 +308,81 @@ namespace NeoEditor
                 else
                     tabs[i].OnInactive();
             }
+        }
+
+        public void InitializeLayout()
+		{
+			panels.Add(PanelUtils.CreatePanelFor(gameViewPanelContent, panelCanvas));
+			//panels.Add(PanelUtils.CreatePanelFor(inspectorPanelContent, panelCanvas));
+			panels.Add(PanelUtils.CreatePanelFor(projectPanelContent, panelCanvas));
+			panels.Add(PanelUtils.CreatePanelFor(filePanelContent, panelCanvas));
+			panels.Add(PanelUtils.CreatePanelFor(previewPanelContent, panelCanvas));
+			panels.Add(PanelUtils.CreatePanelFor(mediaPanelContent, panelCanvas));
+
+			panelTabs = new Dictionary<PanelType, PanelTab>
+			{
+				{ PanelType.GameView, panels[0][0] },
+				{ PanelType.SceneView, panels[0].AddTab(sceneViewPanelContent) },
+				//{ PanelType.Inspector, panels[0].AddTab(inspectorPanelContent) },
+				{ PanelType.Project, panels[1][0] },
+				{ PanelType.File, panels[2][0] },
+				//{ PanelType.Hierarchy, panels[0].AddTab(hierarchyPanelContent) },
+				{ PanelType.Preview, panels[3][0] },
+				{ PanelType.Media, panels[4][0] },
+				//{ PanelType.Timeline, panels[0].AddTab(timelinePanelContent) }
+			};
+
+			panels[0][0].Icon = null;
+			panels[0][0].Label = "Game";
+			panels[0][0].MinSize = new Vector2(240, 160);
+
+			panels[0][1].Icon = null;
+			panels[0][1].Label = "Scene";
+			panels[0][1].MinSize = new Vector2(240, 160);
+
+            panels[0].ResizeTo(new Vector2(960, 640));
+            panels[0].ActiveTab = 0;
+
+			panels[1][0].Icon = null;
+			panels[1][0].Label = "Project";
+			panels[1][0].MinSize = new Vector2(200, 100);
+
+            panels[1].ResizeTo(new Vector2(480, 640));
+
+			panels[2][0].Icon = null;
+			panels[2][0].Label = "File";
+			panels[2][0].MinSize = new Vector2(200, 100);
+
+			panels[2].ResizeTo(new Vector2(480, 470));
+
+			panels[3][0].Icon = null;
+			panels[3][0].Label = "Preview";
+			panels[3][0].MinSize = new Vector2(200, 100);
+
+            panels[3].ResizeTo(new Vector2(480, 170)); 
+
+			panels[4][0].Icon = null;
+			panels[4][0].Label = "Media";
+			panels[4][0].MinSize = new Vector2(300, 100);
+
+            PanelGroup fileAndPreview = new PanelGroup(panelCanvas, Direction.Bottom);
+			fileAndPreview.AddElement(panels[3]);
+            fileAndPreview.AddElement(panels[2]);
+
+			PanelGroup group = new PanelGroup(panelCanvas, Direction.Right);
+			group.AddElement(panels[1]);
+			group.AddElement(fileAndPreview);
+			group.AddElement(panels[0]);
+			group.DockToRoot(Direction.Bottom);
+
+			panels[4].DockToRoot(Direction.Bottom);
+
+			Main.Entry.Logger.Log($"--- {Convert.ToBase64String(PanelSerialization.SerializeCanvasToArray(panelCanvas))} ---");
+		}
+
+		public void SelectLayout(EditorTab tab)
+        {
+            
         }
 
         public void TogglePauseGame()
