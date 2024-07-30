@@ -221,7 +221,7 @@ namespace NeoEditor
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
             InitializeLayout();
-            PanelSerialization.DeserializeCanvasFromArray(panelCanvas, Convert.FromBase64String("AAEAAAD/////AQAAAAAAAAAMAgAAAExEeW5hbWljUGFuZWxzLlJ1bnRpbWUsIFZlcnNpb249MC4wLjAuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1udWxsBQEAAAAxRHluYW1pY1BhbmVscy5QYW5lbFNlcmlhbGl6YXRpb24rU2VyaWFsaXplZENhbnZhcwQAAAAGYWN0aXZlDHVzZUZyZWVTcGFjZQ5yb290\nUGFuZWxHcm91cBR1bmFuY2hvcmVkUGFuZWxHcm91cAAABAQBATVEeW5hbWljUGFuZWxzLlBhbmVsU2VyaWFsaXphdGlvbitTZXJpYWxpemVkUGFuZWxHcm91cAIAAAA1RHluYW1pY1BhbmVscy5QYW5lbFNlcmlhbGl6YXRpb24rU2VyaWFsaXplZFBhbmVsR3JvdXACAAAAAgAAAAEACQMAAAAJBAAAAAUDAAAANUR5bmFtaWNQYW5lbHMuUGFuZWxT\nZXJpYWxpemF0aW9uK1NlcmlhbGl6ZWRQYW5lbEdyb3VwAwAAAApob3Jpem9udGFsCGNoaWxkcmVuBHNpemUABAQBNUR5bmFtaWNQYW5lbHMuUGFuZWxTZXJpYWxpemF0aW9uK0lTZXJpYWxpemVkRWxlbWVudFtdAgAAADJEeW5hbWljUGFuZWxzLlBhbmVsU2VyaWFsaXphdGlvbitTZXJpYWxpemVkVmVjdG9yMgIAAAACAAAAAQkFAAAABfr///8y\nRHluYW1pY1BhbmVscy5QYW5lbFNlcmlhbGl6YXRpb24rU2VyaWFsaXplZFZlY3RvcjICAAAAAXgBeQAACwsCAAAAAADwRADgg0QBBAAAAAMAAAAACQcAAAAB+P////r///8AAEhCAABIQgcFAAAAAAEAAAABAAAABDNEeW5hbWljUGFuZWxzLlBhbmVsU2VyaWFsaXphdGlvbitJU2VyaWFsaXplZEVsZW1lbnQCAAAACQkAAAAHBwAAAAABAAAAAQAA\nAAQzRHluYW1pY1BhbmVscy5QYW5lbFNlcmlhbGl6YXRpb24rSVNlcmlhbGl6ZWRFbGVtZW50AgAAAAkKAAAAAQkAAAADAAAAAAkLAAAAAfT////6////AADwRADgg0QFCgAAADVEeW5hbWljUGFuZWxzLlBhbmVsU2VyaWFsaXphdGlvbitTZXJpYWxpemVkRHVtbXlQYW5lbAEAAAAEc2l6ZQQyRHluYW1pY1BhbmVscy5QYW5lbFNlcmlhbGl6YXRp\nb24rU2VyaWFsaXplZFZlY3RvcjICAAAAAgAAAAHz////+v///wAASEIAAEhCBwsAAAAAAQAAAAIAAAAEM0R5bmFtaWNQYW5lbHMuUGFuZWxTZXJpYWxpemF0aW9uK0lTZXJpYWxpemVkRWxlbWVudAIAAAAJDgAAAAkPAAAABQ4AAAAwRHluYW1pY1BhbmVscy5QYW5lbFNlcmlhbGl6YXRpb24rU2VyaWFsaXplZFBhbmVsBAAAAAlhY3RpdmVUYWIE\ndGFicwxmbG9hdGluZ1NpemUEc2l6ZQAEBAQINUR5bmFtaWNQYW5lbHMuUGFuZWxTZXJpYWxpemF0aW9uK1NlcmlhbGl6ZWRQYW5lbFRhYltdAgAAADJEeW5hbWljUGFuZWxzLlBhbmVsU2VyaWFsaXphdGlvbitTZXJpYWxpemVkVmVjdG9yMgIAAAAyRHluYW1pY1BhbmVscy5QYW5lbFNlcmlhbGl6YXRpb24rU2VyaWFsaXplZFZlY3RvcjICAAAA\nAgAAAAAAAAAJEAAAAAHv////+v///wAA8EQAgM9DAe7////6////AADwRACAK0MBDwAAAAMAAAABCRMAAAAB7P////r///8AAPBE/99cRAcQAAAAAAEAAAABAAAABDNEeW5hbWljUGFuZWxzLlBhbmVsU2VyaWFsaXphdGlvbitTZXJpYWxpemVkUGFuZWxUYWICAAAACRUAAAAHEwAAAAABAAAAAwAAAAQzRHluYW1pY1BhbmVscy5QYW5lbFNlcmlh\nbGl6YXRpb24rSVNlcmlhbGl6ZWRFbGVtZW50AgAAAAkWAAAACRcAAAAJGAAAAAUVAAAAM0R5bmFtaWNQYW5lbHMuUGFuZWxTZXJpYWxpemF0aW9uK1NlcmlhbGl6ZWRQYW5lbFRhYgEAAAACaWQBAgAAAAYZAAAAFk5lb0VkaXRvclBhbmVsVGFic180XzABFgAAAA4AAAABAAAACRoAAAAB5f////r///8AAPBDAAAgRAHk////+v///wAA8EP/31xE\nARcAAAAOAAAAAAAAAAkdAAAAAeL////6////AADwQwAAKkMB4f////r///8AAPBD/99cRAEYAAAADgAAAAAAAAAJIAAAAAHf////+v///wAAcEQAACBEAd7////6////AABwRP/fXEQHGgAAAAABAAAAAgAAAAQzRHluYW1pY1BhbmVscy5QYW5lbFNlcmlhbGl6YXRpb24rU2VyaWFsaXplZFBhbmVsVGFiAgAAAAkjAAAACSQAAAAHHQAAAAABAAAA\nAQAAAAQzRHluYW1pY1BhbmVscy5QYW5lbFNlcmlhbGl6YXRpb24rU2VyaWFsaXplZFBhbmVsVGFiAgAAAAklAAAAByAAAAAAAQAAAAIAAAAEM0R5bmFtaWNQYW5lbHMuUGFuZWxTZXJpYWxpemF0aW9uK1NlcmlhbGl6ZWRQYW5lbFRhYgIAAAAJJgAAAAknAAAAASMAAAAVAAAABigAAAAWTmVvRWRpdG9yUGFuZWxUYWJzXzFfMAEkAAAAFQAAAAYpAAAAFk5lb0VkaXRvclBhbmVsVGFic18yXzABJQAAABUAAAAGKgAAABZOZW9FZGl0b3JQYW5lbFRhYnNfM18wASYAAAAVAAAABisAAAAWTmVvRWRpdG9yUGFuZWxUYWJzXzBfMAEnAAAAFQAAAAYsAAAAJGFmMTYzM2JiLTQ5OWUtNGMwZi05NzUzLTRhZjNmODQ0M2FkOQs="));
+            PanelSerialization.DeserializeCanvasFromArray(panelCanvas, Convert.FromBase64String("AAEAAAD/////AQAAAAAAAAAMAgAAAExEeW5hbWljUGFuZWxzLlJ1bnRpbWUsIFZlcnNpb249MC4wLjAuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1udWxsBQEAAAAxRHluYW1pY1BhbmVscy5QYW5lbFNlcmlhbGl6YXRpb24rU2VyaWFsaXplZENhbnZhcwQAAAAGYWN0aXZlDHVzZUZyZWVTcGFjZQ5yb290UGFuZWxHcm91cBR1bmFuY2hvcmVkUGFuZWxHcm91cAAABAQBATVEeW5hbWljUGFuZWxzLlBhbmVsU2VyaWFsaXphdGlvbitTZXJpYWxpemVkUGFuZWxHcm91cAIAAAA1RHluYW1pY1BhbmVscy5QYW5lbFNlcmlhbGl6YXRpb24rU2VyaWFsaXplZFBhbmVsR3JvdXACAAAAAgAAAAEACQMAAAAJBAAAAAUDAAAANUR5bmFtaWNQYW5lbHMuUGFuZWxTZXJpYWxpemF0aW9uK1NlcmlhbGl6ZWRQYW5lbEdyb3VwAwAAAApob3Jpem9udGFsCGNoaWxkcmVuBHNpemUABAQBNUR5bmFtaWNQYW5lbHMuUGFuZWxTZXJpYWxpemF0aW9uK0lTZXJpYWxpemVkRWxlbWVudFtdAgAAADJEeW5hbWljUGFuZWxzLlBhbmVsU2VyaWFsaXphdGlvbitTZXJpYWxpemVkVmVjdG9yMgIAAAACAAAAAQkFAAAABfr///8yRHluYW1pY1BhbmVscy5QYW5lbFNlcmlhbGl6YXRpb24rU2VyaWFsaXplZFZlY3RvcjICAAAAAXgBeQAACwsCAAAAAADwRADgg0QBBAAAAAMAAAAACQcAAAAB+P////r///8AAEhCAAACRAcFAAAAAAEAAAABAAAABDNEeW5hbWljUGFuZWxzLlBhbmVsU2VyaWFsaXphdGlvbitJU2VyaWFsaXplZEVsZW1lbnQCAAAACQkAAAAHBwAAAAABAAAAAQAAAAQzRHluYW1pY1BhbmVscy5QYW5lbFNlcmlhbGl6YXRpb24rSVNlcmlhbGl6ZWRFbGVtZW50AgAAAAkKAAAAAQkAAAADAAAAAAkLAAAAAfT////6////AADwRADgg0QFCgAAADVEeW5hbWljUGFuZWxzLlBhbmVsU2VyaWFsaXphdGlvbitTZXJpYWxpemVkRHVtbXlQYW5lbAEAAAAEc2l6ZQQyRHluYW1pY1BhbmVscy5QYW5lbFNlcmlhbGl6YXRpb24rU2VyaWFsaXplZFZlY3RvcjICAAAAAgAAAAHz////+v///wAASEIAAAJEBwsAAAAAAQAAAAIAAAAEM0R5bmFtaWNQYW5lbHMuUGFuZWxTZXJpYWxpemF0aW9uK0lTZXJpYWxpemVkRWxlbWVudAIAAAAJDgAAAAkPAAAABQ4AAAAwRHluYW1pY1BhbmVscy5QYW5lbFNlcmlhbGl6YXRpb24rU2VyaWFsaXplZFBhbmVsBAAAAAlhY3RpdmVUYWIEdGFicwxmbG9hdGluZ1NpemUEc2l6ZQAEBAQINUR5bmFtaWNQYW5lbHMuUGFuZWxTZXJpYWxpemF0aW9uK1NlcmlhbGl6ZWRQYW5lbFRhYltdAgAAADJEeW5hbWljUGFuZWxzLlBhbmVsU2VyaWFsaXphdGlvbitTZXJpYWxpemVkVmVjdG9yMgIAAAAyRHluYW1pY1BhbmVscy5QYW5lbFNlcmlhbGl6YXRpb24rU2VyaWFsaXplZFZlY3RvcjICAAAAAgAAAAAAAAAJEAAAAAHv////+v///wAA8EQAgM9DAe7////6////AADwRADAzEMBDwAAAAMAAAABCRMAAAAB7P////r///8AAPBE/18hRAcQAAAAAAEAAAABAAAABDNEeW5hbWljUGFuZWxzLlBhbmVsU2VyaWFsaXphdGlvbitTZXJpYWxpemVkUGFuZWxUYWICAAAACRUAAAAHEwAAAAABAAAAAwAAAAQzRHluYW1pY1BhbmVscy5QYW5lbFNlcmlhbGl6YXRpb24rSVNlcmlhbGl6ZWRFbGVtZW50AgAAAAkWAAAACRcAAAAJGAAAAAUVAAAAM0R5bmFtaWNQYW5lbHMuUGFuZWxTZXJpYWxpemF0aW9uK1NlcmlhbGl6ZWRQYW5lbFRhYgEAAAACaWQBAgAAAAYZAAAAFk5lb0VkaXRvclBhbmVsVGFic180XzABFgAAAA4AAAABAAAACRoAAAAB5f////r///8AAPBDAAAgRAHk////+v///wBAlUP/XyFEARcAAAAOAAAAAAAAAAkdAAAAAeL////6////AADwQwAAKkMB4f////r///+rz7dD/18hRAEYAAAADgAAAAEAAAAJIAAAAAHf////+v///wAAcEQAACBEAd7////6////FrycRP9fIUQHGgAAAAABAAAAAgAAAAQzRHluYW1pY1BhbmVscy5QYW5lbFNlcmlhbGl6YXRpb24rU2VyaWFsaXplZFBhbmVsVGFiAgAAAAkjAAAACSQAAAAHHQAAAAABAAAAAQAAAAQzRHluYW1pY1BhbmVscy5QYW5lbFNlcmlhbGl6YXRpb24rU2VyaWFsaXplZFBhbmVsVGFiAgAAAAklAAAAByAAAAAAAQAAAAIAAAAEM0R5bmFtaWNQYW5lbHMuUGFuZWxTZXJpYWxpemF0aW9uK1NlcmlhbGl6ZWRQYW5lbFRhYgIAAAAJJgAAAAknAAAAASMAAAAVAAAABigAAAAWTmVvRWRpdG9yUGFuZWxUYWJzXzFfMAEkAAAAFQAAAAYpAAAAFk5lb0VkaXRvclBhbmVsVGFic18yXzABJQAAABUAAAAGKgAAABZOZW9FZGl0b3JQYW5lbFRhYnNfM18wASYAAAAVAAAABisAAAAWTmVvRWRpdG9yUGFuZWxUYWJzXzBfMAEnAAAAFQAAAAYsAAAAFk5lb0VkaXRvclBhbmVsVGFic18wXzEL"));
             // panelCanvas.ForceRebuildLayoutImmediate();
 
             SelectTab(EditorTab.Project);
@@ -318,22 +318,6 @@ namespace NeoEditor
 			panels.Add(PanelUtils.CreatePanelFor(filePanelContent, panelCanvas));
 			panels.Add(PanelUtils.CreatePanelFor(previewPanelContent, panelCanvas));
 			panels.Add(PanelUtils.CreatePanelFor(mediaPanelContent, panelCanvas));
-            
-            // set panel ids
-            for (var i = 0; i < panels.Count; i++)
-            {
-                var panel = panels[i];
-                
-                var tabs = (List<PanelTab>)AccessTools.Field(typeof(Panel), "tabs").GetValue(panel);
-                for (var j = 0; j < tabs.Count; j++)
-                {
-                    var tab = tabs[j];
-                    
-                    var oldId = tab.ID;
-                    tab.ID = $"NeoEditorPanelTabs_{i}_{j}";
-                    Main.Entry.Logger.Log($"old id: {oldId}, new id: {tab.ID}");
-                }
-            }
 
 			panelTabs = new Dictionary<PanelType, PanelTab>
 			{
@@ -392,6 +376,22 @@ namespace NeoEditor
 			group.DockToRoot(Direction.Bottom);
 
 			panels[4].DockToRoot(Direction.Bottom);
+            
+            // set panel ids
+            for (var i = 0; i < panels.Count; i++)
+            {
+                var panel = panels[i];
+                
+                var tabs = (List<PanelTab>)AccessTools.Field(typeof(Panel), "tabs").GetValue(panel);
+                for (var j = 0; j < tabs.Count; j++)
+                {
+                    var tab = tabs[j];
+                    
+                    var oldId = tab.ID;
+                    tab.ID = $"NeoEditorPanelTabs_{i}_{j}";
+                    Main.Entry.Logger.Log($"old id: {oldId}, new id: {tab.ID}");
+                }
+            }
 		}
 
 		public void SelectLayout(EditorTab tab)
