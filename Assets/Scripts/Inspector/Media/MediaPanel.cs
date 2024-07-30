@@ -17,7 +17,7 @@ namespace NeoEditor.Inspector.Media
 
 		private static Dictionary<LevelEventType, List<PropertyInfo>> fileProperties;
 
-		void Start()
+		private void Initialize()
 		{
 			if (fileProperties != null) return;
 
@@ -41,6 +41,8 @@ namespace NeoEditor.Inspector.Media
 
 		public void SetupItems(NeoEditor editor)
 		{
+			if (fileProperties == null) Initialize();
+
 			foreach (var item in items)
 				Destroy(item.gameObject);
 			items.Clear();
