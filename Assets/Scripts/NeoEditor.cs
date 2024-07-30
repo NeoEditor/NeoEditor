@@ -8,6 +8,8 @@ using ADOFAI;
 using DG.Tweening;
 using DynamicPanels;
 using HarmonyLib;
+using NeoEditor.Inspector;
+using NeoEditor.Inspector.Media;
 using NeoEditor.Patches;
 using NeoEditor.PopupWindows;
 using NeoEditor.Tabs;
@@ -58,10 +60,13 @@ namespace NeoEditor
         public GameObject[] tabContainers;
         public TabBase[] tabs;
         public Button[] tabButtons;
-        public RawImage[] gameViews;
-        public RawImage[] sceneViews;
+        public RawImage gameView;
+        public RawImage sceneView;
 
-        public DynamicPanelsCanvas panelCanvas;
+		public ProjectPanel project;
+		public MediaPanel media;
+
+		public DynamicPanelsCanvas panelCanvas;
 		public RectTransform gameViewPanelContent;
 		public RectTransform sceneViewPanelContent;
 		public RectTransform inspectorPanelContent;
@@ -208,10 +213,8 @@ namespace NeoEditor
             BGcamstaticCopy.targetTexture = Assets.SceneRenderer;
             BGcamCopy.GetComponent<scrMatchCameraSize>().enabled = false;
 
-            foreach (var gameView in gameViews)
-                gameView.texture = Assets.GameRenderer;
-            foreach (var sceneView in sceneViews)
-                sceneView.texture = Assets.SceneRenderer;
+			gameView.texture = Assets.GameRenderer;
+			sceneView.texture = Assets.SceneRenderer;
 
             scrUIController uIController = scrUIController.instance;
             uiController.canvas.renderMode = RenderMode.ScreenSpaceCamera;
@@ -220,28 +223,26 @@ namespace NeoEditor
             //floorConnectors = GameObject.Find("Floor Connector Lines");
             floorConnectors = new GameObject("Floor Connector Lines");
 
-            var dictionary = GCS
-                .settingsInfo.Concat(GCS.levelEventsInfo)
-                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-
             InitializeLayout();
 
             PanelSerialization.DeserializeCanvasFromArray(panelCanvas, Convert.FromBase64String(projectLayoutBase64));
             // panelCanvas.ForceRebuildLayoutImmediate();
 
-            SelectTab(EditorTab.Project);
+            //SelectTab(EditorTab.Project);
 
             customLevel.RemakePath();
             customLevel.ResetScene();
 
             FloorMesh.UpdateAllRequired();
 
-            for (int i = 0; i < 7; i++)
-            {
-                int tab = i;
-                tabs[i].InitTab(dictionary);
-                tabButtons[i].onClick.AddListener(() => SelectTab((EditorTab)tab));
-            }
+            //for (int i = 0; i < 7; i++)
+            //{
+            //    int tab = i;
+            //    tabs[i].InitTab(dictionary);
+            //    tabButtons[i].onClick.AddListener(() => SelectTab((EditorTab)tab));
+            //}
+
+            InitializePanels();
 
             //OpenLevel();
 
@@ -393,6 +394,28 @@ namespace NeoEditor
         {
             
         }
+
+        public void InitializePanels()
+        {
+			var levelEventsInfo = GCS.settingsInfo.Concat(GCS.levelEventsInfo).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+			project.Init(
+				levelEventsInfo["SongSettings"],
+				levelEventsInfo["LevelSettings"],
+				levelEventsInfo["MiscSettings"]
+			);
+			gameView.texture = Assets.GameRenderer;
+
+			OnOpenLevel();
+		}
+
+        public void OnOpenLevel()
+        {
+			project.SetProperties(levelData.songSettings, levelData.levelSettings, levelData.miscSettings);
+			project.SelectTab(0);
+
+			media.SetupItems(this);
+		}
 
         public void TogglePauseGame()
         {
@@ -1017,8 +1040,9 @@ namespace NeoEditor
             //yield return null;
             //this.ShowImageLoadResult();
 
-            foreach (var tab in tabs)
-                tab.OnOpenLevel();
+            //foreach (var tab in tabs)
+            //    tab.OnOpenLevel();
+            OnOpenLevel();
             yield break;
         }
 

@@ -5894,16 +5894,10 @@ MonoBehaviour:
   - {fileID: 1653033903}
   - {fileID: 1639215140}
   - {fileID: 1626121056}
-  gameViews:
-  - {fileID: 1281442934}
-  - {fileID: 1321653147}
-  - {fileID: 1985986104}
-  - {fileID: 887871010}
-  - {fileID: 987597150}
-  sceneViews:
-  - {fileID: 1013079781}
-  - {fileID: 2078320239}
-  - {fileID: 1224137286}
+  gameView: {fileID: 987597150}
+  sceneView: {fileID: 1224137286}
+  project: {fileID: 2038577485}
+  media: {fileID: 1277155571}
   panelCanvas: {fileID: 346703164}
   gameViewPanelContent: {fileID: 10477164}
   sceneViewPanelContent: {fileID: 1456824867}
