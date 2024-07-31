@@ -319,59 +319,73 @@ namespace NeoEditor
         public void InitializeLayout()
 		{
 			panels.Add(PanelUtils.CreatePanelFor(gameViewPanelContent, panelCanvas));
-			//panels.Add(PanelUtils.CreatePanelFor(inspectorPanelContent, panelCanvas));
-			panels.Add(PanelUtils.CreatePanelFor(projectPanelContent, panelCanvas));
+            panels.Add(PanelUtils.CreatePanelFor(projectPanelContent, panelCanvas));
 			panels.Add(PanelUtils.CreatePanelFor(filePanelContent, panelCanvas));
 			panels.Add(PanelUtils.CreatePanelFor(previewPanelContent, panelCanvas));
 			panels.Add(PanelUtils.CreatePanelFor(mediaPanelContent, panelCanvas));
+            //panels.Add(PanelUtils.CreatePanelFor(inspectorPanelContent, panelCanvas));
+			//panels.Add(PanelUtils.CreatePanelFor(hierarchyPanelContent, panelCanvas));
+			//panels.Add(PanelUtils.CreatePanelFor(timelinePanelContent, panelCanvas));
 
 			panelTabs = new Dictionary<PanelType, PanelTab>
 			{
 				{ PanelType.GameView, panels[0][0] },
 				{ PanelType.SceneView, panels[0].AddTab(sceneViewPanelContent) },
-				//{ PanelType.Inspector, panels[0].AddTab(inspectorPanelContent) },
-				{ PanelType.Project, panels[1][0] },
+                //{ PanelType.Inspector, panels[5][0] },
+                { PanelType.Project, panels[1][0] },
 				{ PanelType.File, panels[2][0] },
-				//{ PanelType.Hierarchy, panels[0].AddTab(hierarchyPanelContent) },
-				{ PanelType.Preview, panels[3][0] },
+                //{ PanelType.Hierarchy, panels[6][0] },
+                { PanelType.Preview, panels[3][0] },
 				{ PanelType.Media, panels[4][0] },
-				//{ PanelType.Timeline, panels[0].AddTab(timelinePanelContent) }
-			};
+                //{ PanelType.Timeline, panels[7][0] }
+            };
 
-			panels[0][0].Icon = null;
-			panels[0][0].Label = "Game";
-			panels[0][0].MinSize = new Vector2(240, 160);
+			panelTabs[PanelType.GameView].Icon = null;
+			panelTabs[PanelType.GameView].Label = "Game";
+			panelTabs[PanelType.GameView].MinSize = new Vector2(240, 160);
 
-			panels[0][1].Icon = null;
-			panels[0][1].Label = "Scene";
-			panels[0][1].MinSize = new Vector2(240, 160);
+			panelTabs[PanelType.SceneView].Icon = null;
+			panelTabs[PanelType.SceneView].Label = "Scene";
+			panelTabs[PanelType.SceneView].MinSize = new Vector2(240, 160);
 
             panels[0].ResizeTo(new Vector2(960, 640));
             panels[0].ActiveTab = 0;
 
-			panels[1][0].Icon = null;
-			panels[1][0].Label = "Project";
-			panels[1][0].MinSize = new Vector2(200, 100);
+			panelTabs[PanelType.Project].Icon = null;
+			panelTabs[PanelType.Project].Label = "Project";
+			panelTabs[PanelType.Project].MinSize = new Vector2(200, 100);
 
             panels[1].ResizeTo(new Vector2(480, 640));
 
-			panels[2][0].Icon = null;
-			panels[2][0].Label = "File";
-			panels[2][0].MinSize = new Vector2(200, 100);
+			panelTabs[PanelType.File].Icon = null;
+			panelTabs[PanelType.File].Label = "File";
+			panelTabs[PanelType.File].MinSize = new Vector2(200, 100);
 
 			panels[2].ResizeTo(new Vector2(480, 470));
 
-			panels[3][0].Icon = null;
-			panels[3][0].Label = "Preview";
-			panels[3][0].MinSize = new Vector2(200, 100);
+			panelTabs[PanelType.Preview].Icon = null;
+			panelTabs[PanelType.Preview].Label = "Preview";
+			panelTabs[PanelType.Preview].MinSize = new Vector2(200, 100);
 
             panels[3].ResizeTo(new Vector2(480, 170)); 
 
-			panels[4][0].Icon = null;
-			panels[4][0].Label = "Media";
-			panels[4][0].MinSize = new Vector2(300, 100);
+			panelTabs[PanelType.Media].Icon = null;
+			panelTabs[PanelType.Media].Label = "Media";
+			panelTabs[PanelType.Media].MinSize = new Vector2(300, 100);
 
-            PanelGroup fileAndPreview = new PanelGroup(panelCanvas, Direction.Bottom);
+			//panelTabs[PanelType.Inspector].Icon = null;
+			//panelTabs[PanelType.Inspector].Label = "Inspector";
+			//panelTabs[PanelType.Inspector].MinSize = new Vector2(200, 100);
+
+			//panelTabs[PanelType.Hierarchy].Icon = null;
+			//panelTabs[PanelType.Hierarchy].Label = "Hierarchy";
+			//panelTabs[PanelType.Hierarchy].MinSize = new Vector2(200, 100);
+
+			//panelTabs[PanelType.Timeline].Icon = null;
+			//panelTabs[PanelType.Timeline].Label = "Timeline";
+			//panelTabs[PanelType.Timeline].MinSize = new Vector2(300, 100);
+
+			PanelGroup fileAndPreview = new PanelGroup(panelCanvas, Direction.Bottom);
 			fileAndPreview.AddElement(panels[3]);
             fileAndPreview.AddElement(panels[2]);
 
