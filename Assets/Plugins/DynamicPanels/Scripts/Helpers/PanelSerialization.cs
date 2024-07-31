@@ -57,8 +57,8 @@ namespace DynamicPanels
 		private class SerializedPanelTab
 		{
 			public string id;
-			//public SerializedVector2 minSize;
-			//public string label;
+			public SerializedVector2 minSize;
+			public string label;
 		}
 
 		[Serializable]
@@ -241,8 +241,8 @@ namespace DynamicPanels
 					tabsTemp.Add( new SerializedPanelTab()
 					{
 						id = tab.ID,
-						//minSize = tab.MinSize,
-						//label = tab.Label
+						minSize = tab.MinSize,
+						label = tab.Label
 					} );
 				}
 
@@ -315,11 +315,11 @@ namespace DynamicPanels
 					else
 						panel.AddTab( tab );
 
-					//if( tab != null )
-					//{
-					//	tab.MinSize = tabs[i].minSize;
-					//	tab.Label = tabs[i].label;
-					//}
+					if (tab != null)
+					{
+						tab.MinSize = tabs[i].minSize;
+						tab.Label = tabs[i].label;
+					}
 				}
 
 				if( panel != null )
