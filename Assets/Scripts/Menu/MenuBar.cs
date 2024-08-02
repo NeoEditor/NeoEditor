@@ -17,14 +17,18 @@ namespace NeoEditor.Menu
         public MenuContent menuTemplate;
 
         public RectTransform menubar;
+        public RectTransform rightbar;
 
         private List<MenuButton> menus = new();
         private List<MenuContent> contents = new List<MenuContent>();
 
-        public void AddMenu(MenuItem root)
+        private List<MenuItem> layoutMenus = new List<MenuItem>();
+        private int layoutIndex;
+
+        public void AddMenu(MenuItem root, bool left = true)
         {
             root.parent = null;
-            MenuButton menu = Instantiate(menuBarButtonTemplate, menubar);
+            MenuButton menu = Instantiate(menuBarButtonTemplate, left ? menubar : rightbar);
             menu.text.text = root.text;
             menu.info = root;
             menu.gameObject.SetActive(true);
@@ -41,7 +45,7 @@ namespace NeoEditor.Menu
             contents.Add(content);
         }
 
-        public void AddSubMenu(MenuItem menu, MenuContent content, int depth)
+        public void AddSubMenu(MenuItem menu, MenuContent content, int depth, bool toLeft = false)
         {
             if (menu is SeparatorMenuItem)
             {
@@ -57,7 +61,7 @@ namespace NeoEditor.Menu
                 if (menu is EntryMenuItem)
                 {
                     var subContent = Instantiate(menuTemplate, button.rect);
-                    subContent.rect.anchoredPosition = new Vector2(298f, 2);
+                    subContent.rect.anchoredPosition = new Vector2(toLeft ? -298f : 298f, 2);
                     subContent.parents = content.parents.ToList();
                     subContent.parents.Add(content);
                     subContent.canvas.sortingOrder += depth;
@@ -65,7 +69,7 @@ namespace NeoEditor.Menu
                     contents.Add(subContent);
                     foreach (MenuItem sub in menu.subMenus)
                     {
-                        AddSubMenu(sub, subContent, depth + 1);
+                        AddSubMenu(sub, subContent, depth + 1, toLeft);
                     }
                 }
                 else if (menu is ActionMenuItem)
@@ -75,9 +79,10 @@ namespace NeoEditor.Menu
                 else if (menu is ToggleMenuItem)
                 {
                     button.button.onClick.AddListener(
-                        () => (menu as ToggleMenuItem).action(!button.isChecked)
+                        () => (menu as ToggleMenuItem).action(!button.IsChecked)
                     );
                 }
+                menu.button = button;
             }
         }
 
@@ -154,24 +159,100 @@ namespace NeoEditor.Menu
             zoom.AddSubMenu(new ActionMenuItem("Zoom Out", new EditorKeybind(KeyModifier.Control, KeyCode.Minus), () => { }));
             zoom.AddSubMenu(new ActionMenuItem("Restore Default Zoom", new EditorKeybind(KeyModifier.Control, KeyCode.Alpha0), () => { }));
             view.AddSubMenu(new SeparatorMenuItem());
-
             AddMenu(view);
         }
 
-        void Update()
-        {
-            foreach(var menu in menus)
-            foreach (var sub in menu.info.subMenus)
-            {
-                if (!sub.shortcut.IsPressed()) continue;
+		void Update()
+		{
+			foreach (var menu in menus)
+			{
+				foreach (var sub in menu.info.subMenus)
+				{
+					if (!sub.shortcut.IsPressed()) continue;
 
-                if (sub is ActionMenuItem item)
+					if (sub is ActionMenuItem item)
+					{
+						item.action();
+					}
+					else if (sub is ToggleMenuItem toggle)
+					{
+						toggle.action(!sub.button.IsChecked);
+					}
+				}
+			}
+		}
+
+		public void CreateLayoutSelector(List<string> layoutNames)
+        {
+            var layout = new MenuItem("Layout", (obj) =>
+            {
+                DisableOtherLayoutMenu(NeoEditor.Instance.selectedLayout);
+                return true;
+            });
+
+            var defaultLayouts = NeoEditor.defaultLayouts.Keys;
+            layoutIndex = defaultLayouts.Count;
+            int i = 0;
+            foreach (var defaultLayout in defaultLayouts)
+            {
+				layoutMenus.Add(layout.AddSubMenu(new ToggleMenuItem(defaultLayout
+				, new EditorKeybind(KeyModifier.Control | KeyModifier.Alt, KeyCode.Alpha1 + i)
+				, (on) =>
+				{
+					DisableOtherLayoutMenu(defaultLayout);
+					NeoEditor.Instance.SelectLayout(defaultLayout);
+				})));
+                i++;
+			}
+
+            layout.AddSubMenu(new SeparatorMenuItem());
+
+            var keybind = new EditorKeybind();
+            foreach(var customLayout in layoutNames)
+            {
+                layoutMenus.Add(layout.AddSubMenu(new ToggleMenuItem(customLayout
+                , i < 10 ? new EditorKeybind(KeyModifier.Control | KeyModifier.Alt, KeyCode.Alpha1 + i) : keybind
+                , (on) =>
                 {
-                    item.action();
+                    DisableOtherLayoutMenu(customLayout);
+                    NeoEditor.Instance.SelectLayout(customLayout);
+                })));
+                i++;
+			}
+
+            layout.AddSubMenu(new ActionMenuItem("Custom...", () =>
+            {
+                string name = "CustomLayout" + layoutIndex; //TODO: Find not duplicated name.
+                var toggle = new ToggleMenuItem(name
+                , i < 10 ? new EditorKeybind(KeyModifier.Control | KeyModifier.Alt, KeyCode.Alpha1 + i) : keybind
+                , (on) =>
+                {
+                    DisableOtherLayoutMenu(name);
+                    NeoEditor.Instance.SelectLayout(name);
+                });
+                layoutMenus.Add(toggle);
+                layout.subMenus.Insert(layoutIndex, toggle);
+                //TODO: Generate menu button.
+                //TODO: Rename popup.
+                layoutIndex++;
+                i++;
+			}));
+            layout.AddSubMenu(new SeparatorMenuItem());
+            layout.AddSubMenu(new EntryMenuItem("Delete Layout")); //Only custom layouts.
+            layout.AddSubMenu(new EntryMenuItem("Reset Layout")); //Only default layouts.
+
+            AddMenu(layout, false);
+		}
+
+        public void DisableOtherLayoutMenu(string name)
+        {
+            foreach (var layoutMenu in layoutMenus)
+            {
+                if (layoutMenu.text != name)
+                {
+                    layoutMenu.button.IsChecked = false;
                 }
             }
         }
-
-        public void GenerateUI() { }
     }
 }

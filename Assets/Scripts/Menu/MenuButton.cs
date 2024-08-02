@@ -22,6 +22,16 @@ namespace NeoEditor.Menu
         public Sprite uncheck;
 
         public MenuItem info;
-        public bool isChecked = false;
+        
+        private bool isChecked = false;
+        public bool IsChecked
+        {
+            get { return isChecked; }
+            set
+            {
+                isChecked = value;
+                checkbox.sprite = isChecked ? check : uncheck;
+            }
+        }
     }
 }

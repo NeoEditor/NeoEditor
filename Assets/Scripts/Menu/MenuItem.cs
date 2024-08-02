@@ -17,6 +17,7 @@ namespace NeoEditor.Menu
         public EditorKeybind shortcut;
         public string shortcutText;
         public Func<GameObject, bool> onActive;
+        public MenuButton button;
 
         public MenuItem(string text, Func<GameObject, bool> onActive = null)
         {
