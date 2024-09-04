@@ -284,7 +284,7 @@ namespace NeoEditor.Inspector.Timeline
 
             scrConductor conductor = scrConductor.instance;
             float timelineWidth =
-                TimeToBeat(floors.Last().entryTime + conductor.crotchet * 4) * width;
+                TimeToBeat(floors.Last().entryTime + conductor.crotchetAtStart * 4) * width;
 
             content.GetComponent<RectTransform>().SizeDeltaX(timelineWidth);
             content.GetComponent<RectTransform>().SizeDeltaY((timelineRowEndPosX.Count + 2) * height);
@@ -558,7 +558,7 @@ namespace NeoEditor.Inspector.Timeline
 
         float TimeToBeat(double time)
         {
-            return (float)(time / scrConductor.instance.crotchet);
+            return (float)(time / scrConductor.instance.crotchetAtStart);
         }
 
         private VerticalLineData CreateLineData(scrFloor floor, int floorIdx)

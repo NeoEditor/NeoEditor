@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using ADOFAI;
+using ADOFAI.LevelEditor.Controls;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -84,8 +85,8 @@ namespace NeoEditor.Inspector.Controls
 
         public void UpdateEnabled()
         {
-            bool enabled = propertyInfo.CheckIfEnabled(inspectorPanel.selectedEvent);
-            bool shown = propertyInfo.CheckIfShown(inspectorPanel.selectedEvent);
+            bool enabled = propertyInfo.CheckIfEnabled(inspectorPanel.selectedEvent, inspectorPanel.selectedTab);
+            bool shown = propertyInfo.CheckIfShown(inspectorPanel.selectedEvent, inspectorPanel.selectedTab);
             SetEnabled(enabled, shown);
         }
 

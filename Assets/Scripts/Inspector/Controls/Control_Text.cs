@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using ADOFAI;
+using ADOFAI.LevelEditor.Controls;
 using NeoEditor.Tabs;
 using SA.GoogleDoc;
 using TMPro;

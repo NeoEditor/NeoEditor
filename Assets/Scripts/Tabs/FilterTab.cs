@@ -13,7 +13,7 @@ namespace NeoEditor.Tabs
 			List<LevelEventInfo> infos = new List<LevelEventInfo>()
 			{
 				GCS.levelEventsInfo["SetFilter"],
-				GCS.levelEventsInfo["SetFilterAdvanced"],
+				//GCS.levelEventsInfo["SetFilterAdvanced"],
 				GCS.levelEventsInfo["HallOfMirrors"],
 				GCS.levelEventsInfo["ShakeScreen"],
 				GCS.levelEventsInfo["Bloom"],

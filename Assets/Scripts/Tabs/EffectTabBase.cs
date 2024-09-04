@@ -25,7 +25,7 @@ namespace NeoEditor.Tabs
 
         public override void InitTab(Dictionary<string, LevelEventInfo> levelEventsInfo)
         {
-            events.Init(GCS.levelEventsInfo.Values.ToList());
+            events.Init(GCS.levelEventsInfo.Values.Where(info => info.name != "SetFilterAdvanced" && info.name != "SetParticle" && info.name != "AddParticle").ToList());
             gameView.texture = Assets.GameRenderer;
             sceneView.texture = Assets.SceneRenderer;
         }

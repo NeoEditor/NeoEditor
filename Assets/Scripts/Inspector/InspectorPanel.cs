@@ -54,7 +54,9 @@ namespace NeoEditor.Inspector
 
         private EventSystem eventSystem;
 
-        public void Init(LevelEventInfo levelEventInfo, bool addFloorControl = false)
+		public string selectedTab { get; set; }
+
+		public void Init(LevelEventInfo levelEventInfo, bool addFloorControl = false)
         {
             eventSystem = EventSystem.current;
             Dictionary<string, ADOFAI.PropertyInfo> propertiesInfo = levelEventInfo.propertiesInfo;
@@ -687,7 +689,7 @@ namespace NeoEditor.Inspector
                     num2 = num;
                     break;
                 }
-            } while (!control.propertyInfo.CheckIfEnabled(selectedEvent) || (flag && !flag2));
+            } while (!control.propertyInfo.CheckIfEnabled(selectedEvent, selectedTab) || (flag && !flag2));
             Selectable selectable = propertySelectables[num2].selectable;
             if (flag2)
             {

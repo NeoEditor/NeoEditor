@@ -143,8 +143,11 @@ namespace NeoEditor
 
         private void Start()
         {
-            customLevel = scnGame.instance;
+			customLevel = scnGame.instance;
             Application.wantsToQuit += TryApplicationQuit;
+
+            LoadLevelEventSprites();
+            LoadLevelCategorySprites();
 
             lineMaterial = new Material(Shader.Find("ADOFAI/ScrollingSprite"));
             lineMaterial.SetTexture("_MainTex", floorConnectorTex);
@@ -211,8 +214,42 @@ namespace NeoEditor
 
             scrController.instance.paused = true;
             GameObject.Find("Error Meter(Clone)")?.SetActive(false);
-            //customLevel.Play(0, false);
-        }
+			//customLevel.Play(0, false);
+
+			void LoadLevelEventSprites()
+			{
+				if (GCS.levelEventIcons != null)
+				{
+					return;
+				}
+				GCS.levelEventIcons = new Dictionary<LevelEventType, Sprite>();
+				foreach (object obj in Enum.GetValues(typeof(LevelEventType)))
+				{
+					Sprite sprite = Resources.Load<Sprite>("LevelEditor/LevelEvents/" + ((obj != null) ? obj.ToString() : null));
+					if (sprite != null)
+					{
+						GCS.levelEventIcons.Add((LevelEventType)obj, sprite);
+					}
+				}
+			}
+
+			void LoadLevelCategorySprites()
+			{
+				if (GCS.eventCategoryIcons != null)
+				{
+					return;
+				}
+				GCS.eventCategoryIcons = new Dictionary<ADOFAI.LevelEventCategory, Sprite>();
+				foreach (object obj in Enum.GetValues(typeof(ADOFAI.LevelEventCategory)))
+				{
+					Sprite sprite = Resources.Load<Sprite>("LevelEditor/EventCategories/" + ((obj != null) ? obj.ToString() : null));
+					if (sprite != null)
+					{
+						GCS.eventCategoryIcons.Add((ADOFAI.LevelEventCategory)obj, sprite);
+					}
+				}
+			}
+		}
 
         private void Update() { }
 
