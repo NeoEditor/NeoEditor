@@ -72,7 +72,7 @@ namespace NeoEditor.Inspector.Media
 
 			foreach (var file in files)
 			{
-				Main.Entry.Logger.Log(file.Key);
+				//Main.Entry.Logger.Log(file.Key);
 				var item = Instantiate(itemPrefab, content.transform);
 				bool hasImage = editor.customLevel.imgHolder.customSprites.ContainsKey(file.Key);
 

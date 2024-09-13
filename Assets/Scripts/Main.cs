@@ -24,6 +24,11 @@ namespace NeoEditor
             harmony = new Harmony(modEntry.Info.Id);
             Entry = modEntry;
             Assets.Load();
+#if DEBUG
+			NeoLogger.Setup(modEntry.Logger, NeoLogger.LogLevel.Debug);
+#else
+			NeoLogger.Setup(modEntry.Logger, NeoLogger.LogLevel.Info);
+#endif
 
             modEntry.OnToggle = (entry, value) =>
             {

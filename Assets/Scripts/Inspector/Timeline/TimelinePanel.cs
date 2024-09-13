@@ -119,7 +119,7 @@ namespace NeoEditor.Inspector.Timeline
 
             // release all loaded objects
 
-            Main.Entry.Logger.Log("[d] TimelinePanel#Init() called. Releasing objects to pool...");
+            //Main.Entry.Logger.Log("[d] TimelinePanel#Init() called. Releasing objects to pool...");
 
             foreach (var line in vLines)
             {
@@ -227,7 +227,7 @@ namespace NeoEditor.Inspector.Timeline
                     timelineRowEndPosX.Add(eventEndPosX);
                 }
 
-                Main.Entry.Logger.Log(string.Format("floor {0}: {1} {2} {3} // row: {4}", levelEvent.floor, levelEvent.eventType, position.x, eventEndPosX, optimalRow));
+                //Main.Entry.Logger.Log(string.Format("floor {0}: {1} {2} {3} // row: {4}", levelEvent.floor, levelEvent.eventType, position.x, eventEndPosX, optimalRow));
 
                 var eventData = new LevelEventData(entryTime, duration, optimalRow, levelEvent);
                 levelEventsDataSortedByStartPos.Add(eventData);
