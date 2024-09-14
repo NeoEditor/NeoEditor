@@ -472,7 +472,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4577907279013079112}
-  - component: {fileID: 2877403497381272782}
+  - component: {fileID: 4918806692549783685}
+  - component: {fileID: 6366065295602699076}
   m_Layer: 5
   m_Name: Control_Color
   m_TagString: Untagged
@@ -501,7 +502,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &2877403497381272782
+--- !u!114 &4918806692549783685
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -510,14 +511,35 @@ MonoBehaviour:
   m_GameObject: {fileID: 2922194740277733172}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4cc5415da074ef948b40558dc34d66f6, type: 3}
+  m_Script: {fileID: -289728065, guid: 06dd3d5416bf43ea368cc39ff96e6d5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inspectorPanel: {fileID: 0}
+  propertiesPanel: {fileID: 0}
   propertyTransform: {fileID: 4577907279013079112}
+  rectTransform: {fileID: 4577907279013079112}
   randomControl: {fileID: 0}
-  inputField: {fileID: 1999917503144064964}
-  picker: {fileID: 8293299660945893692}
+  colorField: {fileID: 6366065295602699076}
+--- !u!114 &6366065295602699076
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2922194740277733172}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 2039074430, guid: 06dd3d5416bf43ea368cc39ff96e6d5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  field: {fileID: 1999917503144064964}
+  sample: {fileID: 373759937641204960}
+  colorButton: {fileID: 8293299660945893692}
+  colorPickerPopup: {fileID: 0}
+  usesAlpha: 0
+  defaultValue: 
+  onChange:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3807211091538709888
 GameObject:
   m_ObjectHideFlags: 0

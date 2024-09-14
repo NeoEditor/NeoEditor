@@ -17,7 +17,7 @@ using UnityEngine.UI;
 
 namespace NeoEditor.Inspector
 {
-    public class EventInspectorPanel : InspectorPanel
+    public class EventInspectorPanel : PropertiesPanel
     {
 		public void Init(List<LevelEventType> events)
         {
@@ -31,7 +31,7 @@ namespace NeoEditor.Inspector
 				.GetComponent<CreateEventButton>();
 				button.button.onClick.AddListener(() =>
 				{
-                    parentTab.AddEvent(type);
+					NeoEditor.Instance.selectedTab.AddEvent(type);
 				});
                 button.label.text = type == LevelEventType.None
 					? ""

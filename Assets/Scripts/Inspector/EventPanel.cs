@@ -11,43 +11,39 @@ using UnityEngine.UI;
 
 namespace NeoEditor.Inspector
 {
-    public class EventPanel : MonoBehaviour
+    public class EventPanel : InspectorPanel
     {
         public RectTransform content;
-        public TextMeshProUGUI title;
-        public TextMeshProUGUI eventTitle;
         public SelectorPanel selectorPanel;
         public EffectTabBase parentTab;
         public LevelEventCategory[] categories;
 
-        protected Dictionary<LevelEventType, InspectorPanel> inspectors;
-        protected LevelEventType selectedEventType = LevelEventType.None;
-        protected LevelEvent selectedEvent;
+        protected Dictionary<LevelEventType, PropertiesPanel> inspectors;
 
         public virtual void Init(List<LevelEventInfo> infos)
         {
             NeoEditor editor = NeoEditor.Instance;
 
-            inspectors = new Dictionary<LevelEventType, InspectorPanel>();
+            inspectors = new Dictionary<LevelEventType, PropertiesPanel>();
             foreach (var info in infos)
             {
-                InspectorPanel inspector = Instantiate(editor.prefab_inspector, content)
-                    .GetComponent<InspectorPanel>();
-                inspector.parentTab = parentTab;
-                inspector.Init(info, true);
-                inspector.gameObject.SetActive(false);
-                inspectors.Add(info.type, inspector);
+                PropertiesPanel panel = Instantiate(editor.prefab_inspector, content)
+                    .GetComponent<PropertiesPanel>();
+                //panel.parentTab = parentTab;
+                panel.Init(this, info);
+                panel.gameObject.SetActive(false);
+                inspectors.Add(info.type, panel);
             }
 
             selectorPanel.parentTab = parentTab;
             selectorPanel.Init(categories);
-            selectorPanel.title = eventTitle;
+            selectorPanel.title = title;
 		}
 
         public virtual void SetProperties(LevelEventType type, LevelEvent levelEvent)
         {
             selectorPanel.gameObject.SetActive(false);
-			eventTitle.text =
+			title.text =
                 type == LevelEventType.None
                     ? ""
                     : RDString.Get("editor." + type.ToString(), null, LangSection.Translations);
@@ -59,7 +55,7 @@ namespace NeoEditor.Inspector
 
         public virtual void SetSelector()
         {
-            eventTitle.text = "Select Event";
+            title.text = "Select Event";
             selectedEventType = LevelEventType.None;
             selectorPanel.gameObject.SetActive(true);
             selectedEvent = null;
@@ -67,7 +63,7 @@ namespace NeoEditor.Inspector
 
         public virtual void HidePanel()
         {
-            eventTitle.text = "";
+            title.text = "";
 			if (selectedEventType == LevelEventType.None)
                 selectorPanel.gameObject.SetActive(false);
 			else

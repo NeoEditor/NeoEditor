@@ -13,7 +13,7 @@ namespace NeoEditor.Inspector
     {
         public RectTransform content;
         public RectTransform buttons;
-        public TextMeshProUGUI title;
+        public TMP_Text title;
 
         public TabBase parentTab;
 
@@ -42,7 +42,7 @@ namespace NeoEditor.Inspector
             {
                 var category = Instantiate(editor.prefab_eventInspector, content)
                     .GetComponent<EventInspectorPanel>();
-                category.parentTab = parentTab;
+                //category.parentTab = parentTab;
                 category.Init(NeoConstants.Events[eventCategory].ToList());
                 categories.Add(category);
 

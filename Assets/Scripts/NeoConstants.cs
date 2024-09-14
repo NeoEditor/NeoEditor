@@ -42,7 +42,8 @@ namespace NeoEditor
             LevelEventType.TileDimensions,
             LevelEventType.KillPlayer,
             LevelEventType.SetFloorIcon,
-            LevelEventType.AddObject
+            LevelEventType.AddObject,
+            LevelEventType.AddParticle
         };
 
         public static readonly LevelEventType[] SelectorIgnoreEvents = new LevelEventType[]
@@ -98,10 +99,13 @@ namespace NeoEditor
             LevelEventType.AddDecoration,
             LevelEventType.AddText,
             LevelEventType.AddObject,
+            LevelEventType.AddParticle,
             LevelEventType.MoveDecorations,
             LevelEventType.SetText,
             LevelEventType.SetObject,
-            LevelEventType.SetDefaultText
+            LevelEventType.SetParticle,
+            LevelEventType.EmitParticle,
+            LevelEventType.SetDefaultText,
         };
 
         public static readonly LevelEventType[] CameraEvents = new LevelEventType[]
@@ -182,9 +186,12 @@ namespace NeoEditor
 			{ LevelEventType.AddDecoration, DecorationEventColor },
 			{ LevelEventType.AddText, DecorationEventColor },
 			{ LevelEventType.AddObject, DecorationEventColor },
+            { LevelEventType.AddParticle, DecorationEventColor },
 			{ LevelEventType.MoveDecorations, DecorationEventColor },
 			{ LevelEventType.SetText, DecorationEventColor },
 			{ LevelEventType.SetObject, DecorationEventColor },
+            { LevelEventType.SetParticle, DecorationEventColor },
+            { LevelEventType.EmitParticle, DecorationEventColor },
 			{ LevelEventType.SetDefaultText, DecorationEventColor },
 			{ LevelEventType.MoveCamera, CameraEventColor },
 			{ LevelEventType.ShakeScreen, CameraEventColor },
@@ -196,7 +203,7 @@ namespace NeoEditor
 			{ LevelEventType.SetFilterAdvanced, FilterEventColor },
 			{ LevelEventType.HallOfMirrors, FilterEventColor },
 			{ LevelEventType.Bloom, FilterEventColor },
-			{ (LevelEventType)61, FilterEventColor }, // Set Frame Rate
+			{ LevelEventType.SetFrameRate, FilterEventColor }, // Set Frame Rate
             { LevelEventType.RepeatEvents, ModifierEventColor },
 			{ LevelEventType.SetConditionalEvents, ModifierEventColor },
 			{ LevelEventType.EditorComment, CommentEventColor },

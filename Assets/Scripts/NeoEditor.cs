@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using ADOFAI;
+using ADOFAI.Editor.ParticleEditor;
+using ADOFAI.LevelEditor.Controls;
 using DG.Tweening;
 using HarmonyLib;
 using NeoEditor.Patches;
@@ -72,7 +74,7 @@ namespace NeoEditor
         public GameObject prefab_controlText;
         public GameObject prefab_controlLongText;
         public GameObject prefab_controlColor;
-        public GameObject prefab_controlFile;
+        public GameObject prefab_controlBrowse;
         public GameObject prefab_controlVector2;
         public GameObject prefab_controlTile;
         public GameObject prefab_controlToggle;
@@ -114,7 +116,47 @@ namespace NeoEditor
         private readonly Color linePurple = new Color(0.75f, 0.5f, 1f, 1f);
         private readonly Color lineBlue = new Color(0.4f, 0.4f, 1f, 1f);
 
-        private void Awake()
+        public TabBase selectedTab { get; private set; }
+
+		public EditorWebServices webServices;
+
+		[Header("Inspector")]
+		public InspectorPanel settingsPanel;
+
+		[Header("Undo Redo")]
+		[NonSerialized]
+		public bool initialized;
+
+		[NonSerialized]
+		public int changingState;
+
+		[NonSerialized]
+		public List<scnEditor.LevelState> undoStates;
+
+		[NonSerialized]
+		public List<scnEditor.LevelState> redoStates;
+
+		[NonSerialized]
+		public LevelEventType settingsEventType;
+
+		[NonSerialized]
+		public LevelEventType filteredEventType;
+
+		private int saveStateLastFrame;
+
+		[NonSerialized]
+		public PropertyControl_DecorationsList propertyControlDecorationsList;
+
+		[NonSerialized]
+		public PropertyControl_EventsList propertyControlEventsList;
+
+		[NonSerialized]
+		public RectTransform decorationsListContent;
+
+		[NonSerialized]
+		public RectTransform eventsListContent;
+
+		private void Awake()
         {
             NeoEditor.Instance = this;
             Main.harmony.Patch(
@@ -138,6 +180,7 @@ namespace NeoEditor
                     AccessTools.all
                 )
             );
+            EditorPatch.ForceNeoEditor.Patcher(Main.harmony);
             LoadGameScene();
         }
 
@@ -148,6 +191,7 @@ namespace NeoEditor
 
             LoadLevelEventSprites();
             LoadLevelCategorySprites();
+            RDString.LoadLevelEditorFonts();
 
             lineMaterial = new Material(Shader.Find("ADOFAI/ScrollingSprite"));
             lineMaterial.SetTexture("_MainTex", floorConnectorTex);
@@ -272,8 +316,9 @@ namespace NeoEditor
                 HarmonyPatchType.Transpiler,
                 Main.Entry.Info.Id
             );
+			EditorPatch.ForceNeoEditor.Unpatcher(Main.harmony);
 
-            ADOStartup.SetupLevelEventsInfo();
+			ADOStartup.SetupLevelEventsInfo();
         }
 
         private void LoadGameScene()
@@ -305,6 +350,7 @@ namespace NeoEditor
 
         public void SelectTab(EditorTab tab)
         {
+            selectedTab = tabs[(int)tab];
             for (int i = 0; i < 7; i++)
             {
                 tabContainers[i].SetActive(i == (int)tab);
@@ -598,7 +644,16 @@ namespace NeoEditor
             DrawMultiPlanet();
         }
 
-        public void UpdateDecorationObject(LevelEvent e)
+		public void ApplyEventsToFloors()
+		{
+			customLevel.ApplyEventsToFloors(this.floors);
+			DrawFloorOffsetLines();
+			DrawHolds(false);
+			DrawMultiPlanet();
+			//refreshDecSprites = true;
+		}
+
+		public void UpdateDecorationObject(LevelEvent e)
         {
             if (e.isFake)
             {
@@ -967,5 +1022,141 @@ namespace NeoEditor
 			});
             yield break;
 		}
+
+		public void Undo()
+		{
+			this.UndoOrRedo(false);
+		}
+
+		public void Redo()
+		{
+			this.UndoOrRedo(true);
+		}
+
+		public void UndoOrRedo(bool redo)
+		{
+			//Debug.Log("UndoOrRedo - I was called");
+			//if (this.changingState != 0)
+			//{
+			//	return;
+			//}
+			//List<scnEditor.LevelState> list = redo ? this.redoStates : this.undoStates;
+			//if (list.Count > 0)
+			//{
+			//	bool dataHasChanged = list.Count > 0 && list.Last<scnEditor.LevelState>().data != null;
+			//	using (new SaveStateScope(this, false, dataHasChanged, false))
+			//	{
+			//		if (!redo)
+			//		{
+			//			this.redoStates.Add(this.undoStates.Pop<scnEditor.LevelState>());
+			//		}
+			//		scnEditor.LevelState levelState = list.Last<scnEditor.LevelState>();
+			//		int[] selectedDecorationIndices = levelState.selectedDecorationIndices;
+			//		if (levelState.data != null)
+			//		{
+			//			this.customLevel.levelData = levelState.data;
+			//		}
+			//		this.DeselectFloors(false);
+			//		this.RemakePath(true, true);
+			//		this.DeselectAllDecorations();
+			//		this.UpdateDecorationObjects();
+			//		foreach (int num in selectedDecorationIndices)
+			//		{
+			//			if (this.customLevel.levelData.decorations.Count > num)
+			//			{
+			//				LevelEvent levelEvent = this.customLevel.levelData.decorations[num];
+			//				this.SelectDecoration(levelEvent, false, false, true, false);
+			//			}
+			//		}
+			//		if (!this.SelectionDecorationIsEmpty())
+			//		{
+			//			LevelEvent levelEvent2 = this.selectedDecorations[this.selectedDecorations.Count - 1];
+			//			this.levelEventsPanel.ShowInspector(true, true);
+			//			this.levelEventsPanel.ShowPanel(levelEvent2.eventType, 0);
+			//		}
+			//		this.propertyControlDecorationsList.RefreshItemsList(true);
+			//		List<int> list2 = levelState.selectedFloors;
+			//		if (list2.Count > 1)
+			//		{
+			//			this.MultiSelectFloors(this.floors[list2[0]], this.floors[list2[list2.Count - 1]], false);
+			//		}
+			//		else if (list2.Count == 1)
+			//		{
+			//			int index = list2[0];
+			//			this.SelectFloor(this.floors[index], true);
+			//			this.levelEventsPanel.ShowPanel(levelState.floorEventType, levelState.floorEventTypeIndex);
+			//		}
+			//		this.settingsPanel.ShowPanel(levelState.settingsEventType, 0);
+			//		if (this.particleEditor.gameObject.activeSelf && this.particleEditor.SelectedEvent != null)
+			//		{
+			//			if (this.selectedDecorations.Count == 0)
+			//			{
+			//				this.HideParticleEditor();
+			//			}
+			//			else
+			//			{
+			//				ParticleEditor particleEditor = this.particleEditor;
+			//				List<LevelEvent> list3 = this.selectedDecorations;
+			//				particleEditor.SetEvent(list3[list3.Count - 1]);
+			//			}
+			//		}
+			//		list.RemoveAt(list.Count - 1);
+			//	}
+			//}
+		}
+
+		public void SaveState(bool clearRedo = true, bool dataHasChanged = true)
+		{
+			//if (this.changingState != 0 || !this.initialized)
+			//{
+			//	return;
+			//}
+			//List<int> list = new List<int>();
+			//if (!this.SelectionIsEmpty())
+			//{
+			//	if (this.SelectionIsSingle())
+			//	{
+			//		list.Add(this.selectedFloors[0].seqID);
+			//	}
+			//	else
+			//	{
+			//		foreach (scrFloor scrFloor in this.selectedFloors)
+			//		{
+			//			list.Add(scrFloor.seqID);
+			//		}
+			//	}
+			//}
+			//LevelData data = this.levelData.Copy();
+			//int[] array = new int[this.selectedDecorations.Count];
+			//int num = 0;
+			//foreach (LevelEvent dec in this.selectedDecorations)
+			//{
+			//	array[num] = scrDecorationManager.GetDecorationIndex(dec);
+			//	num++;
+			//}
+			//scnEditor.LevelState levelState = new scnEditor.LevelState(data, list, array, dataHasChanged);
+			//levelState.settingsEventType = this.settingsPanel.selectedEventType;
+			//levelState.floorEventType = this.levelEventsPanel.selectedEventType;
+			//levelState.floorEventTypeIndex = this.levelEventsPanel.EventNumOfTab(levelState.floorEventType);
+			//this.undoStates.Add(levelState);
+			//if (clearRedo)
+			//{
+			//	this.redoStates.Clear();
+			//}
+			//if (this.undoStates.Count > 100)
+			//{
+			//	this.undoStates.RemoveAt(0);
+			//}
+			//if (dataHasChanged)
+			//{
+			//	this.unsavedChanges = true;
+			//}
+			//this.saveStateLastFrame = Time.frameCount;
+		}
+
+		public void ShowExportWindow(int state)
+        {
+
+        }
 	}
 }

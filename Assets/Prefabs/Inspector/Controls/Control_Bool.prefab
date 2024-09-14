@@ -143,7 +143,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4577907279013079112}
-  - component: {fileID: 1851546545676790400}
+  - component: {fileID: 6951381319174283184}
   m_Layer: 5
   m_Name: Control_Bool
   m_TagString: Untagged
@@ -171,7 +171,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1851546545676790400
+--- !u!114 &6951381319174283184
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -180,14 +180,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 2922194740277733172}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 849492761ee7c5641bd69848c919b423, type: 3}
+  m_Script: {fileID: 761916384, guid: 06dd3d5416bf43ea368cc39ff96e6d5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inspectorPanel: {fileID: 0}
+  propertiesPanel: {fileID: 0}
   propertyTransform: {fileID: 4577907279013079112}
+  rectTransform: {fileID: 4577907279013079112}
   randomControl: {fileID: 0}
-  onButton: {fileID: 5319356703353060168}
-  offButton: {fileID: 8721560687663802001}
+  offButton: {fileID: 5319356703353060168}
+  onButton: {fileID: 8721560687663802001}
+  selectedToggleBackground: {fileID: 21300000, guid: 33579a55f81c5044eb545f070e483509, type: 3}
+  unselectedToggleBackground: {fileID: 21300000, guid: 477ab54d5a1457b478af4d33891fedc5, type: 3}
 --- !u!1 &5448627210895050963
 GameObject:
   m_ObjectHideFlags: 0
@@ -382,15 +385,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.75294125, g: 0.75294125, b: 0.75294125, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: cfb62fa1cd478cb48a1559c410d1d0ea, type: 3}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: 33579a55f81c5044eb545f070e483509, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -503,15 +506,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.1882353, g: 0.1882353, b: 0.1882353, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 3b4ad9b73eceece43b8a6ec3528b2dd6, type: 3}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: 477ab54d5a1457b478af4d33891fedc5, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4

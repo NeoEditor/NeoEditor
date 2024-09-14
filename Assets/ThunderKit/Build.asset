@@ -50,7 +50,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Active: 1
   stageDebugDatabases: 0
-  releaseBuild: 1
+  releaseBuild: 0
   assemblyArtifactPath: <AssemblyStaging>
   buildTarget: 5
 --- !u!114 &4479662176688360722

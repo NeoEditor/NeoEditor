@@ -38,7 +38,6 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2538,9 +2537,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05e044955f0dfd1429521e18a04de649, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  content: {fileID: 346313855}
   title: {fileID: 975144273}
-  eventTitle: {fileID: 2069213839}
+  panels: {fileID: 0}
+  tabs: {fileID: 0}
+  deleteEventButton: {fileID: 0}
+  disableEventButton: {fileID: 0}
+  disableEventButtonImage: {fileID: 0}
+  titleCanvas: {fileID: 0}
+  messageCanvas: {fileID: 0}
+  messageText: {fileID: 0}
+  showInspector: 0
+  permaHideInspector: 0
+  artistPopup: {fileID: 0}
+  artistContainer: {fileID: 0}
+  artistPrefab: {fileID: 0}
+  addArtist: {fileID: 0}
+  addArtistText: {fileID: 0}
+  artistUIDisclaimer: {fileID: 0}
+  artistRectMaxHeight: 0
+  approvalLevelPrefab: {fileID: 0}
+  approvalLevelBadge: {fileID: 0}
+  visibleIcon: {fileID: 0}
+  hiddenIcon: {fileID: 0}
+  powerIcon: {fileID: 0}
+  subTabButtons: {fileID: 0}
+  subTabGroupTemplate: {fileID: 0}
+  subTabButtonTemplate: {fileID: 0}
+  floorPanel: 0
+  content: {fileID: 346313855}
   selectorPanel: {fileID: 389651830}
   parentTab: {fileID: 1800583285}
   categories: 0300000006000000
@@ -3456,7 +3480,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -480, y: 0.000061035156}
+  m_AnchoredPosition: {x: -480, y: -0.000030517578}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &429007807
@@ -4531,6 +4555,7 @@ GameObject:
   - component: {fileID: 583772893}
   - component: {fileID: 583772892}
   - component: {fileID: 583772896}
+  - component: {fileID: 583772897}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -4693,7 +4718,7 @@ MonoBehaviour:
   prefab_controlText: {fileID: 2922194740277733172, guid: 180832335885c714ebee0e547a052319, type: 3}
   prefab_controlLongText: {fileID: 2922194740277733172, guid: 16b9d2b041de0f0408bd88ed0018e7ed, type: 3}
   prefab_controlColor: {fileID: 2922194740277733172, guid: 8b500c54e237868418a6d4464403f9b8, type: 3}
-  prefab_controlFile: {fileID: 2922194740277733172, guid: 5d18de9b50a596042a8bf013adad8512, type: 3}
+  prefab_controlBrowse: {fileID: 2922194740277733172, guid: 5d18de9b50a596042a8bf013adad8512, type: 3}
   prefab_controlVector2: {fileID: 2922194740277733172, guid: 33c8ea38c510b434f8b3e0c093292970, type: 3}
   prefab_controlTile: {fileID: 2922194740277733172, guid: aa4b39e89fab7e2409e73f3e00c80f30, type: 3}
   prefab_controlToggle: {fileID: 2922194740277733172, guid: 8c9cfeff7d44ad0488cb4cfd3231381c, type: 3}
@@ -4705,6 +4730,20 @@ MonoBehaviour:
   camUserSizeTarget: 1
   camUserSize: 1
   scrollSpeed: 0.5
+  webServices: {fileID: 583772897}
+  settingsPanel: {fileID: 1979671794}
+--- !u!114 &583772897
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 583772891}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 970662754, guid: 06dd3d5416bf43ea368cc39ff96e6d5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &588507624
 GameObject:
   m_ObjectHideFlags: 0
@@ -10590,9 +10629,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05e044955f0dfd1429521e18a04de649, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  title: {fileID: 1239978368}
+  panels: {fileID: 0}
+  tabs: {fileID: 0}
+  deleteEventButton: {fileID: 0}
+  disableEventButton: {fileID: 0}
+  disableEventButtonImage: {fileID: 0}
+  titleCanvas: {fileID: 0}
+  messageCanvas: {fileID: 0}
+  messageText: {fileID: 0}
+  showInspector: 0
+  permaHideInspector: 0
+  artistPopup: {fileID: 0}
+  artistContainer: {fileID: 0}
+  artistPrefab: {fileID: 0}
+  addArtist: {fileID: 0}
+  addArtistText: {fileID: 0}
+  artistUIDisclaimer: {fileID: 0}
+  artistRectMaxHeight: 0
+  approvalLevelPrefab: {fileID: 0}
+  approvalLevelBadge: {fileID: 0}
+  visibleIcon: {fileID: 0}
+  hiddenIcon: {fileID: 0}
+  powerIcon: {fileID: 0}
+  subTabButtons: {fileID: 0}
+  subTabGroupTemplate: {fileID: 0}
+  subTabButtonTemplate: {fileID: 0}
+  floorPanel: 0
   content: {fileID: 599878499}
-  title: {fileID: 1466566130}
-  eventTitle: {fileID: 1239978368}
   selectorPanel: {fileID: 184750156}
   parentTab: {fileID: 24885808}
   categories: 00000000010000000200000003000000040000000500000006000000
@@ -13245,9 +13309,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f21f19bf1da7b2340b0d2392a9c3a4a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  content: {fileID: 1422125945}
   title: {fileID: 1399429085}
-  eventTitle: {fileID: 1828548066}
+  panels: {fileID: 0}
+  tabs: {fileID: 0}
+  deleteEventButton: {fileID: 0}
+  disableEventButton: {fileID: 0}
+  disableEventButtonImage: {fileID: 0}
+  titleCanvas: {fileID: 0}
+  messageCanvas: {fileID: 0}
+  messageText: {fileID: 0}
+  showInspector: 0
+  permaHideInspector: 0
+  artistPopup: {fileID: 0}
+  artistContainer: {fileID: 0}
+  artistPrefab: {fileID: 0}
+  addArtist: {fileID: 0}
+  addArtistText: {fileID: 0}
+  artistUIDisclaimer: {fileID: 0}
+  artistRectMaxHeight: 0
+  approvalLevelPrefab: {fileID: 0}
+  approvalLevelBadge: {fileID: 0}
+  visibleIcon: {fileID: 0}
+  hiddenIcon: {fileID: 0}
+  powerIcon: {fileID: 0}
+  subTabButtons: {fileID: 0}
+  subTabGroupTemplate: {fileID: 0}
+  subTabButtonTemplate: {fileID: 0}
+  floorPanel: 0
+  content: {fileID: 1422125945}
   selectorPanel: {fileID: 391542273}
   parentTab: {fileID: 1021895430}
   categories: 0500000006000000
@@ -18043,8 +18132,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fbf0ad47a25bcd46b9bbe02c6b84c01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  title: {fileID: 0}
+  panels: {fileID: 1580117947}
+  tabs: {fileID: 588507625}
+  deleteEventButton: {fileID: 0}
+  disableEventButton: {fileID: 0}
+  disableEventButtonImage: {fileID: 0}
+  titleCanvas: {fileID: 0}
+  messageCanvas: {fileID: 0}
+  messageText: {fileID: 0}
+  showInspector: 0
+  permaHideInspector: 0
+  artistPopup: {fileID: 0}
+  artistContainer: {fileID: 0}
+  artistPrefab: {fileID: 0}
+  addArtist: {fileID: 0}
+  addArtistText: {fileID: 0}
+  artistUIDisclaimer: {fileID: 0}
+  artistRectMaxHeight: 0
+  approvalLevelPrefab: {fileID: 0}
+  approvalLevelBadge: {fileID: 0}
+  visibleIcon: {fileID: 0}
+  hiddenIcon: {fileID: 0}
+  powerIcon: {fileID: 0}
+  subTabButtons: {fileID: 0}
+  subTabGroupTemplate: {fileID: 0}
+  subTabButtonTemplate: {fileID: 0}
+  floorPanel: 0
   content: {fileID: 1580117947}
-  title: {fileID: 1885042007}
   parentTab: {fileID: 1224220583}
   songButton: {fileID: 391361829}
   levelButton: {fileID: 562261053}
