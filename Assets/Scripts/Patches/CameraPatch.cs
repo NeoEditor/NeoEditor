@@ -10,7 +10,7 @@ namespace NeoEditor.Patches
 {
     public static class CameraPatch
     {
-        //[HarmonyPatch(typeof(scrCamera), "SetupRTCam")]
+        [HarmonyPatch(typeof(scrCamera), "SetupRTCam")]
         public static class ForceSetupRTCam
         {
             public static void Prefix(ref bool enable)
