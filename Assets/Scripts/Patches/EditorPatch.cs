@@ -16,6 +16,8 @@ namespace NeoEditor.Patches
 	{
 		public static class ForceNeoEditor
 		{
+			public static HashSet<string> notImplemented = new HashSet<string>();
+
 			public static MethodInfo PatchMethod
 			{
 				get
@@ -59,6 +61,13 @@ namespace NeoEditor.Patches
 							NeoLogger.Error(e);
 						}
 					}
+				}
+
+				NeoLogger.Debug("");
+				NeoLogger.Debug("");
+				foreach (var s in notImplemented)
+				{
+					NeoLogger.Debug($"{s} is not implemented.");
 				}
 			}
 
@@ -116,7 +125,10 @@ namespace NeoEditor.Patches
 								{
 									FieldInfo prefab = typeof(NeoEditor).GetField(fi.Name, AccessTools.all);
 									if (prefab == null)
+									{
 										NeoLogger.Warn($"{fi.Name} is not implemented.");
+										notImplemented.Add(fi.Name);
+									}
 									else
 									{
 										code.operand = typeof(NeoEditor).GetProperty("Instance").GetMethod;
@@ -148,6 +160,7 @@ namespace NeoEditor.Patches
 							if (field == null)
 							{
 								NeoLogger.Error($"{fieldInfo.Name} is not implemented.");
+								notImplemented.Add(fieldInfo.Name);
 								code.opcode = OpCodes.Nop;
 							}
 							else
@@ -163,6 +176,7 @@ namespace NeoEditor.Patches
 							if (method == null)
 							{
 								NeoLogger.Error($"{methodInfo.Name} is not implemented.");
+								notImplemented.Add(methodInfo.Name);
 								code.opcode = OpCodes.Nop;
 							}
 							else
