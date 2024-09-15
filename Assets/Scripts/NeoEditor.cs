@@ -1175,7 +1175,6 @@ namespace NeoEditor
 			particleEditorContainer.gameObject.SetActive(true);
 		}
 
-		// Token: 0x060007FC RID: 2044 RVA: 0x00044984 File Offset: 0x00042B84
 		public void HideParticleEditor()
 		{
             particleEditorContainer.gameObject.SetActive(false);
