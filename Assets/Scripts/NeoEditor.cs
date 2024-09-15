@@ -65,7 +65,12 @@ namespace NeoEditor
         public ConfirmPopup confirmPopup;
         public ConfirmPopup confirmPopupLarge;
 
-        public GameObject prefab_inspector;
+		[Header("Particle Editor Popup")]
+		public Image particleEditorContainer;
+		public ParticleEditor particleEditor;
+
+        [Header("Prefabs")]
+		public GameObject prefab_inspector;
         public GameObject prefab_eventInspector;
         public GameObject prefab_inspectorTabButton;
         public GameObject prefab_eventButton;
@@ -246,6 +251,11 @@ namespace NeoEditor
             customLevel.ResetScene();
 
             FloorMesh.UpdateAllRequired();
+
+            // Setup particle editor.
+            particleEditor.previewDec = 
+                GameObject.Instantiate(scrDecorationManager.instance.prefab_particleDecoration, particleEditor.transform.Find("Preview"))
+                .GetComponent<scrParticleDecoration>();
 
             for (int i = 0; i < 7; i++)
             {
@@ -1158,5 +1168,17 @@ namespace NeoEditor
         {
 
         }
+
+		public void ShowParticleEditor(LevelEvent targetEvent)
+		{
+			particleEditor.SetEvent(targetEvent);
+			particleEditorContainer.gameObject.SetActive(true);
+		}
+
+		// Token: 0x060007FC RID: 2044 RVA: 0x00044984 File Offset: 0x00042B84
+		public void HideParticleEditor()
+		{
+            particleEditorContainer.gameObject.SetActive(false);
+		}
 	}
 }

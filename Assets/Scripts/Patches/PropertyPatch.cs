@@ -1,4 +1,5 @@
 ﻿using ADOFAI;
+using ADOFAI.Editor;
 using ADOFAI.LevelEditor.Controls;
 using HarmonyLib;
 using NeoEditor.Tabs;
@@ -14,6 +15,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 namespace NeoEditor.Patches
 {
@@ -116,6 +118,16 @@ namespace NeoEditor.Patches
 				{
 					property.enabledButton.onClick.AddListener(() => __instance.StartCoroutine(InvokeAtNextFrame(() => LayoutRebuilder.ForceRebuildLayoutImmediate(__instance.content))));
 				}
+			}
+		}
+
+		[HarmonyPatch(typeof(PropertiesSubTabButton), "SetSelected")]
+		public static class TabButtonSelectedPatch
+		{
+			public static void Prefix(PropertiesSubTabButton __instance, bool selected)
+			{
+				if (NeoEditor.Instance == null) return;
+				__instance.button.interactable = !selected;
 			}
 		}
 	}
