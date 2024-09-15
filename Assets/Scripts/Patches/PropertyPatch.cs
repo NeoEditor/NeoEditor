@@ -111,6 +111,7 @@ namespace NeoEditor.Patches
 		{
 			public static void Postfix(PropertiesPanel __instance)
 			{
+				if (NeoEditor.Instance == null) return;
 				foreach (var property in __instance.properties.Values)
 				{
 					property.enabledButton.onClick.AddListener(() => __instance.StartCoroutine(InvokeAtNextFrame(() => LayoutRebuilder.ForceRebuildLayoutImmediate(__instance.content))));
