@@ -178,7 +178,7 @@ namespace NeoEditor.Patches
 								//NeoLogger.Error($"{fieldInfo.Name} is not implemented.");
 								notImplementedInCurrentMethod.Add(fieldInfo.Name, true);
 								notImplemented.Add(fieldInfo.Name);
-								code.opcode = OpCodes.Nop;
+								//code.opcode = OpCodes.Nop;
 							}
 							else
 								code.operand = field;
@@ -195,7 +195,7 @@ namespace NeoEditor.Patches
 								//NeoLogger.Error($"{methodInfo.Name} is not implemented.");
 								notImplementedInCurrentMethod.Add(methodInfo.Name, true);
 								notImplemented.Add(methodInfo.Name);
-								code.opcode = OpCodes.Nop;
+								//code.opcode = OpCodes.Nop;
 							}
 							else
 								code.operand = method;
