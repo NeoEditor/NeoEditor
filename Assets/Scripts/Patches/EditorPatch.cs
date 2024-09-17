@@ -189,7 +189,8 @@ namespace NeoEditor.Patches
 						MethodInfo methodInfo = code.operand as MethodInfo;
 						if(methodInfo.ReflectedType == typeof(scnEditor))
 						{
-							MethodInfo method = typeof(NeoEditor).GetMethod(methodInfo.Name, AccessTools.all);
+							MethodInfo method = typeof(NeoEditor).GetMethod(methodInfo.Name, 
+								methodInfo.GetParameters().Select(parameter => parameter.ParameterType).ToArray());
 							if (method == null)
 							{
 								//NeoLogger.Error($"{methodInfo.Name} is not implemented.");
