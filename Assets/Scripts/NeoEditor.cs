@@ -856,6 +856,7 @@ namespace NeoEditor
 
 		private IEnumerator OpenLevelCo(string definedLevelPath = null)
         {
+            Instance.Pause();
             ClearAllFloorOffsets();
             //this.redoStates.Clear();
             //this.undoStates.Clear();
@@ -974,6 +975,7 @@ namespace NeoEditor
             }
             if (flag2)
             {
+                Instance.Rewind();
                 //this.errorImageResult.Clear();
                 //this.isUnauthorizedAccess = false;
                 RemakePath(true, true);
