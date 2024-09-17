@@ -16,7 +16,10 @@ namespace NeoEditor.Patches
 	{
 		public static class ForceNeoEditor
 		{
+			// Not implemented in all methods. No duplicates.
 			public static HashSet<string> notImplemented = new HashSet<string>();
+			// Not implemented in current patching method. Key is field/method's name. Value means error(true) or warn(false).
+			public static Dictionary<string, bool> notImplementedInCurrentMethod = new Dictionary<string, bool>();
 
 			public static MethodInfo PatchMethod
 			{
@@ -53,7 +56,20 @@ namespace NeoEditor.Patches
 						try
 						{
 							//NeoLogger.Debug($"Patching {method.ReflectedType.Name}.{method.Name}.");
+							notImplementedInCurrentMethod.Clear();
 							harmony.Patch(method, transpiler: PatchMethod);
+							if (notImplementedInCurrentMethod.Count > 0)
+							{
+								NeoLogger.Debug($"Patching {method.ReflectedType.Name}.{method.Name}(). Has errors.");
+								foreach (var kv in notImplementedInCurrentMethod)
+								{
+									if (kv.Value)
+										NeoLogger.Error($"{kv.Key} is not implemented.");
+									else
+										NeoLogger.Warn($"{kv.Key} is not implemented.");
+								}
+								NeoLogger.LogEmpty(NeoLogger.LogLevel.Debug);
+							}
 						}
 						catch (Exception e)
 						{
@@ -63,8 +79,7 @@ namespace NeoEditor.Patches
 					}
 				}
 
-				NeoLogger.Debug("");
-				NeoLogger.Debug("");
+				NeoLogger.LogEmpty(NeoLogger.LogLevel.Debug);
 				foreach (var s in notImplemented)
 				{
 					NeoLogger.Debug($"{s} is not implemented.");
@@ -126,7 +141,8 @@ namespace NeoEditor.Patches
 									FieldInfo prefab = typeof(NeoEditor).GetField(fi.Name, AccessTools.all);
 									if (prefab == null)
 									{
-										NeoLogger.Warn($"{fi.Name} is not implemented.");
+										//NeoLogger.Warn($"{fi.Name} is not implemented.");
+										notImplementedInCurrentMethod.Add(fi.Name, false);
 										notImplemented.Add(fi.Name);
 									}
 									else
@@ -159,7 +175,8 @@ namespace NeoEditor.Patches
 							FieldInfo field = typeof(NeoEditor).GetField(fieldInfo.Name, AccessTools.all);
 							if (field == null)
 							{
-								NeoLogger.Error($"{fieldInfo.Name} is not implemented.");
+								//NeoLogger.Error($"{fieldInfo.Name} is not implemented.");
+								notImplementedInCurrentMethod.Add(fieldInfo.Name, true);
 								notImplemented.Add(fieldInfo.Name);
 								code.opcode = OpCodes.Nop;
 							}
@@ -175,7 +192,8 @@ namespace NeoEditor.Patches
 							MethodInfo method = typeof(NeoEditor).GetMethod(methodInfo.Name, AccessTools.all);
 							if (method == null)
 							{
-								NeoLogger.Error($"{methodInfo.Name} is not implemented.");
+								//NeoLogger.Error($"{methodInfo.Name} is not implemented.");
+								notImplementedInCurrentMethod.Add(methodInfo.Name, true);
 								notImplemented.Add(methodInfo.Name);
 								code.opcode = OpCodes.Nop;
 							}

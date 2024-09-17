@@ -74,5 +74,12 @@ namespace NeoEditor
 		{
 			Log(LogLevel.Error, obj.ToString());
 		}
+
+		internal static void LogEmpty(LogLevel level)
+		{
+			if (level < NeoLogger.Level || level == LogLevel.None) return;
+
+			UnityModManager.Logger.Log("", "");
+		}
 	}
 }
