@@ -15,6 +15,7 @@ using NeoEditor.Tabs;
 using SA.GoogleDoc;
 using SFB;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -64,6 +65,10 @@ namespace NeoEditor
         public UnsavedChangesPopup unsavedChangesPopup;
         public ConfirmPopup confirmPopup;
         public ConfirmPopup confirmPopupLarge;
+
+		public Button popupBlocker;
+		private List<Action> _popupStack;
+		private int _currentPopupSortOrder;
 
 		[Header("Particle Editor Popup")]
 		public Image particleEditorContainer;
@@ -540,7 +545,46 @@ namespace NeoEditor
             }
         }
 
-        public void ShowNotificationPopupBase(
+		public int PushPopupBlocker(Action onClickAction)
+		{
+			int result = _currentPopupSortOrder + 1;
+			popupBlocker.gameObject.SetActive(true);
+			Button component = popupBlocker.GetComponent<Button>();
+			component.onClick.RemoveAllListeners();
+			component.onClick.AddListener(new UnityAction(PopPopupBlocker));
+			popupBlocker.GetComponent<Canvas>().sortingOrder = _currentPopupSortOrder;
+			_popupStack.Add(onClickAction);
+			_currentPopupSortOrder += 2;
+			return result;
+		}
+
+		public void ClearPopupBlocker()
+		{
+			while (_popupStack.Count > 0)
+			{
+				PopPopupBlocker();
+			}
+		}
+
+		public void PopPopupBlocker()
+		{
+			if (_popupStack.Count == 0)
+			{
+				return;
+			}
+			List<Action> popupStack = _popupStack;
+			Action action = popupStack[popupStack.Count - 1];
+			_popupStack.Remove(action);
+			action();
+			if (_popupStack.Count == 0)
+			{
+				popupBlocker.gameObject.SetActive(false);
+			}
+			_currentPopupSortOrder -= 2;
+			popupBlocker.GetComponent<Canvas>().sortingOrder = _currentPopupSortOrder - 2;
+		}
+
+		public void ShowNotificationPopupBase(
             ConfirmPopup popup,
             string text,
             string title = null,
