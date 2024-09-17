@@ -60,7 +60,7 @@ namespace NeoEditor.Patches
 							harmony.Patch(method, transpiler: PatchMethod);
 							if (notImplementedInCurrentMethod.Count > 0)
 							{
-								NeoLogger.Debug($"Patching {method.ReflectedType.Name}.{method.Name}(). Has errors.");
+								NeoLogger.Error($"Patching {method.ReflectedType.Name}.{method.Name}(). Has errors.");
 								foreach (var kv in notImplementedInCurrentMethod)
 								{
 									if (kv.Value)
