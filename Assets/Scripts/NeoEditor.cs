@@ -161,6 +161,8 @@ namespace NeoEditor
 		[NonSerialized]
 		public RectTransform eventsListContent;
 
+		public static bool selectingFloorID = false;
+
 		private void Awake()
         {
             NeoEditor.Instance = this;
