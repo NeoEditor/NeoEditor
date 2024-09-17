@@ -67,8 +67,8 @@ namespace NeoEditor
         public ConfirmPopup confirmPopupLarge;
 
 		public Button popupBlocker;
-		private List<Action> _popupStack;
-		private int _currentPopupSortOrder;
+		private List<Action> _popupStack = new List<Action>();
+		private int _currentPopupSortOrder = 30000;
 
 		[Header("Particle Editor Popup")]
 		public Image particleEditorContainer;
