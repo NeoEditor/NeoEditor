@@ -176,7 +176,7 @@ namespace NeoEditor.Patches
 							if (field == null)
 							{
 								//NeoLogger.Error($"{fieldInfo.Name} is not implemented.");
-								notImplementedInCurrentMethod.Add(fieldInfo.Name, true);
+								notImplementedInCurrentMethod.TryAdd(fieldInfo.Name, true);
 								notImplemented.Add(fieldInfo.Name);
 								//code.opcode = OpCodes.Nop;
 							}
@@ -193,7 +193,7 @@ namespace NeoEditor.Patches
 							if (method == null)
 							{
 								//NeoLogger.Error($"{methodInfo.Name} is not implemented.");
-								notImplementedInCurrentMethod.Add(methodInfo.Name, true);
+								notImplementedInCurrentMethod.TryAdd(methodInfo.Name, true);
 								notImplemented.Add(methodInfo.Name);
 								//code.opcode = OpCodes.Nop;
 							}
