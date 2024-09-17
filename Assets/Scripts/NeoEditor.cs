@@ -65,6 +65,7 @@ namespace NeoEditor
         public UnsavedChangesPopup unsavedChangesPopup;
         public ConfirmPopup confirmPopup;
         public ConfirmPopup confirmPopupLarge;
+        public RDColorPickerPopup colorPickerPopup;
 
 		public Button popupBlocker;
 		private List<Action> _popupStack = new List<Action>();

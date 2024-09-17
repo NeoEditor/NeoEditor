@@ -37,6 +37,7 @@ namespace NeoEditor.Patches
 					.Where(t => t.IsClass && t.Namespace == "ADOFAI.LevelEditor.Controls")
 					.ToList();
 				types.Add(typeof(PropertiesPanel));
+				types.Add(typeof(RDColorPickerPopup));
 
 				return types;
 			}
