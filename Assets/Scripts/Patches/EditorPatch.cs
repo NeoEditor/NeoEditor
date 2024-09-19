@@ -222,6 +222,7 @@ namespace NeoEditor.Patches
 		{
 			public static void Prefix(LevelEventInfo levelEventInfo)
 			{
+				if (NeoEditor.Instance == null) return;
 				if (
 					!GCS.settingsInfo.Values.Contains(levelEventInfo)
 					&& !levelEventInfo.propertiesInfo.Keys.Contains("floor")
