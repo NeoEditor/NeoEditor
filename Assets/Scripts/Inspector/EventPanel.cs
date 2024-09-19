@@ -47,10 +47,10 @@ namespace NeoEditor.Inspector
                 type == LevelEventType.None
                     ? ""
                     : RDString.Get("editor." + type.ToString(), null, LangSection.Translations);
+            selectedEvent = levelEvent;
             selectedEventType = type;
             inspectors[type].gameObject.SetActive(true);
             inspectors[type].SetProperties(levelEvent);
-            selectedEvent = levelEvent;
         }
 
         public virtual void SetSelector()
