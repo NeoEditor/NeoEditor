@@ -177,23 +177,30 @@ namespace NeoEditor
                 transpiler: typeof(SceneGamePatch.PlayWithoutCountdown).GetMethod(
                     "Transpiler",
                     AccessTools.all
-                )
-            );
-            Main.harmony.Patch(
-                typeof(scnGame).GetMethod("FinishCustomLevelLoading", AccessTools.all),
-                transpiler: typeof(SceneGamePatch.FixLoadLevel).GetMethod(
-                    "Transpiler",
-                    AccessTools.all
-                )
-            );
-            Main.harmony.Patch(
-                typeof(scrController).GetMethod("Update", AccessTools.all),
-                transpiler: typeof(ControllerPatch.BlockEscPause).GetMethod(
-                    "Transpiler",
-                    AccessTools.all
-                )
-            );
-            EditorPatch.ForceNeoEditor.Patcher(Main.harmony);
+				)
+			);
+			Main.harmony.Patch(
+				typeof(scnGame).GetMethod("FinishCustomLevelLoading", AccessTools.all),
+				transpiler: typeof(SceneGamePatch.FixLoadLevel).GetMethod(
+					"Transpiler",
+					AccessTools.all
+				)
+			);
+			Main.harmony.Patch(
+				typeof(scrController).GetMethod("Update", AccessTools.all),
+				transpiler: typeof(ControllerPatch.BlockEscPause).GetMethod(
+					"Transpiler",
+					AccessTools.all
+				)
+			);
+			Main.harmony.Patch(
+				typeof(InspectorPanel).GetMethod("ToggleArtistPopup", AccessTools.all),
+				transpiler: typeof(PropertyPatch.ArtistPopupPositionPatch).GetMethod(
+					"Transpiler",
+					AccessTools.all
+				)
+			);
+			EditorPatch.ForceNeoEditor.Patcher(Main.harmony);
             LoadGameScene();
         }
 
@@ -249,7 +256,9 @@ namespace NeoEditor
             //floorConnectors = GameObject.Find("Floor Connector Lines");
             floorConnectors = new GameObject("Floor Connector Lines");
 
-            var dictionary = GCS
+			webServices.LoadAllArtists(null);
+
+			var dictionary = GCS
                 .settingsInfo.Concat(GCS.levelEventsInfo)
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
@@ -331,6 +340,11 @@ namespace NeoEditor
             );
             Main.harmony.Unpatch(
                 typeof(scrController).GetMethod("Update", AccessTools.all),
+                HarmonyPatchType.Transpiler,
+                Main.Entry.Info.Id
+            );
+            Main.harmony.Unpatch(
+                typeof(InspectorPanel).GetMethod("ToggleArtistPopup", AccessTools.all),
                 HarmonyPatchType.Transpiler,
                 Main.Entry.Info.Id
             );

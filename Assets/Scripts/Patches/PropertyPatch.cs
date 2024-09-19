@@ -130,5 +130,28 @@ namespace NeoEditor.Patches
 				__instance.button.interactable = !selected;
 			}
 		}
+
+		//[HarmonyPatch(typeof(InspectorPanel), "ToggleArtistPopup")]
+		public static class ArtistPopupPositionPatch
+		{
+			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+			{
+				var codes = new List<CodeInstruction>(instructions);
+
+				for (int i = 0; i < codes.Count; i++)
+				{
+					CodeInstruction code = codes[i];
+					if (code.opcode != OpCodes.Ldc_R4)
+						continue;
+
+					if (i < codes.Count - 1 && codes[i + 1].opcode == OpCodes.Sub)
+					{
+						code.operand = 15f;
+						break;
+					}
+				}
+				return codes.AsEnumerable();
+			}
+		}
 	}
 }
