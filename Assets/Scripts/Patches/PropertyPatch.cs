@@ -71,6 +71,34 @@ namespace NeoEditor.Patches
 			}
 		}
 
+		[HarmonyPatch(typeof(PropertiesPanel), "Init")]
+		public static class FloorNumProperty
+		{
+			public static void Prefix(LevelEventInfo levelEventInfo)
+			{
+				if (NeoEditor.Instance == null) return;
+				if (
+					!GCS.settingsInfo.Values.Contains(levelEventInfo)
+					&& !levelEventInfo.propertiesInfo.Keys.Contains("floor")
+				)
+				{
+					Dictionary<string, object> dict = new Dictionary<string, object>
+				{
+					{ "name", "floor" },
+					{ "type", "Int" },
+					{ "default", 0 },
+					{ "key", "editor.tileNumber" },
+					{ "canBeDisabled", false }
+				};
+					ADOFAI.PropertyInfo propertyInfo = new ADOFAI.PropertyInfo(dict, levelEventInfo);
+					levelEventInfo.propertiesInfo = new Dictionary<string, ADOFAI.PropertyInfo>
+					{
+						{ "floor", propertyInfo }
+					}.Concat(levelEventInfo.propertiesInfo).ToDictionary(k => k.Key, v => v.Value);
+				}
+			}
+		}
+
 		[HarmonyPatch(typeof(PropertyControl_Text), "Validate")]
 		public static class SyncTimeline
 		{
