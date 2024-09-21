@@ -14,6 +14,7 @@ using NeoEditor.PopupWindows;
 using NeoEditor.Tabs;
 using SA.GoogleDoc;
 using SFB;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
@@ -108,7 +109,7 @@ namespace NeoEditor
 
         public bool paused => scrController.instance.paused;
 
-		public string filename { get; private set; }
+		public TMP_Text filenameText;
 
 		private bool shouldScrub = true;
         private int scrubTo = 0;
@@ -120,8 +121,22 @@ namespace NeoEditor
         public float camUserSize = 1f;
         public float scrollSpeed;
         public Tween anchorZoomTween;
-		private bool unsavedChanges;
-		private readonly Color grayColor = new Color(0.42352942f, 0.42352942f, 0.42352942f);
+
+		private bool unsavedChanges
+        {
+            get
+            {
+                return _unsavedChanges;
+            }
+            set
+            {
+                _unsavedChanges = value;
+                RefreshFilenameText();
+            }
+        }
+        private bool _unsavedChanges;
+		
+        private readonly Color grayColor = new Color(0.42352942f, 0.42352942f, 0.42352942f);
         private readonly Color lineGreen = new Color(0.4f, 1f, 0.4f, 1f);
         private readonly Color lineYellow = new Color(1f, 1f, 0.4f, 1f);
         private readonly Color linePurple = new Color(0.75f, 0.5f, 1f, 1f);
@@ -256,6 +271,7 @@ namespace NeoEditor
             //floorConnectors = GameObject.Find("Floor Connector Lines");
             floorConnectors = new GameObject("Floor Connector Lines");
 
+            RefreshFilenameText();
 			webServices.LoadAllArtists(null);
 
 			var dictionary = GCS
@@ -897,12 +913,16 @@ namespace NeoEditor
 		private void RefreshFilenameText()
 		{
 			string text = (string.IsNullOrEmpty(ADOBase.levelPath) ? RDString.Get("editor.levelNotSaved") : Path.GetFileName(ADOBase.levelPath));
+            if (text == "level.adofai" || text == "main.adofai")
+            {
+                text = new DirectoryInfo(Path.GetDirectoryName(ADOBase.levelPath)).Name + Path.DirectorySeparatorChar + text;
+            }
 			if (unsavedChanges)
 			{
-				text += "*";
+				text += "<color=#ffffff80> · unsaved</color>";
 			}
 
-			filename = text;
+			filenameText.text = text;
 		}
 
         public LevelEvent AddEvent(int floor, LevelEventType type)
@@ -1009,6 +1029,7 @@ namespace NeoEditor
             GCS.customLevelId = null;
             Persistence.UpdateLastUsedFolder(ADOBase.levelPath);
             Persistence.UpdateLastOpenedLevel(ADOBase.levelPath);
+            RefreshFilenameText();
             bool flag2 = false;
             LoadResult loadResult = LoadResult.Error;
             string text4 = "";
