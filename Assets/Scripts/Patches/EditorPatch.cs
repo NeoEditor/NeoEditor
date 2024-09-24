@@ -41,6 +41,9 @@ namespace NeoEditor.Patches
 				types.Add(typeof(RDColorPickerPopup));
 				types.Add(typeof(ArtistUIDisclaimer));
 				types.Add(typeof(ApprovalLevelBadge));
+				types.Add(typeof(ListItem));
+				types.Add(typeof(ListItem_Decoration));
+				types.Add(typeof(ListItem_Event));
 
 				return types;
 			}

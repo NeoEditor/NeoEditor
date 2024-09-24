@@ -43,7 +43,8 @@ namespace NeoEditor
         public List<scrDecoration> allDecorations => scrDecorationManager.instance.allDecorations;
         public List<scrFloor> floors => customLevel.levelMaker.listFloors;
 
-        public new scnGame customLevel;
+        public Canvas levelEditorCanvas;
+		public new scnGame customLevel;
 
         public GameObject[] tabContainers;
         public TabBase[] tabs;
@@ -90,8 +91,9 @@ namespace NeoEditor
         public GameObject prefab_controlVector2;
         public GameObject prefab_controlTile;
         public GameObject prefab_controlToggle;
+        public GameObject prefab_controlDecorationsList;
 
-        [NonSerialized]
+		[NonSerialized]
         public Color editingColor = new Color(0.898f, 0.376f, 0.376f, 1f);
 
         [NonSerialized]
@@ -1262,6 +1264,58 @@ namespace NeoEditor
 		public void HideParticleEditor()
 		{
             particleEditorContainer.gameObject.SetActive(false);
+		}
+
+		public void EnableEvent(LevelEvent e, bool enabled)
+		{
+			e.active = enabled;
+			ApplyEventsToFloors();
+		}
+
+		public void ShowEvent(LevelEvent e, bool visible)
+		{
+			e.visible = visible;
+			UpdateEventVisibility(e);
+		}
+
+		public void ForceHideEvent(scrDecoration dec, bool forceHide)
+		{
+			dec.forceHide = forceHide;
+			UpdateEventVisibility(dec.sourceLevelEvent);
+		}
+
+		public void LockEvent(LevelEvent e, bool locked)
+		{
+			e.locked = locked;
+		}
+
+		public void ForceLockEvent(scrDecoration dec, bool forceLock)
+		{
+			dec.forceLock = forceLock;
+		}
+
+		private void UpdateEventVisibility(LevelEvent e)
+		{
+			scrDecoration scrDecoration = this.allDecorations.Find((scrDecoration d) => d.sourceLevelEvent == e);
+			scrDecoration.SetVisible(e.visible && !scrDecoration.forceHide);
+		}
+
+		public void OnDecorationSelected(LevelEvent decorationEvent)
+		{
+			//if (!this.SelectionIsEmpty())
+			//{
+			//	this.DeselectFloors(false);
+			//}
+			//this.ShowSelectedColorForLastSelectedFloor();
+		}
+
+		public void OnDecorationAllItemsDeselected()
+		{
+			//if (this.lastSelectedFloor && this.SelectionIsEmpty())
+			//{
+			//	DOTween.Kill("selectedColorTween", false);
+			//	this.ShowDeselectedColor(this.lastSelectedFloor);
+			//}
 		}
 	}
 }
