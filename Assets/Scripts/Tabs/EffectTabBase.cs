@@ -25,7 +25,7 @@ namespace NeoEditor.Tabs
 
         public override void InitTab(Dictionary<string, LevelEventInfo> levelEventsInfo)
         {
-            events.Init(GCS.levelEventsInfo.Values.Where(info => info.name != "SetFilterAdvanced" && info.name != "SetParticle" && info.name != "AddParticle").ToList());
+            events.Init(levelEventsInfo.Values.Where(info => !info.type.IsSetting()).ToList());
             gameView.texture = Assets.GameRenderer;
             sceneView.texture = Assets.SceneRenderer;
         }
@@ -70,6 +70,11 @@ namespace NeoEditor.Tabs
 		public override void AddEvent(LevelEventType type)
 		{
 			timeline.ApplySelector(type);
+		}
+
+		public override InspectorPanel GetLevelEventsPanel()
+		{
+            return events;
 		}
 	}
 }

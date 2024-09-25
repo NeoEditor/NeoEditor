@@ -44,6 +44,10 @@ namespace NeoEditor.Patches
 				types.Add(typeof(ListItem));
 				types.Add(typeof(ListItem_Decoration));
 				types.Add(typeof(ListItem_Event));
+				types.Add(typeof(DecorationPivot));
+				types.Add(typeof(TransformGizmoHolder));
+				types.Add(typeof(EditorGizmo));
+				types.Add(typeof(scrDecorationManager));
 
 				return types;
 			}

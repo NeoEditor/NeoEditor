@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using ADOFAI;
+using ADOFAI.Editor;
 using ADOFAI.Editor.ParticleEditor;
 using ADOFAI.LevelEditor.Controls;
 using DG.Tweening;
@@ -17,6 +18,7 @@ using SFB;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -55,7 +57,9 @@ namespace NeoEditor
         public Camera mainCamera;
         public Camera uiCamera;
 
-        public GameObject popupWindows;
+		public EventSystem eventSystem;
+
+		public GameObject popupWindows;
         public GameObject savePopupContainer;
         public GameObject missingFilesPopupContainer;
         public GameObject unsavedChangesPopupContainer;
@@ -150,6 +154,7 @@ namespace NeoEditor
 
 		[Header("Inspector")]
 		public InspectorPanel settingsPanel;
+        public InspectorPanel levelEventsPanel;
 
 		[Header("Undo Redo")]
 		[NonSerialized]
@@ -178,6 +183,9 @@ namespace NeoEditor
 		[NonSerialized]
 		public PropertyControl_EventsList propertyControlEventsList;
 
+		private bool refreshBgSprites;
+		private bool refreshDecSprites;
+
 		[NonSerialized]
 		public RectTransform decorationsListContent;
 
@@ -185,6 +193,39 @@ namespace NeoEditor
 		public RectTransform eventsListContent;
 
 		public static bool selectingFloorID = false;
+
+        [NonSerialized]
+        public List<scrFloor> selectedFloors = new List<scrFloor>();
+
+		[NonSerialized]
+		public int selectedFloorCached;
+
+		[NonSerialized]
+		public List<LevelEvent> selectedDecorations = new List<LevelEvent>();
+
+		[NonSerialized]
+		public int cacheSelectedEventIndex;
+
+		public DecorationPivot decPivot;
+		public TransformGizmoHolder decTransformGizmo;
+
+		[NonSerialized]
+		public new Camera camera;
+		public float cameraSelectDuration;
+
+		public bool userIsEditingAnInputField
+        {
+            get
+            {
+                GameObject currentSelectedGameObject = eventSystem.currentSelectedGameObject;
+                if (currentSelectedGameObject == null)
+                {
+                    return false;
+                }
+                TMP_InputField component = currentSelectedGameObject.GetComponent<TMP_InputField>();
+                return component != null && component.isFocused;
+            }
+        }
 
 		private void Awake()
         {
@@ -224,6 +265,7 @@ namespace NeoEditor
         private void Start()
         {
 			customLevel = scnGame.instance;
+            eventSystem = EventSystem.current;
             Application.wantsToQuit += TryApplicationQuit;
 
             LoadLevelEventSprites();
@@ -250,7 +292,9 @@ namespace NeoEditor
                 camera.Method("SetupRTCam").Invoke(camera, new object[] { true });
             }
 
-            mainCamera.targetTexture = Assets.SceneRenderer;
+			this.camera = camera.camobj;
+
+			mainCamera.targetTexture = Assets.SceneRenderer;
             mainCamera.cullingMask = camera.camobj.cullingMask;
             mainCamera.cullingMask |= 1 << LayerMask.NameToLayer("Foreground");
             mainCamera.cullingMask |= 1 << 26;
@@ -340,9 +384,22 @@ namespace NeoEditor
 			}
 		}
 
-        private void Update() { }
+        private void Update()
+        {
+			if (refreshBgSprites)
+			{
+				UpdateBackgroundSprites();
+			}
+			if (refreshDecSprites)
+			{
+				UpdateDecorationObjects();
+			}
+		}
 
-        private void LateUpdate() { }
+        private void LateUpdate()
+        {
+			FloorMesh.UpdateAllRequired();
+		}
 
         private void OnDestroy()
         {
@@ -410,6 +467,8 @@ namespace NeoEditor
                 else
                     tabs[i].OnInactive();
             }
+
+            levelEventsPanel = selectedTab.GetLevelEventsPanel();
         }
 
         public void TogglePauseGame()
@@ -740,6 +799,18 @@ namespace NeoEditor
 			DrawHolds(false);
 			DrawMultiPlanet();
 			//refreshDecSprites = true;
+		}
+
+		public void UpdateDecorationObjects()
+		{
+			customLevel.UpdateDecorationObjects(true);
+			refreshDecSprites = false;
+		}
+
+		public void UpdateBackgroundSprites()
+		{
+			customLevel.UpdateBackgroundSprites();
+			refreshBgSprites = false;
 		}
 
 		public void UpdateDecorationObject(LevelEvent e)
@@ -1316,6 +1387,274 @@ namespace NeoEditor
 			//	DOTween.Kill("selectedColorTween", false);
 			//	this.ShowDeselectedColor(this.lastSelectedFloor);
 			//}
+		}
+
+		public void SelectDecoration(int itemIndex, bool jumpToDecoration = true, bool showPanel = true, bool ignoreDeselection = false, bool ignoreAdjustRect = false)
+		{
+			LevelEvent sourceLevelEvent = scrDecorationManager.GetDecoration(itemIndex).sourceLevelEvent;
+			if (sourceLevelEvent != null)
+			{
+				SelectDecoration(sourceLevelEvent, jumpToDecoration, showPanel, ignoreDeselection, ignoreAdjustRect);
+			}
+		}
+
+		public void SelectDecoration(LevelEvent levelEvent, bool jumpToDecoration = true, bool showPanel = true, bool ignoreDeselection = false, bool ignoreAdjustRect = false)
+		{
+			using (new SaveStateScope(this, false, false, false))
+			{
+				bool flag = selectedDecorations.Contains(levelEvent);
+				if (flag && RDInput.holdingControl && !ignoreDeselection)
+				{
+					DeselectDecoration(levelEvent);
+				}
+				else
+				{
+					if (!RDInput.holdingShift && !RDInput.holdingControl && !ignoreDeselection)
+					{
+						DeselectAllDecorations();
+						//this.DeselectFloors(false);
+						flag = false;
+					}
+					if (!(scrDecorationManager.GetDecoration(levelEvent) == null))
+					{
+						if (!flag)
+						{
+							selectedDecorations.Add(levelEvent);
+						}
+						if (jumpToDecoration && !Persistence.disableCameraDecorationFocus)
+						{
+							MoveCameraToDecoration(levelEvent);
+						}
+						scrDecorationManager.instance.ShowSelectionBorders(levelEvent, true);
+						bool enable = SelectionDecorationIsSingle();
+						decPivot.UpdatePivotCrossImage(enable);
+						if (selectedDecorations.Count <= 1)
+						{
+							decTransformGizmo.Setup(levelEvent);
+						}
+						else
+						{
+							decTransformGizmo.UpdateGizmosVisibility();
+						}
+						int decorationIndex = scrDecorationManager.GetDecorationIndex(levelEvent);
+						if (showPanel)
+						{
+                            //levelEventsPanel.ShowInspector(true, true);
+                            levelEventsPanel.ShowPanel(levelEvent.eventType, 0);
+                        }
+						propertyControlDecorationsList.lastSelectedIndex = decorationIndex;
+						propertyControlDecorationsList.RefreshItemsList(false);
+						if (!ignoreAdjustRect)
+						{
+							propertyControlDecorationsList.RefreshScrollRectPosition(levelEvent);
+						}
+						if (propertyControlDecorationsList.OnItemSelected != null)
+						{
+							propertyControlDecorationsList.OnItemSelected(levelEvent);
+						}
+						selectingFloorID = false;
+					}
+				}
+			}
+		}
+
+		public void DeselectDecoration(LevelEvent levelEvent)
+		{
+			using (new SaveStateScope(this, false, true, false))
+			{
+				if (selectedDecorations.Count <= 1)
+				{
+					DeselectAllDecorations();
+				}
+				else if (!(scrDecorationManager.GetDecoration(levelEvent) == null))
+				{
+					scrDecorationManager.instance.ShowSelectionBorders(levelEvent, false);
+					decTransformGizmo.UpdateGizmosVisibility();
+					selectedDecorations.Remove(levelEvent);
+					LevelEvent levelEvent2 = selectedDecorations[selectedDecorations.Count - 1];
+					SelectDecoration(levelEvent2, false, true, true, false);
+				}
+			}
+		}
+
+		public void DeselectAllDecorations()
+		{
+			if (SelectionDecorationIsEmpty())
+			{
+				return;
+			}
+			using (new SaveStateScope(this, false, false, false))
+			{
+				//levelEventsPanel.ShowInspector(false, false);
+				scrDecorationManager.instance.ClearDecorationBorders();
+				int count = selectedDecorations.Count;
+				selectedDecorations.Clear();
+				propertyControlDecorationsList.RefreshItemsList(false);
+				decPivot.UpdatePivotCrossImage(false);
+				decTransformGizmo.UpdateGizmosVisibility();
+				if (count > 0)
+				{
+					levelEventsPanel.HideAllInspectorTabs();
+					if (propertyControlDecorationsList.OnAllItemsDeselected != null)
+					{
+						propertyControlDecorationsList.OnAllItemsDeselected();
+					}
+				}
+				selectingFloorID = false;
+			}
+		}
+
+		public bool SelectionDecorationIsEmpty()
+		{
+			return selectedDecorations.Count == 0;
+		}
+
+		public bool SelectionDecorationIsSingle()
+		{
+			return selectedDecorations.Count == 1 && selectedDecorations[0] != null;
+		}
+
+		public LevelEvent AddDecoration(LevelEventType eventType, int index = -1)
+		{
+			LevelEvent levelEvent = CreateDecoration(eventType);
+			AddDecoration(levelEvent, index);
+			return levelEvent;
+		}
+
+		public void AddDecoration(LevelEvent dec, int index = -1)
+		{
+			using (new SaveStateScope(this, false, true, false))
+			{
+				int index2 = (index == -1) ? levelData.decorations.Count : (index + 1);
+				levelData.decorations.Insert(index2, dec);
+				bool flag;
+				scrDecorationManager.instance.CreateDecoration(dec, out flag, index);
+			}
+		}
+
+		private LevelEvent CreateDecoration(LevelEventType eventType)
+		{
+			LevelEvent levelEvent = new LevelEvent(-1, eventType);
+			Vector3 position = Camera.main.transform.position;
+			if (selectedFloors.Count == 1)
+			{
+				levelEvent["relativeTo"] = DecPlacementType.Tile;
+				levelEvent.floor = selectedFloors[0].seqID;
+				levelEvent["position"] = Vector2.zero;
+			}
+			else
+			{
+				levelEvent["position"] = new Vector2(position.x, position.y) / customLevel.GetTileSize();
+			}
+			return levelEvent;
+		}
+
+		public bool EventHasBackgroundSprite(LevelEvent evnt)
+		{
+			return evnt.eventType == LevelEventType.CustomBackground && !string.IsNullOrEmpty(evnt.data["bgImage"].ToString());
+		}
+
+		public void RemoveEvent(LevelEvent evnt, bool skipDecorationUpdate = false)
+		{
+			if (evnt == null)
+			{
+				return;
+			}
+			using (new SaveStateScope(this, false, true, false))
+			{
+				if (evnt.IsDecoration)
+				{
+					decorations.Remove(evnt);
+					selectedDecorations.Remove(evnt);
+					if (!skipDecorationUpdate)
+					{
+						decTransformGizmo.UpdateGizmosVisibility();
+						UpdateDecorationObjects();
+						levelEventsPanel.ShowPanel(LevelEventType.None, 0);
+						levelEventsPanel.HideAllInspectorTabs();
+						refreshBgSprites = true;
+						if (decorations.Count == 0)
+						{
+							decPivot.UpdatePivotCrossImage(false);
+						}
+					}
+				}
+				else
+				{
+					events.Remove(evnt);
+				}
+				if (EventHasBackgroundSprite(evnt))
+				{
+					refreshBgSprites = true;
+				}
+			}
+		}
+
+		public void RemoveEvents(List<LevelEvent> events)
+		{
+			if (events == null || events.Count == 0)
+			{
+				return;
+			}
+			using (new SaveStateScope(this, false, true, false))
+			{
+				for (int i = 0; i < events.Count; i++)
+				{
+					RemoveEvent(events[i], i != events.Count - 1);
+				}
+			}
+		}
+
+		public void DeleteMultiSelectionDecorations()
+		{
+			if (SelectionDecorationIsEmpty())
+			{
+				return;
+			}
+			List<LevelEvent> events = new List<LevelEvent>(selectedDecorations);
+			RemoveEvents(events);
+			decTransformGizmo.UpdateGizmosVisibility();
+		}
+
+		public List<LevelEvent> GetSelectedFloorEvents(LevelEventType eventType)
+		{
+			return GetFloorEvents(selectedFloors[0].seqID, eventType);
+		}
+
+		public List<LevelEvent> GetFloorEvents(int floorID, LevelEventType eventType)
+		{
+			if (eventType.IsSetting())
+			{
+				return null;
+			}
+			List<LevelEvent> list = new List<LevelEvent>();
+			foreach (LevelEvent levelEvent in events)
+			{
+				if (floorID == levelEvent.floor && levelEvent.eventType == eventType)
+				{
+					list.Add(levelEvent);
+				}
+			}
+			return list;
+		}
+
+		private void MoveCameraToFloor(scrFloor floor)
+		{
+			Vector3 endValue = new Vector3(floor.x, floor.y, -10f);
+			camera.transform.DOMove(endValue, cameraSelectDuration, false).SetUpdate(true);
+		}
+
+		public void MoveCameraToDecoration(LevelEvent levelEvent)
+		{
+			scrDecoration decoration = scrDecorationManager.GetDecoration(levelEvent);
+			Vector2 v = decoration.transform.position.xy() - (ADOBase.controller.camy.transform.position.xy() - decoration.parallax.posCamAtStart.xy()) * decoration.parallax.multiplier;
+			DoCameraJump(v.WithZ(-10f));
+		}
+
+		private void DoCameraJump(Vector3 targetPos)
+		{
+			camera.transform.DOKill(false);
+			camera.transform.DOMove(targetPos, 0.4f, false).SetUpdate(true).SetEase(Ease.OutCubic);
 		}
 	}
 }

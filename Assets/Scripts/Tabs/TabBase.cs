@@ -25,5 +25,7 @@ namespace NeoEditor.Tabs
         public virtual void SelectEvent(LevelEvent levelEvent) { }
 
 		public virtual void AddEvent(LevelEventType type) { }
+
+        public virtual InspectorPanel GetLevelEventsPanel() { return null; }
 	}
 }

@@ -3,7 +3,16 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Beat
+  - Bar
+  - X
+  - NewgroundsAPI
+  - MovingFloor
+  - MissIndicator
+  - EventIndicator
+  - IgnoreClick
+  - HitDecoration
   layers:
   - Default
   - TransparentFX
@@ -12,20 +21,20 @@ TagManager:
   - Water
   - UI
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Foreground
+  - Planet
+  - Floor
+  - BG
+  - BG Static
+  - Camera
+  - Flash
+  - TopGlow
+  - FloorTemp
+  - Review
+  - WorkshopThumbnail
+  - textDeco
+  - Handles
+  - RenderTexture
   - 
   - 
   - 
@@ -38,6 +47,39 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Bg3
+    uniqueID: 1281023201
+    locked: 0
+  - name: Bg2(Lights)
+    uniqueID: 1456742089
+    locked: 0
+  - name: Bg
+    uniqueID: 1320933907
+    locked: 0
+  - name: Floor
+    uniqueID: 2973111929
+    locked: 0
+  - name: FloorCover
+    uniqueID: 3627498465
+    locked: 0
+  - name: FloorTop
+    uniqueID: 1116417277
+    locked: 0
+  - name: Ring
+    uniqueID: 2236660977
+    locked: 0
+  - name: Planet
+    uniqueID: 20593777
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Petals
+    uniqueID: 4228497229
+    locked: 0
+  - name: FgFlash
+    uniqueID: 353734097
+    locked: 0
+  - name: ForegroundUI
+    uniqueID: 1360410871
     locked: 0

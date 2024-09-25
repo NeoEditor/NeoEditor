@@ -18,14 +18,16 @@ namespace NeoEditor.Inspector
         public EffectTabBase parentTab;
         public LevelEventCategory[] categories;
 
-        protected Dictionary<LevelEventType, PropertiesPanel> inspectors;
+        public Dictionary<LevelEventType, PropertiesPanel> inspectors;
 
         public virtual void Init(List<LevelEventInfo> infos)
         {
             NeoEditor editor = NeoEditor.Instance;
 
             inspectors = new Dictionary<LevelEventType, PropertiesPanel>();
-            foreach (var info in infos)
+			panelsList = new List<PropertiesPanel>();
+
+			foreach (var info in infos)
             {
                 PropertiesPanel panel = Instantiate(editor.prefab_inspector, content)
                     .GetComponent<PropertiesPanel>();
@@ -33,7 +35,15 @@ namespace NeoEditor.Inspector
                 panel.Init(this, info);
                 panel.gameObject.SetActive(false);
                 inspectors.Add(info.type, panel);
-            }
+				if (info.type == LevelEventType.EditorComment)
+				{
+					panelsList.Insert(0, panel);
+				}
+				else
+				{
+					panelsList.Add(panel);
+				}
+			}
 
             selectorPanel.parentTab = parentTab;
             selectorPanel.Init(categories);
