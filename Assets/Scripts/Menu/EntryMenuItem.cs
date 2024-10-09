@@ -9,7 +9,7 @@ namespace NeoEditor.Menu
 {
     public class EntryMenuItem : MenuItem
     {
-        public EntryMenuItem(string text, Func<GameObject, bool> onActive = null)
+        public EntryMenuItem(string text, Func<MenuButton, bool> onActive = null)
             : base(text, "▶", onActive) { }
     }
 }

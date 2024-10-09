@@ -16,16 +16,16 @@ namespace NeoEditor.Menu
         public List<MenuItem> subMenus;
         public EditorKeybind shortcut;
         public string shortcutText;
-        public Func<GameObject, bool> onActive;
+        public Func<MenuButton, bool> onActive;
 
-        public MenuItem(string text, Func<GameObject, bool> onActive = null)
+        public MenuItem(string text, Func<MenuButton, bool> onActive = null)
         {
             this.text = text;
             subMenus = new List<MenuItem>();
             this.onActive = onActive;
         }
 
-        public MenuItem(string text, EditorKeybind shortcut, Func<GameObject, bool> onActive = null)
+        public MenuItem(string text, EditorKeybind shortcut, Func<MenuButton, bool> onActive = null)
             : this(text, onActive)
         {
             this.shortcut = shortcut;
@@ -37,9 +37,10 @@ namespace NeoEditor.Menu
                 keyMask.HasFlag(KeyModifier.Alt),
                 shortcut.key
             );
+            if (shortcutText == "none") shortcutText = "";
         }
 
-        public MenuItem(string text, string shortcut, Func<GameObject, bool> onActive = null)
+        public MenuItem(string text, string shortcut, Func<MenuButton, bool> onActive = null)
             : this(text, onActive)
         {
             shortcutText = shortcut;

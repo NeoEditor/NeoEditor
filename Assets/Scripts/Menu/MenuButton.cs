@@ -22,6 +22,25 @@ namespace NeoEditor.Menu
         public Sprite uncheck;
 
         public MenuItem info;
-        public bool isChecked = false;
+        private bool _isChecked;
+        public bool isChecked
+        {
+            get
+            {
+                return _isChecked;
+            }
+            set
+            {
+                checkbox.sprite = value ? check : uncheck;
+                _isChecked = value;
+            }
+        }
+
+        public void SetEnabled(bool enabled)
+        {
+            button.interactable = enabled;
+            text.color.WithAlpha(enabled ? 1f : 0.5f);
+			shortcut.color.WithAlpha(enabled ? 1f : 0.5f);
+		}
     }
 }
