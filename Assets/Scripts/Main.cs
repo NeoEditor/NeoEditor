@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using DynamicPanels;
 using HarmonyLib;
 using NeoEditor.Patches;
 using UnityEngine;
@@ -36,8 +37,15 @@ namespace NeoEditor
 
                 if (value)
                 {
-                    harmony.PatchAll(Assembly.GetExecutingAssembly());
-                }
+					harmony.PatchAll(Assembly.GetExecutingAssembly());
+					harmony.Patch(
+						typeof(PanelUtils).GetNestedType("Internal", AccessTools.all).GetMethod("CreatePanel"),
+						transpiler: typeof(DynamicPanelsPatch.LoadPanel).GetMethod(
+						    "Transpiler",
+						    AccessTools.all
+						)
+					);
+				}
                 else
                 {
                     harmony.UnpatchAll(entry.Info.Id);

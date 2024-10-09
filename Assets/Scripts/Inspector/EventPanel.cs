@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using ADOFAI;
-using NeoEditor.Tabs;
 using SA.GoogleDoc;
 using TMPro;
 using UnityEngine;
@@ -15,7 +14,6 @@ namespace NeoEditor.Inspector
     {
         public RectTransform content;
         public SelectorPanel selectorPanel;
-        public EffectTabBase parentTab;
         public LevelEventCategory[] categories;
 
         public Dictionary<LevelEventType, PropertiesPanel> inspectors;
@@ -45,7 +43,6 @@ namespace NeoEditor.Inspector
 				}
 			}
 
-            selectorPanel.parentTab = parentTab;
             selectorPanel.Init(categories);
             selectorPanel.title = title;
 		}

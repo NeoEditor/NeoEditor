@@ -10,9 +10,10 @@ using ADOFAI.Editor.ParticleEditor;
 using ADOFAI.LevelEditor.Controls;
 using DG.Tweening;
 using HarmonyLib;
+using NeoEditor.Inspector.Media;
+using NeoEditor.Inspector;
 using NeoEditor.Patches;
 using NeoEditor.PopupWindows;
-using NeoEditor.Tabs;
 using SA.GoogleDoc;
 using SFB;
 using TMPro;
@@ -21,22 +22,13 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using NeoEditor.Inspector.Timeline;
+using DynamicPanels;
 
 namespace NeoEditor
 {
     public class NeoEditor : ADOBase
     {
-        public enum EditorTab
-        {
-            Project,
-            Chart,
-            Camera,
-            Filter,
-            Decoration,
-            Effect,
-            Export
-        }
-
         public static NeoEditor Instance { get; private set; }
 
         public LevelData levelData => customLevel.levelData;
@@ -48,11 +40,8 @@ namespace NeoEditor
         public Canvas levelEditorCanvas;
 		public new scnGame customLevel;
 
-        public GameObject[] tabContainers;
-        public TabBase[] tabs;
-        public Button[] tabButtons;
-        public RawImage[] gameViews;
-        public RawImage[] sceneViews;
+        public RawImage gameView;
+        public RawImage sceneView;
 
         public Camera mainCamera;
         public Camera uiCamera;
@@ -148,13 +137,31 @@ namespace NeoEditor
         private readonly Color linePurple = new Color(0.75f, 0.5f, 1f, 1f);
         private readonly Color lineBlue = new Color(0.4f, 0.4f, 1f, 1f);
 
-        public TabBase selectedTab { get; private set; }
-
 		public EditorWebServices webServices;
 
-		[Header("Inspector")]
+		[Header("Inspectors")]
 		public InspectorPanel settingsPanel;
         public InspectorPanel levelEventsPanel;
+
+        [Header("Panels")]
+		public ProjectPanel projectPanel;
+		public MediaPanel mediaPanel;
+		public EventPanel eventsPanel;
+		public TimelinePanel timelinePanel;
+		public DecorationPanel decorationsPanel;
+
+        [Header("DynamicPanels")]
+		public DynamicPanelsCanvas panelCanvas;
+		public RectTransform gameViewPanelContent;
+		public RectTransform sceneViewPanelContent;
+		public RectTransform inspectorPanelContent;
+		public RectTransform projectPanelContent;
+		public RectTransform decorationsPanelContent;
+		public RectTransform mediaPanelContent;
+		public RectTransform timelinePanelContent;
+        public RectTransform controlsPanelContent;
+		public Dictionary<string, Panel> panels;
+		public Dictionary<string, PanelTab> panelTabs;
 
 		[Header("Undo Redo")]
 		[NonSerialized]
@@ -305,10 +312,8 @@ namespace NeoEditor
             BGcamstaticCopy.targetTexture = Assets.SceneRenderer;
             BGcamCopy.GetComponent<scrMatchCameraSize>().enabled = false;
 
-            foreach (var gameView in gameViews)
-                gameView.texture = Assets.GameRenderer;
-            foreach (var sceneView in sceneViews)
-                sceneView.texture = Assets.SceneRenderer;
+			gameView.texture = Assets.GameRenderer;
+			sceneView.texture = Assets.SceneRenderer;
 
             scrUIController uIController = scrUIController.instance;
             uiController.canvas.renderMode = RenderMode.ScreenSpaceCamera;
@@ -324,9 +329,9 @@ namespace NeoEditor
                 .settingsInfo.Concat(GCS.levelEventsInfo)
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-            SelectTab(EditorTab.Project);
+			InitializeLayout();
 
-            customLevel.RemakePath();
+			customLevel.RemakePath();
             customLevel.ResetScene();
 
             FloorMesh.UpdateAllRequired();
@@ -336,12 +341,7 @@ namespace NeoEditor
                 GameObject.Instantiate(scrDecorationManager.instance.prefab_particleDecoration, particleEditor.transform.Find("Preview"))
                 .GetComponent<scrParticleDecoration>();
 
-            for (int i = 0; i < 7; i++)
-            {
-                int tab = i;
-                tabs[i].InitTab(dictionary);
-                tabButtons[i].onClick.AddListener(() => SelectTab((EditorTab)tab));
-            }
+            Initialize(dictionary);
 
             //OpenLevel();
 
@@ -438,7 +438,147 @@ namespace NeoEditor
             SceneManager.LoadScene("scnGame", LoadSceneMode.Additive);
         }
 
-        private bool TryApplicationQuit()
+        private void Initialize(Dictionary<string, LevelEventInfo> levelEventsInfo)
+        {
+			projectPanel.Init(
+				levelEventsInfo["SongSettings"],
+				levelEventsInfo["LevelSettings"],
+				levelEventsInfo["MiscSettings"]
+			);
+
+            mediaPanel.Init();
+
+			decorationsPanel.Init(levelEventsInfo["DecorationSettings"]);
+
+			eventsPanel.Init(levelEventsInfo.Values.Where(info => !info.type.IsSetting()).ToList());
+
+			OnOpenLevel(true);
+		}
+
+        private void InitializeLayout()
+        {
+            panels = new Dictionary<string, Panel>();
+            panelTabs = new Dictionary<string, PanelTab>();
+
+			panels.Add("Game", PanelUtils.CreatePanelFor(gameViewPanelContent, panelCanvas));
+            PanelTab gameViewTab = panels["Game"][0];
+            gameViewTab.Icon = null;
+            gameViewTab.Label = "Preview";
+            gameViewTab.MinSize = new Vector2(320, 180);
+            gameViewTab.ID = "Preview";
+            panelTabs.Add("Preview", gameViewTab);
+
+			PanelTab sceneViewTab = panels["Game"].AddTab(sceneViewPanelContent);
+            sceneViewTab.Icon = null;
+            sceneViewTab.Label = "Scene";
+            sceneViewTab.MinSize = new Vector2(320, 180);
+            sceneViewTab.ID = "Scene";
+            panelTabs.Add("Scene", sceneViewTab);
+
+            panels["Game"].DockToRoot(Direction.None);
+            panels["Game"].ActiveTab = 0;
+            panels["Game"].ResizeTo(new Vector2(1091, 649));
+
+			panels.Add("ProjectAndMedia", PanelUtils.CreatePanelFor(projectPanelContent, panelCanvas));
+			PanelTab projectTab = panels["ProjectAndMedia"][0];
+			projectTab.Icon = null;
+			projectTab.Label = "Project";
+			projectTab.MinSize = new Vector2(276, 200);
+            projectTab.ID = "Project";
+
+			PanelTab mediaTab = panels["ProjectAndMedia"].AddTab(mediaPanelContent);
+            mediaTab.Icon = null;
+            mediaTab.Label = "Media";
+            mediaTab.MinSize = new Vector2(276, 200);
+            mediaTab.ID = "Media";
+
+			panels["ProjectAndMedia"].ActiveTab = 0;
+			panels["ProjectAndMedia"].ResizeTo(new Vector2(276, 649));
+
+            panels.Add("Decorations", PanelUtils.CreatePanelFor(decorationsPanelContent, panelCanvas));
+            PanelTab decorationsTab = panels["Decorations"][0];
+            decorationsTab.Icon = null;
+            decorationsTab.Label = "Decorations";
+            decorationsTab.MinSize = new Vector2(276, 200);
+            decorationsTab.ID = "Decorations";
+
+            panels["Decorations"].ResizeTo(new Vector2(276, 649));
+
+            PanelGroup group = new PanelGroup(panelCanvas, Direction.Left);
+            group.AddElement(panels["Decorations"]);
+            group.AddElement(panels["ProjectAndMedia"]);
+            group.DockToRoot(Direction.Left);
+
+            panels.Add("Timeline", PanelUtils.CreatePanelFor(timelinePanelContent, panelCanvas));
+            PanelTab timelineTab = panels["Timeline"][0];
+            timelineTab.Icon = null;
+            timelineTab.Label = "Timeline";
+            timelineTab.MinSize = new Vector2(400, 300);
+            timelineTab.ID = "Timeline";
+
+			panels["Timeline"].DockToRoot(Direction.Bottom);
+			panels["Timeline"].ResizeTo(new Vector2(1643, 403));
+
+            panels.Add("Play", PanelUtils.CreatePanelFor(controlsPanelContent, panelCanvas));
+            PanelTab controlsTab = panels["Play"][0];
+            controlsTab.Icon = null;
+            controlsTab.Label = "Play";
+            controlsTab.MinSize = new Vector2(277, 157);
+            controlsTab.ID = "Play";
+
+            panels["Play"].ResizeTo(new Vector2(277, 157));
+
+            panels.Add("Inspector", PanelUtils.CreatePanelFor(inspectorPanelContent, panelCanvas));
+            PanelTab inspectorTab = panels["Inspector"][0];
+            inspectorTab.Icon = null;
+            inspectorTab.Label = "Inspector";
+            inspectorTab.MinSize = new Vector2(276, 200);
+            inspectorTab.ID = "Inspector";
+
+            panels["Inspector"].ResizeTo(new Vector2(277, 895));
+
+			PanelGroup right = new PanelGroup(panelCanvas, Direction.Top);
+			right.AddElement(panels["Inspector"]);
+			right.AddElement(panels["Play"]);
+			right.DockToRoot(Direction.Right);
+		}
+
+        private void OnOpenLevel(bool noLevel = false)
+        {
+            projectPanel.SetProperties(levelData.songSettings, levelData.levelSettings, levelData.miscSettings);
+			projectPanel.SelectTab(0);
+
+			decorationsPanel.SetProperties(levelData.decorationSettings);
+
+			if (!noLevel)
+            {
+				mediaPanel.SetupItems(this);
+				timelinePanel.Init();
+            }
+		}
+
+        private void OnPlayLevel()
+        {
+
+        }
+
+        public void SelectEvent(LevelEvent levelEvent)
+        {
+			eventsPanel.SetProperties(levelEvent.eventType, levelEvent);
+		}
+
+		public void UnselectEvent()
+		{
+            eventsPanel.HidePanel();
+		}
+
+		public virtual void SetEventSelector()
+		{
+			UnselectEvent();
+			eventsPanel.SetSelector();
+		}
+
+		private bool TryApplicationQuit()
         {
             //if (this.unsavedChanges && !this.forceQuit)
             //{
@@ -453,22 +593,6 @@ namespace NeoEditor
             //	return false;
             //}
             return true;
-        }
-
-        public void SelectTab(EditorTab tab)
-        {
-            selectedTab = tabs[(int)tab];
-            for (int i = 0; i < 7; i++)
-            {
-                tabContainers[i].SetActive(i == (int)tab);
-                tabButtons[i].interactable = i != (int)tab;
-                if (i == (int)tab)
-                    tabs[i].OnActive();
-                else
-                    tabs[i].OnInactive();
-            }
-
-            levelEventsPanel = selectedTab.GetLevelEventsPanel();
         }
 
         public void TogglePauseGame()
@@ -514,8 +638,7 @@ namespace NeoEditor
 
             GameObject.Find("Error Meter(Clone)")?.SetActive(false);
 
-            foreach (var tab in tabs)
-                tab.OnPlayLevel();
+            OnPlayLevel();
         }
 
         public void Pause()
@@ -1006,6 +1129,11 @@ namespace NeoEditor
             return levelEvent;
 		}
 
+		public void AddEvent(LevelEventType type)
+		{
+			timelinePanel.ApplySelector(type);
+		}
+
 		private IEnumerator OpenLevelCo(string definedLevelPath = null)
         {
             Instance.Pause();
@@ -1161,8 +1289,7 @@ namespace NeoEditor
             //yield return null;
             //this.ShowImageLoadResult();
 
-            foreach (var tab in tabs)
-                tab.OnOpenLevel();
+            OnOpenLevel();
             yield break;
         }
 

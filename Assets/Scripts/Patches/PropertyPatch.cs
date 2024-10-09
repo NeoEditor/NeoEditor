@@ -2,7 +2,6 @@
 using ADOFAI.Editor;
 using ADOFAI.LevelEditor.Controls;
 using HarmonyLib;
-using NeoEditor.Tabs;
 using SA.GoogleDoc;
 using System;
 using System.Collections;
@@ -104,13 +103,13 @@ namespace NeoEditor.Patches
 		{
 			public static void Postfix(PropertyControl_Text __instance, string __result)
 			{
-				if (NeoEditor.Instance == null) return;
+				NeoEditor editor = NeoEditor.Instance;
+				if (editor == null) return;
 				if (__instance.propertyInfo.name.Contains("angleOffset"))
 				{
 					float value = 1f;
 					float.TryParse(__result, out value);
-					(NeoEditor.Instance.selectedTab as EffectTabBase)?.timeline
-						.UpdateSelectedEventPos(value);
+					editor.timelinePanel.UpdateSelectedEventPos(value);
 				}
 				else if (__instance.propertyInfo.name == "floor")
 				{
@@ -120,8 +119,7 @@ namespace NeoEditor.Patches
 					{
 						value2 = Mathf.RoundToInt(f);
 					}
-					(NeoEditor.Instance.selectedTab as EffectTabBase)?.timeline
-						.UpdateSelectedEventPos(value2);
+					editor.timelinePanel.UpdateSelectedEventPos(value2);
 				}
 			}
 		}

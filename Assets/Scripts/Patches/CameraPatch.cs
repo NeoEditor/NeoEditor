@@ -28,8 +28,7 @@ namespace NeoEditor.Patches
                 Assets.GameRenderer = (RenderTexture)__instance.Field("camRT").GetValue(__instance);
                 NeoEditor.Instance.uiCamera.targetTexture = Assets.GameRenderer;
 
-                foreach (var gameView in editor.gameViews)
-                    gameView.texture = Assets.GameRenderer;
+                editor.gameView.texture = Assets.GameRenderer;
             }
         }
 

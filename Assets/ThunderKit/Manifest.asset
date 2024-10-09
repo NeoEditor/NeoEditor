@@ -40,6 +40,9 @@ MonoBehaviour:
     assets:
     - {fileID: 8400000, guid: 34314749a38907b418eea589b07b27be, type: 2}
     - {fileID: 8400000, guid: eedcff35bba17404c9dd78e5f50dfd4c, type: 2}
+  - assetBundleName: dp_asset
+    assets:
+    - {fileID: 102900000, guid: a10da257b412cea428dfd530dbca2051, type: 3}
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0

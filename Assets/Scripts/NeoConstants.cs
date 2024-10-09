@@ -57,12 +57,17 @@ namespace NeoEditor
             LevelEventType.MiscSettings,
             LevelEventType.EventSettings,
             LevelEventType.DecorationSettings,
-            LevelEventType.CallMethod,
-            LevelEventType.AddComponent,
-            LevelEventType.FreeRoamWarning,
             LevelEventType.Multitap,
-            LevelEventType.KillPlayer,
-            LevelEventType.SetFloorIcon
+            LevelEventType.SetSpeed,
+            LevelEventType.Twirl,
+            LevelEventType.Pause,
+            LevelEventType.Hold,
+            LevelEventType.MultiPlanet,
+            LevelEventType.FreeRoam,
+            LevelEventType.AddDecoration,
+            LevelEventType.AddText,
+            LevelEventType.AddObject,
+            LevelEventType.AddParticle
         };
 
         public static readonly LevelEventType[] SoundEvents = new LevelEventType[]
@@ -209,6 +214,5 @@ namespace NeoEditor
 			{ LevelEventType.EditorComment, CommentEventColor },
 			{ LevelEventType.Bookmark, CommentEventColor }
 		};
-
 	}
 }
