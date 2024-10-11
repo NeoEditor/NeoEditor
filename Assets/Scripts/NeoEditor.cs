@@ -477,35 +477,35 @@ namespace NeoEditor
 
             panels["Game"].DockToRoot(Direction.None);
             panels["Game"].ActiveTab = 0;
-            panels["Game"].ResizeTo(new Vector2(1091, 649));
+            panels["Game"].ResizeTo(new Vector2(960, 568));
 
 			panels.Add("ProjectAndMedia", PanelUtils.CreatePanelFor(projectPanelContent, panelCanvas));
 			PanelTab projectTab = panels["ProjectAndMedia"][0];
 			projectTab.Icon = null;
 			projectTab.Label = "Project";
-			projectTab.MinSize = new Vector2(276, 200);
+			projectTab.MinSize = new Vector2(250, 200);
             projectTab.ID = "Project";
             panelTabs.Add("Project", projectTab);
 
 			PanelTab mediaTab = panels["ProjectAndMedia"].AddTab(mediaPanelContent);
             mediaTab.Icon = null;
             mediaTab.Label = "Media";
-            mediaTab.MinSize = new Vector2(276, 200);
+            mediaTab.MinSize = new Vector2(250, 200);
             mediaTab.ID = "Media";
 			panelTabs.Add("Media", mediaTab);
 
 			panels["ProjectAndMedia"].ActiveTab = 0;
-			panels["ProjectAndMedia"].ResizeTo(new Vector2(276, 649));
+			panels["ProjectAndMedia"].ResizeTo(new Vector2(320, 568));
 
             panels.Add("Decorations", PanelUtils.CreatePanelFor(decorationsPanelContent, panelCanvas));
             PanelTab decorationsTab = panels["Decorations"][0];
             decorationsTab.Icon = null;
             decorationsTab.Label = "Decorations";
-            decorationsTab.MinSize = new Vector2(276, 200);
+            decorationsTab.MinSize = new Vector2(250, 200);
             decorationsTab.ID = "Decorations";
 			panelTabs.Add("Decorations", decorationsTab);
 
-			panels["Decorations"].ResizeTo(new Vector2(276, 649));
+			panels["Decorations"].ResizeTo(new Vector2(320, 568));
 
             PanelGroup group = new PanelGroup(panelCanvas, Direction.Left);
             group.AddElement(panels["Decorations"]);
@@ -520,28 +520,28 @@ namespace NeoEditor
             timelineTab.ID = "Timeline";
 			panelTabs.Add("Timeline", timelineTab);
 
+			panels["Timeline"].ResizeTo(new Vector2(1600, 487));
 			panels["Timeline"].DockToRoot(Direction.Bottom);
-			panels["Timeline"].ResizeTo(new Vector2(1643, 403));
 
             panels.Add("Play", PanelUtils.CreatePanelFor(controlsPanelContent, panelCanvas));
             PanelTab controlsTab = panels["Play"][0];
             controlsTab.Icon = null;
             controlsTab.Label = "Play";
-            controlsTab.MinSize = new Vector2(277, 157);
+            controlsTab.MinSize = new Vector2(250, 150);
             controlsTab.ID = "Play";
 			panelTabs.Add("Play", controlsTab);
 
-			panels["Play"].ResizeTo(new Vector2(277, 157));
+			panels["Play"].ResizeTo(new Vector2(320, 150));
 
             panels.Add("Inspector", PanelUtils.CreatePanelFor(inspectorPanelContent, panelCanvas));
             PanelTab inspectorTab = panels["Inspector"][0];
             inspectorTab.Icon = null;
             inspectorTab.Label = "Inspector";
-            inspectorTab.MinSize = new Vector2(276, 200);
+            inspectorTab.MinSize = new Vector2(250, 200);
             inspectorTab.ID = "Inspector";
 			panelTabs.Add("Inspector", inspectorTab);
 
-			panels["Inspector"].ResizeTo(new Vector2(277, 895));
+			panels["Inspector"].ResizeTo(new Vector2(320, 905));
 
 			PanelGroup right = new PanelGroup(panelCanvas, Direction.Top);
 			right.AddElement(panels["Inspector"]);
