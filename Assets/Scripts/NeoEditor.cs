@@ -547,7 +547,12 @@ namespace NeoEditor
 			right.AddElement(panels["Inspector"]);
 			right.AddElement(panels["Play"]);
 			right.DockToRoot(Direction.Right);
-		}
+        }
+
+        public void ResetLayout()
+        {
+            PanelSerialization.DeserializeCanvasFromArray(panelCanvas, Convert.FromBase64String(NeoConstants.DefaultLayout));
+        }
 
         private void OnOpenLevel(bool noLevel = false)
         {

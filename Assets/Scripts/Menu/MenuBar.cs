@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using ADOFAI.Editor;
+using DynamicPanels;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 
@@ -287,6 +289,14 @@ namespace NeoEditor.Menu
 				return true;
 			}
 			));
+            panel.AddSubMenu(new SeparatorMenuItem());
+#if DEBUG
+            panel.AddSubMenu(new ActionMenuItem("Serialize Layout", () =>
+            {
+				NeoLogger.Debug(Convert.ToBase64String(PanelSerialization.SerializeCanvasToArray(editor.panelCanvas)));
+			}));
+#endif
+            panel.AddSubMenu(new ActionMenuItem("Reset Layout", () => { editor.ResetLayout(); }));
 			AddMenu(panel);
 
             var view = new MenuItem("View");
