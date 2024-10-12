@@ -31,16 +31,18 @@ namespace NeoEditor.Menu
             }
             set
             {
-                checkbox.sprite = value ? check : uncheck;
+                if (checkbox != null)
+                    checkbox.sprite = value ? check : uncheck;
                 _isChecked = value;
             }
         }
 
         public void SetEnabled(bool enabled)
         {
-            button.interactable = enabled;
-            text.color.WithAlpha(enabled ? 1f : 0.5f);
-			shortcut.color.WithAlpha(enabled ? 1f : 0.5f);
+            if (button != null)
+                button.interactable = enabled;
+            text?.color.WithAlpha(enabled ? 1f : 0.5f);
+			shortcut?.color.WithAlpha(enabled ? 1f : 0.5f);
 		}
     }
 }
