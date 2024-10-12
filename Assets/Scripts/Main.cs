@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -19,11 +20,17 @@ namespace NeoEditor
         public static bool Enabled = false;
         public static UnityModManager.ModEntry Entry;
 
+        public static string OptionsFolderPath = "Options/NeoEditor/";
+        public static string LayoutConfigFile = OptionsFolderPath + "Layout";
+
         public static void Load(UnityModManager.ModEntry modEntry)
         {
             ADOStartup.ModWasAdded(modEntry.Info.Id);
             harmony = new Harmony(modEntry.Info.Id);
             Entry = modEntry;
+
+            if (!Directory.Exists(OptionsFolderPath)) Directory.CreateDirectory(OptionsFolderPath);
+
             Assets.Load();
 #if DEBUG
 			NeoLogger.Setup(modEntry.Logger, NeoLogger.LogLevel.Debug);

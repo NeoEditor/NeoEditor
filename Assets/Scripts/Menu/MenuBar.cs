@@ -135,7 +135,7 @@ namespace NeoEditor.Menu
             file.AddSubMenu(new ActionMenuItem("Help", new EditorKeybind(KeyModifier.Control, KeyCode.H), () => { }));
             file.AddSubMenu(new ActionMenuItem("Preference", 
                 new EditorKeybind(KeyModifier.Control | KeyModifier.Shift, KeyCode.I), () => { }));
-            file.AddSubMenu(new ActionMenuItem("Exit", new EditorKeybind(KeyModifier.Control, KeyCode.Q), controller.QuitToMainMenu));
+            file.AddSubMenu(new ActionMenuItem("Exit", new EditorKeybind(KeyModifier.Control, KeyCode.Q), editor.TryQuit));
             AddMenu(file);
 
             var edit = new MenuItem("Edit");
@@ -296,7 +296,7 @@ namespace NeoEditor.Menu
 				NeoLogger.Debug(Convert.ToBase64String(PanelSerialization.SerializeCanvasToArray(editor.panelCanvas)));
 			}));
 #endif
-            panel.AddSubMenu(new ActionMenuItem("Reset Layout", () => { editor.ResetLayout(); }));
+            panel.AddSubMenu(new ActionMenuItem("Reset Layout", () => editor.ResetLayout()));
 			AddMenu(panel);
 
             var view = new MenuItem("View");

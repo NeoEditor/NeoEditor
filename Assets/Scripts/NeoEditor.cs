@@ -24,6 +24,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using NeoEditor.Inspector.Timeline;
 using DynamicPanels;
+using GDMiniJSON;
 
 namespace NeoEditor
 {
@@ -547,14 +548,54 @@ namespace NeoEditor
 			right.AddElement(panels["Inspector"]);
 			right.AddElement(panels["Play"]);
 			right.DockToRoot(Direction.Right);
+
+            LoadLayout();
+        }
+
+        public void LoadLayout()
+        {
+            if (!File.Exists(Main.LayoutConfigFile)) return;
+            var json = Json.Deserialize(File.ReadAllText(Main.LayoutConfigFile)) as Dictionary<string, object>;
+            object layout;
+            if (json.TryGetValue("Layout", out layout))
+            {
+                PanelSerialization.DeserializeCanvasFromArray(panelCanvas, Convert.FromBase64String(layout.ToString()));
+            }
+        }
+
+        public void SaveLayout()
+        {
+            var dictionary = new Dictionary<string, object>()
+            {
+                { "Layout", Convert.ToBase64String(PanelSerialization.SerializeCanvasToArray(panelCanvas)) }
+            };
+            File.WriteAllText(Main.LayoutConfigFile, Json.Serialize(dictionary));
         }
 
         public void ResetLayout()
         {
             PanelSerialization.DeserializeCanvasFromArray(panelCanvas, Convert.FromBase64String(NeoConstants.DefaultLayout));
+            SaveLayout();
         }
 
-        private void OnOpenLevel(bool noLevel = false)
+        public void TryQuit()
+        {
+            //CheckUnsavedChanges(() =>
+            //{
+            Quit();
+            //}, false);
+        }
+
+        public void Quit()
+        {
+			Application.wantsToQuit -= TryApplicationQuit;
+
+            SaveLayout();
+
+            controller.QuitToMainMenu();
+		}
+
+		private void OnOpenLevel(bool noLevel = false)
         {
             projectPanel.SetProperties(levelData.songSettings, levelData.levelSettings, levelData.miscSettings);
 			projectPanel.SelectTab(0);
