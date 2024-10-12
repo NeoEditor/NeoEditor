@@ -6249,6 +6249,7 @@ MonoBehaviour:
   confirmPopupLarge: {fileID: 1658145744}
   colorPickerPopup: {fileID: 478315816}
   popupBlocker: {fileID: 889522958}
+  menuBar: {fileID: 1656983619}
   particleEditorContainer: {fileID: 728191704}
   particleEditor: {fileID: 2101449319}
   prefab_inspector: {fileID: 2394376618906559339, guid: 14454f0ad1c153a41a9bd87bae9f80b6, type: 3}

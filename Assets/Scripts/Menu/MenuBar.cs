@@ -108,6 +108,14 @@ namespace NeoEditor.Menu
             }
         }
 
+        public void CloseMenu()
+        {
+			foreach (var content in contents)
+			{
+                content.gameObject.SetActive(false);
+			}
+		}
+
         void Start()
         {
             NeoEditor editor = NeoEditor.Instance;

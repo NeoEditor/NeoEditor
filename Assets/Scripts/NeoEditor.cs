@@ -25,6 +25,7 @@ using UnityEngine.UI;
 using NeoEditor.Inspector.Timeline;
 using DynamicPanels;
 using GDMiniJSON;
+using NeoEditor.Menu;
 
 namespace NeoEditor
 {
@@ -66,6 +67,8 @@ namespace NeoEditor
 		public Button popupBlocker;
 		private List<Action> _popupStack = new List<Action>();
 		private int _currentPopupSortOrder = 30000;
+
+        public MenuBar menuBar;
 
 		[Header("Particle Editor Popup")]
 		public Image particleEditorContainer;
@@ -574,8 +577,15 @@ namespace NeoEditor
 
         public void ResetLayout()
         {
+            foreach (var (_, panel) in panelTabs)
+            {
+                panel.Panel.gameObject.SetActive(true);
+            }
+
             PanelSerialization.DeserializeCanvasFromArray(panelCanvas, Convert.FromBase64String(NeoConstants.DefaultLayout));
             SaveLayout();
+
+            menuBar.CloseMenu();
         }
 
         public void TryQuit()
@@ -591,6 +601,8 @@ namespace NeoEditor
 			Application.wantsToQuit -= TryApplicationQuit;
 
             SaveLayout();
+
+            menuBar.CloseMenu();
 
             controller.QuitToMainMenu();
 		}
