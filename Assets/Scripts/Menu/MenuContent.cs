@@ -15,6 +15,8 @@ namespace NeoEditor.Menu
         public RectTransform rect;
         public Canvas canvas;
         public List<MenuContent> parents = new List<MenuContent>();
+        public MenuItem item;
+        public List<MenuButton> childs = new List<MenuButton>();
 
         public void OnPointerExit(PointerEventData eventData)
         {

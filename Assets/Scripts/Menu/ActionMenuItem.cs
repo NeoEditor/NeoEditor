@@ -15,7 +15,7 @@ namespace NeoEditor.Menu
         public ActionMenuItem(
             string text,
             Action action,
-            Func<GameObject, bool> onActive = null
+            Func<MenuButton, bool> onActive = null
         )
             : base(text, onActive)
         {
@@ -26,7 +26,7 @@ namespace NeoEditor.Menu
             string text,
             EditorKeybind shortcut,
             Action action,
-            Func<GameObject, bool> onActive = null
+            Func<MenuButton, bool> onActive = null
         )
             : base(text, shortcut, onActive)
         {

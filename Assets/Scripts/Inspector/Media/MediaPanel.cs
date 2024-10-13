@@ -17,7 +17,7 @@ namespace NeoEditor.Inspector.Media
 
 		private static Dictionary<LevelEventType, List<PropertyInfo>> fileProperties;
 
-		void Start()
+		public void Init()
 		{
 			if (fileProperties != null) return;
 

@@ -7,7 +7,6 @@ using ADOFAI;
 using DG.Tweening;
 using HarmonyLib;
 using NeoEditor.Inspector.Controls;
-using NeoEditor.Tabs;
 using SA.GoogleDoc;
 using TMPro;
 using UnityEditor;
@@ -27,11 +26,15 @@ namespace NeoEditor.Inspector
 				if (NeoConstants.SelectorIgnoreEvents.Contains(type)
 					|| NeoConstants.TimelineIgnoreEvents.Contains(type))
 					continue;
+
+				LevelEventInfo info = GCS.levelEventsInfo[type.ToString()];
+				if (info != null && info.pro) continue;
+
 				CreateEventButton button = Instantiate(editor.prefab_eventButton, content)
 				.GetComponent<CreateEventButton>();
 				button.button.onClick.AddListener(() =>
 				{
-					NeoEditor.Instance.selectedTab.AddEvent(type);
+					NeoEditor.Instance.AddEvent(type);
 				});
                 button.label.text = type == LevelEventType.None
 					? ""

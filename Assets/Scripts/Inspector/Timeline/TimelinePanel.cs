@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using ADOFAI;
-using NeoEditor.Tabs;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -14,8 +13,6 @@ namespace NeoEditor.Inspector.Timeline
 {
     public class TimelinePanel : MonoBehaviour, IPointerClickHandler
     {
-        public EffectTabBase parentTab;
-
         public GameObject horizontalLine;
         public GameObject verticalLine;
         public GameObject eventObj;
@@ -298,13 +295,14 @@ namespace NeoEditor.Inspector.Timeline
 
         public void SelectEvent(TimelineEvent timelineEvent)
         {
+            NeoEditor editor = NeoEditor.Instance;
             if (selectedEvent != null)
             {
                 selectedEvent.UnselectEvent();
-                parentTab.UnselectEvent();
+                editor.UnselectEvent();
             }
             selectedEvent = timelineEvent;
-            parentTab.SelectEvent(selectedEvent.targetEvent);
+            editor.SelectEvent(selectedEvent.targetEvent);
         }
 
         public void SetParent(RectTransform transform)
@@ -716,7 +714,7 @@ namespace NeoEditor.Inspector.Timeline
 
             selectingEventFloor = floor;
             selectingTargetEvent = eventData;
-            parentTab.SetEventSelector();
+            NeoEditor.Instance.SetEventSelector();
 		}
 
 		public void ApplySelector(LevelEventType type)

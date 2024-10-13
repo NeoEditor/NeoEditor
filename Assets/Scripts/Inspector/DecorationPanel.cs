@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using ADOFAI;
-using NeoEditor.Tabs;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,8 +10,6 @@ namespace NeoEditor.Inspector
     public class DecorationPanel : InspectorPanel
     {
         public RectTransform content;
-
-        public DecorationTab parentTab;
 
         PropertiesPanel decorations;
         LevelEvent decorationsEvent;

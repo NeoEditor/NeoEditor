@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using ADOFAI.Editor;
+using DynamicPanels;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 
@@ -28,6 +30,7 @@ namespace NeoEditor.Menu
             menu.gameObject.SetActive(true);
 
             var content = Instantiate(menuTemplate, menu.rect);
+            content.item = root;
             foreach (MenuItem sub in root.subMenus)
             {
                 AddSubMenu(sub, content, 1);
@@ -41,13 +44,15 @@ namespace NeoEditor.Menu
 
         public void AddSubMenu(MenuItem menu, MenuContent content, int depth)
         {
+            MenuButton button;
             if (menu is SeparatorMenuItem)
             {
-                Instantiate(separatorTemplate, content.rect).gameObject.SetActive(true);
+                button = Instantiate(separatorTemplate, content.rect);
+                button.gameObject.SetActive(true);
             }
             else
             {
-                MenuButton button = Instantiate(menuButtonTemplate, content.rect);
+                button = Instantiate(menuButtonTemplate, content.rect);
                 button.text.text = menu.text;
                 button.shortcut.text = menu.shortcutText;
                 button.checkbox.gameObject.SetActive(menu is ToggleMenuItem);
@@ -59,6 +64,7 @@ namespace NeoEditor.Menu
                     subContent.parents = content.parents.ToList();
                     subContent.parents.Add(content);
                     subContent.canvas.sortingOrder += depth;
+                    subContent.item = menu;
                     button.button.onClick.AddListener(() => ShowMenu(subContent));
                     contents.Add(subContent);
                     foreach (MenuItem sub in menu.subMenus)
@@ -73,10 +79,16 @@ namespace NeoEditor.Menu
                 else if (menu is ToggleMenuItem)
                 {
                     button.button.onClick.AddListener(
-                        () => (menu as ToggleMenuItem).action(!button.isChecked)
+                        () =>
+                        {
+                            (menu as ToggleMenuItem).action(!button.isChecked);
+                            button.isChecked = !button.isChecked;
+                        }
                     );
                 }
             }
+
+            content.childs.Add(button);
         }
 
         public void ShowMenu(MenuContent content)
@@ -87,10 +99,27 @@ namespace NeoEditor.Menu
                     c.gameObject.SetActive(false);
             }
             content.gameObject.SetActive(true);
+
+			for (int i = 0; i < content.item.subMenus.Count; i++)
+            {
+				MenuItem menu = content.item.subMenus[i];
+                var menuButton = content.childs[i];
+                menuButton.SetEnabled(menu.onActive == null || menu.onActive(menuButton));
+            }
         }
+
+        public void CloseMenu()
+        {
+			foreach (var content in contents)
+			{
+                content.gameObject.SetActive(false);
+			}
+		}
 
         void Start()
         {
+            NeoEditor editor = NeoEditor.Instance;
+
             var file = new MenuItem("File");
             file.AddSubMenu(new ActionMenuItem("New", new EditorKeybind(KeyModifier.Control, KeyCode.N), () => { }));
             file.AddSubMenu(new SeparatorMenuItem());
@@ -114,7 +143,7 @@ namespace NeoEditor.Menu
             file.AddSubMenu(new ActionMenuItem("Help", new EditorKeybind(KeyModifier.Control, KeyCode.H), () => { }));
             file.AddSubMenu(new ActionMenuItem("Preference", 
                 new EditorKeybind(KeyModifier.Control | KeyModifier.Shift, KeyCode.I), () => { }));
-            file.AddSubMenu(new ActionMenuItem("Exit", new EditorKeybind(KeyModifier.Control, KeyCode.Q), controller.QuitToMainMenu));
+            file.AddSubMenu(new ActionMenuItem("Exit", new EditorKeybind(KeyModifier.Control, KeyCode.Q), editor.TryQuit));
             AddMenu(file);
 
             var edit = new MenuItem("Edit");
@@ -137,6 +166,146 @@ namespace NeoEditor.Menu
             edit.AddSubMenu(new SeparatorMenuItem());
             edit.AddSubMenu(new ActionMenuItem("Select All", new EditorKeybind(KeyModifier.Control, KeyCode.A), () => { }));
             AddMenu(edit);
+
+            var panel = new MenuItem("Panel");
+			panel.AddSubMenu(new ToggleMenuItem("Preview Panel", new EditorKeybind(), (on) =>
+			{
+				if (on)
+				{
+					editor.panelTabs["Game"].Panel.gameObject.SetActive(true);
+				}
+				else
+				{
+					editor.panelTabs["Game"].Detach()?.gameObject.SetActive(false);
+				}
+			}, (obj) =>
+			{
+				obj.isChecked = editor.panelTabs["Game"].Panel.gameObject.activeInHierarchy;
+				return true;
+			}
+			));
+			panel.AddSubMenu(new ToggleMenuItem("Scene Panel", new EditorKeybind(), (on) =>
+			{
+				if (on)
+				{
+					editor.panelTabs["Scene"].Panel.gameObject.SetActive(true);
+				}
+				else
+				{
+					editor.panelTabs["Scene"].Detach()?.gameObject.SetActive(false);
+				}
+			}, (obj) =>
+			{
+				obj.isChecked = editor.panelTabs["Scene"].Panel.gameObject.activeInHierarchy;
+				return true;
+			}
+			));
+			panel.AddSubMenu(new ToggleMenuItem("Inspector Panel", new EditorKeybind(), (on) =>
+			{
+				if (on)
+				{
+					editor.panelTabs["Inspector"].Panel.gameObject.SetActive(true);
+				}
+				else
+				{
+					editor.panelTabs["Inspector"].Detach()?.gameObject.SetActive(false);
+				}
+			}, (obj) =>
+			{
+				obj.isChecked = editor.panelTabs["Inspector"].Panel.gameObject.activeInHierarchy;
+				return true;
+			}
+			));
+			panel.AddSubMenu(new ToggleMenuItem("Decorations Panel", new EditorKeybind(), (on) =>
+			{
+				if (on)
+				{
+					editor.panelTabs["Decorations"].Panel.gameObject.SetActive(true);
+				}
+				else
+				{
+					editor.panelTabs["Decorations"].Detach()?.gameObject.SetActive(false);
+				}
+			}, (obj) =>
+			{
+				obj.isChecked = editor.panelTabs["Decorations"].Panel.gameObject.activeInHierarchy;
+				return true;
+			}
+			));
+			panel.AddSubMenu(new ToggleMenuItem("Project Panel", new EditorKeybind(), (on) =>
+            {
+                if (on)
+                {
+                    editor.panelTabs["Project"].Panel.gameObject.SetActive(true);
+                }
+                else
+                {
+                    editor.panelTabs["Project"].Detach()?.gameObject.SetActive(false);
+                }
+            }, (obj) =>
+            {
+                obj.isChecked = editor.panelTabs["Project"].Panel.gameObject.activeInHierarchy;
+                return true;
+            }
+            ));
+			panel.AddSubMenu(new ToggleMenuItem("Media Panel", new EditorKeybind(), (on) =>
+			{
+				if (on)
+				{
+					editor.panelTabs["Media"].Panel.gameObject.SetActive(true);
+				}
+				else
+				{
+					editor.panelTabs["Media"].Detach()?.gameObject.SetActive(false);
+				}
+			}, (obj) =>
+			{
+				obj.isChecked = editor.panelTabs["Media"].Panel.gameObject.activeInHierarchy;
+				return true;
+			}
+			));
+			
+			panel.AddSubMenu(new ToggleMenuItem("Timeline Panel", new EditorKeybind(), (on) =>
+			{
+				if (on)
+				{
+					editor.panelTabs["Timeline"].Panel.gameObject.SetActive(true);
+				}
+				else
+				{
+					editor.panelTabs["Timeline"].Detach()?.gameObject.SetActive(false);
+				}
+			}, (obj) =>
+			{
+				obj.isChecked = editor.panelTabs["Timeline"].Panel.gameObject.activeInHierarchy;
+				return true;
+			}
+			));
+			panel.AddSubMenu(new ToggleMenuItem("Play Panel", new EditorKeybind(), (on) =>
+			{
+				if (on)
+				{
+					editor.panelTabs["Play"].Panel.gameObject.SetActive(true);
+				}
+				else
+				{
+					editor.panelTabs["Play"].Detach()?.gameObject.SetActive(false);
+				}
+			}, (obj) =>
+			{
+				obj.isChecked = editor.panelTabs["Play"].Panel.gameObject.activeInHierarchy;
+				return true;
+			}
+			));
+            panel.AddSubMenu(new SeparatorMenuItem());
+#if DEBUG
+            panel.AddSubMenu(new ActionMenuItem("Serialize Layout", () =>
+            {
+				NeoLogger.Debug(Convert.ToBase64String(PanelSerialization.SerializeCanvasToArray(editor.panelCanvas)));
+			}));
+#endif
+            panel.AddSubMenu(new ActionMenuItem("Reset Layout", () => editor.ResetLayout()));
+			AddMenu(panel);
 
             var view = new MenuItem("View");
             var zoom = view.AddSubMenu(new EntryMenuItem("Zoom"));

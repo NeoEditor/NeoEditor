@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using DynamicPanels;
 using HarmonyLib;
 using NeoEditor.Patches;
 using UnityEngine;
@@ -18,11 +20,17 @@ namespace NeoEditor
         public static bool Enabled = false;
         public static UnityModManager.ModEntry Entry;
 
+        public static string OptionsFolderPath = "Options/NeoEditor/";
+        public static string LayoutConfigFile = OptionsFolderPath + "Layout";
+
         public static void Load(UnityModManager.ModEntry modEntry)
         {
             ADOStartup.ModWasAdded(modEntry.Info.Id);
             harmony = new Harmony(modEntry.Info.Id);
             Entry = modEntry;
+
+            if (!Directory.Exists(OptionsFolderPath)) Directory.CreateDirectory(OptionsFolderPath);
+
             Assets.Load();
 #if DEBUG
 			NeoLogger.Setup(modEntry.Logger, NeoLogger.LogLevel.Debug);
@@ -36,8 +44,15 @@ namespace NeoEditor
 
                 if (value)
                 {
-                    harmony.PatchAll(Assembly.GetExecutingAssembly());
-                }
+					harmony.PatchAll(Assembly.GetExecutingAssembly());
+					harmony.Patch(
+						typeof(PanelUtils).GetNestedType("Internal", AccessTools.all).GetMethod("CreatePanel"),
+						transpiler: typeof(DynamicPanelsPatch.LoadPanel).GetMethod(
+						    "Transpiler",
+						    AccessTools.all
+						)
+					);
+				}
                 else
                 {
                     harmony.UnpatchAll(entry.Info.Id);

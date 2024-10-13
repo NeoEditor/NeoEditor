@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using ADOFAI;
-using NeoEditor.Tabs;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,8 +13,6 @@ namespace NeoEditor.Inspector
         public RectTransform content;
         public RectTransform buttons;
         public TMP_Text title;
-
-        public TabBase parentTab;
 
         List<EventInspectorPanel> categories = new List<EventInspectorPanel>();
 

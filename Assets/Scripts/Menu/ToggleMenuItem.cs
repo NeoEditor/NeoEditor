@@ -16,7 +16,7 @@ namespace NeoEditor.Menu
             string text,
             EditorKeybind shortcut,
             Action<bool> action,
-            Func<GameObject, bool> onActive = null
+            Func<MenuButton, bool> onActive = null
         )
             : base(text, shortcut, onActive)
         {

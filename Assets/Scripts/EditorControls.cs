@@ -78,7 +78,7 @@ namespace NeoEditor
                 TimeSpan now = TimeSpan.FromSeconds(conductor.song.time);
 
                 time.text =
-                    $"{now.Minutes}:{now.Seconds.ToString("00")}.{now.Milliseconds.ToString("000")}\t({scrController.instance.currentSeqID}/{NeoEditor.Instance.floors.Count - 1})";
+                    $"<b>{now.Minutes}:{now.Seconds.ToString("00")}.{now.Milliseconds.ToString("000")}</b> <color=#ffffff64>{scrController.instance.currentSeqID}/{NeoEditor.Instance.floors.Count - 1}</color>";
 
                 changingSlider = true;
                 slider.value = conductor.song.time / conductor.song.clip.length;

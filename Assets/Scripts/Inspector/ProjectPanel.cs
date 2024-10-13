@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using ADOFAI;
-using NeoEditor.Tabs;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,8 +10,6 @@ namespace NeoEditor.Inspector
     public class ProjectPanel : InspectorPanel
     {
         public RectTransform content;
-
-        public ProjectTab parentTab;
 
         PropertiesPanel songSettings;
         PropertiesPanel levelSettings;
@@ -58,10 +55,6 @@ namespace NeoEditor.Inspector
             songSettings.Init(this, song);
             levelSettings.Init(this, level);
             miscSettings.Init(this, misc);
-
-            //songSettings.parentTab = parentTab;
-            //levelSettings.parentTab = parentTab;
-            //miscSettings.parentTab = parentTab;
         }
 
         public void SetProperties(LevelEvent song, LevelEvent level, LevelEvent misc)
