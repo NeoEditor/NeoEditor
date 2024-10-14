@@ -78,6 +78,7 @@ MonoBehaviour:
   - <StagingRoot>
   definitions:
   - {fileID: 5897886265953266890, guid: fa12daa6ec0fc6e498e1f126956cc7d3, type: 3}
+  - {fileID: 5897886265953266890, guid: 47588e3d37f573d458b0eaa6cc8109c2, type: 3}
 --- !u!114 &8865512037302858118
 MonoBehaviour:
   m_ObjectHideFlags: 0
