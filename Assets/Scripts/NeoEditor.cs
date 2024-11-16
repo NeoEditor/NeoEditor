@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using ADOFAI;
 using ADOFAI.Editor;
+using ADOFAI.Editor.Components.Gradients;
 using ADOFAI.Editor.ParticleEditor;
 using ADOFAI.LevelEditor.Controls;
 using DG.Tweening;
@@ -63,6 +64,7 @@ namespace NeoEditor
         public ConfirmPopup confirmPopup;
         public ConfirmPopup confirmPopupLarge;
         public RDColorPickerPopup colorPickerPopup;
+        public GradientEditor gradientEditorPopup;
 
 		public Button popupBlocker;
 		private List<Action> _popupStack = new List<Action>();
@@ -1179,7 +1181,7 @@ namespace NeoEditor
             }
 			if (unsavedChanges)
 			{
-				text += "<color=#ffffff80> · unsaved</color>";
+				text += "<color=#ffffff80> ï¿½ unsaved</color>";
 			}
 
 			filenameText.text = text;
