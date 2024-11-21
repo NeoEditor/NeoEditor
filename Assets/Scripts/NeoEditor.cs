@@ -177,10 +177,10 @@ namespace NeoEditor
 		public int changingState;
 
 		[NonSerialized]
-		public List<scnEditor.LevelState> undoStates;
+		public List<scnEditor.LevelState> undoStates = new List<scnEditor.LevelState>();
 
 		[NonSerialized]
-		public List<scnEditor.LevelState> redoStates;
+		public List<scnEditor.LevelState> redoStates = new List<scnEditor.LevelState>();
 
 		[NonSerialized]
 		public LevelEventType settingsEventType;
@@ -646,6 +646,7 @@ namespace NeoEditor
 
 		private bool TryApplicationQuit()
         {
+	        // TODO: Implement TryApplicationQuit.
             //if (this.unsavedChanges && !this.forceQuit)
             //{
             //	if (this.playMode)
@@ -811,6 +812,7 @@ namespace NeoEditor
                         break;
                     case "MissingFiles":
                         missingFilesPopupContainer.SetActive(true);
+                        // TODO: Implement MissingFiles.
                         //List<string> missingFiles = GetMissingFiles();
                         StringBuilder stringBuilder = new StringBuilder();
                         //foreach (string value in missingFiles)
@@ -1189,23 +1191,29 @@ namespace NeoEditor
 
         public LevelEvent AddEvent(int floor, LevelEventType type)
         {
-            LevelEvent levelEvent = new LevelEvent(floor, type);
-			events.Add(levelEvent);
+	        using (new SaveStateScope(null, false, true, false))
+	        {
+		        LevelEvent levelEvent = new LevelEvent(floor, type);
+		        events.Add(levelEvent);
 
-            return levelEvent;
-		}
+		        return levelEvent;
+	        }
+        }
 
 		public void AddEvent(LevelEventType type)
 		{
-			timelinePanel.ApplySelector(type);
+			using (new SaveStateScope(null, false, true, false))
+			{
+				timelinePanel.ApplySelector(type);
+			}
 		}
 
 		private IEnumerator OpenLevelCo(string definedLevelPath = null)
         {
             Instance.Pause();
             ClearAllFloorOffsets();
-            //this.redoStates.Clear();
-            //this.undoStates.Clear();
+            redoStates.Clear();
+            undoStates.Clear();
             bool flag = definedLevelPath == null;
             string lastLevelPath = customLevel.levelPath;
             if (flag)
@@ -1385,133 +1393,142 @@ namespace NeoEditor
 
 		public void Undo()
 		{
-			this.UndoOrRedo(false);
+			UndoOrRedo(false);
 		}
 
 		public void Redo()
 		{
-			this.UndoOrRedo(true);
+			UndoOrRedo(true);
 		}
 
 		public void UndoOrRedo(bool redo)
 		{
-			//Debug.Log("UndoOrRedo - I was called");
-			//if (this.changingState != 0)
-			//{
-			//	return;
-			//}
-			//List<scnEditor.LevelState> list = redo ? this.redoStates : this.undoStates;
-			//if (list.Count > 0)
-			//{
-			//	bool dataHasChanged = list.Count > 0 && list.Last<scnEditor.LevelState>().data != null;
-			//	using (new SaveStateScope(this, false, dataHasChanged, false))
-			//	{
-			//		if (!redo)
-			//		{
-			//			this.redoStates.Add(this.undoStates.Pop<scnEditor.LevelState>());
-			//		}
-			//		scnEditor.LevelState levelState = list.Last<scnEditor.LevelState>();
-			//		int[] selectedDecorationIndices = levelState.selectedDecorationIndices;
-			//		if (levelState.data != null)
-			//		{
-			//			this.customLevel.levelData = levelState.data;
-			//		}
-			//		this.DeselectFloors(false);
-			//		this.RemakePath(true, true);
-			//		this.DeselectAllDecorations();
-			//		this.UpdateDecorationObjects();
-			//		foreach (int num in selectedDecorationIndices)
-			//		{
-			//			if (this.customLevel.levelData.decorations.Count > num)
-			//			{
-			//				LevelEvent levelEvent = this.customLevel.levelData.decorations[num];
-			//				this.SelectDecoration(levelEvent, false, false, true, false);
-			//			}
-			//		}
-			//		if (!this.SelectionDecorationIsEmpty())
-			//		{
-			//			LevelEvent levelEvent2 = this.selectedDecorations[this.selectedDecorations.Count - 1];
-			//			this.levelEventsPanel.ShowInspector(true, true);
-			//			this.levelEventsPanel.ShowPanel(levelEvent2.eventType, 0);
-			//		}
-			//		this.propertyControlDecorationsList.RefreshItemsList(true);
-			//		List<int> list2 = levelState.selectedFloors;
-			//		if (list2.Count > 1)
-			//		{
-			//			this.MultiSelectFloors(this.floors[list2[0]], this.floors[list2[list2.Count - 1]], false);
-			//		}
-			//		else if (list2.Count == 1)
-			//		{
-			//			int index = list2[0];
-			//			this.SelectFloor(this.floors[index], true);
-			//			this.levelEventsPanel.ShowPanel(levelState.floorEventType, levelState.floorEventTypeIndex);
-			//		}
-			//		this.settingsPanel.ShowPanel(levelState.settingsEventType, 0);
-			//		if (this.particleEditor.gameObject.activeSelf && this.particleEditor.SelectedEvent != null)
-			//		{
-			//			if (this.selectedDecorations.Count == 0)
-			//			{
-			//				this.HideParticleEditor();
-			//			}
-			//			else
-			//			{
-			//				ParticleEditor particleEditor = this.particleEditor;
-			//				List<LevelEvent> list3 = this.selectedDecorations;
-			//				particleEditor.SetEvent(list3[list3.Count - 1]);
-			//			}
-			//		}
-			//		list.RemoveAt(list.Count - 1);
-			//	}
-			//}
+			Debug.Log("UndoOrRedo - I was called");
+			if (changingState != 0)
+			{
+				return;
+			}
+
+			List<scnEditor.LevelState> list = (redo ? redoStates : undoStates);
+			if (list.Count > 0)
+			{
+				bool flag = list.Count > 0 && list.Last<scnEditor.LevelState>().data != null;
+				using (new SaveStateScope(null, false, flag, false))
+				{
+					if (!redo)
+					{
+						redoStates.Add(undoStates.Pop<scnEditor.LevelState>());
+					}
+
+					scnEditor.LevelState levelState = list.Last<scnEditor.LevelState>();
+					int[] selectedDecorationIndices = levelState.selectedDecorationIndices;
+					if (levelState.data != null)
+					{
+						customLevel.levelData = levelState.data;
+					}
+
+					// DeselectFloors(false);
+					RemakePath(true, true);
+					DeselectAllDecorations();
+					UpdateDecorationObjects();
+					foreach (int num in selectedDecorationIndices)
+					{
+						if (customLevel.levelData.decorations.Count > num)
+						{
+							LevelEvent levelEvent = customLevel.levelData.decorations[num];
+							SelectDecoration(levelEvent, false, false, true, false);
+						}
+					}
+
+					if (!SelectionDecorationIsEmpty())
+					{
+						LevelEvent levelEvent2 = selectedDecorations[selectedDecorations.Count - 1];
+						levelEventsPanel.ShowInspector(true, true);
+						levelEventsPanel.ShowPanel(levelEvent2.eventType, 0);
+					}
+
+					propertyControlDecorationsList.RefreshItemsList(true);
+					List<int> list2 = levelState.selectedFloors;
+					if (list2.Count > 1)
+					{
+						// TODO: Move timeline position.
+						// MultiSelectFloors(floors[list2[0]], floors[list2[list2.Count - 1]], false);
+					}
+					else if (list2.Count == 1)
+					{
+						// TODO: Move timeline position.
+						int num2 = list2[0];
+						// SelectFloor(floors[num2], true);
+						levelEventsPanel.ShowPanel(levelState.floorEventType, levelState.floorEventTypeIndex);
+					}
+
+					settingsPanel.ShowPanel(levelState.settingsEventType, 0);
+					if (particleEditor.gameObject.activeSelf && particleEditor.SelectedEvent != null)
+					{
+						if (selectedDecorations.Count == 0)
+						{
+							HideParticleEditor();
+						}
+						else
+						{
+							List<LevelEvent> list3 = selectedDecorations;
+							particleEditor.SetEvent(list3[list3.Count - 1]);
+						}
+					}
+
+					list.RemoveAt(list.Count - 1);
+				}
+			}
 		}
 
 		public void SaveState(bool clearRedo = true, bool dataHasChanged = true)
 		{
-			//if (this.changingState != 0 || !this.initialized)
-			//{
-			//	return;
-			//}
-			//List<int> list = new List<int>();
-			//if (!this.SelectionIsEmpty())
-			//{
-			//	if (this.SelectionIsSingle())
-			//	{
-			//		list.Add(this.selectedFloors[0].seqID);
-			//	}
-			//	else
-			//	{
-			//		foreach (scrFloor scrFloor in this.selectedFloors)
-			//		{
-			//			list.Add(scrFloor.seqID);
-			//		}
-			//	}
-			//}
-			//LevelData data = this.levelData.Copy();
-			//int[] array = new int[this.selectedDecorations.Count];
-			//int num = 0;
-			//foreach (LevelEvent dec in this.selectedDecorations)
-			//{
-			//	array[num] = scrDecorationManager.GetDecorationIndex(dec);
-			//	num++;
-			//}
-			//scnEditor.LevelState levelState = new scnEditor.LevelState(data, list, array, dataHasChanged);
-			//levelState.settingsEventType = this.settingsPanel.selectedEventType;
-			//levelState.floorEventType = this.levelEventsPanel.selectedEventType;
-			//levelState.floorEventTypeIndex = this.levelEventsPanel.EventNumOfTab(levelState.floorEventType);
-			//this.undoStates.Add(levelState);
-			//if (clearRedo)
-			//{
-			//	this.redoStates.Clear();
-			//}
-			//if (this.undoStates.Count > 100)
-			//{
-			//	this.undoStates.RemoveAt(0);
-			//}
-			//if (dataHasChanged)
-			//{
-			//	this.unsavedChanges = true;
-			//}
-			//this.saveStateLastFrame = Time.frameCount;
+			if (changingState != 0 || !initialized)
+			{
+				return;
+			}
+			List<int> list = new List<int>();
+			// TODO: Save timeline position.
+			// if (!SelectionIsEmpty())
+			// {
+			// 	if (SelectionIsSingle())
+			// 	{
+			// 		list.Add(selectedFloors[0].seqID);
+			// 	}
+			// 	else
+			// 	{
+			// 		foreach (scrFloor scrFloor in selectedFloors)
+			// 		{
+			// 			list.Add(scrFloor.seqID);
+			// 		}
+			// 	}
+			// }
+			LevelData data = levelData.Copy();
+			int[] array = new int[selectedDecorations.Count];
+			int num = 0;
+			foreach (LevelEvent dec in selectedDecorations)
+			{
+				array[num] = scrDecorationManager.GetDecorationIndex(dec);
+				num++;
+			}
+			scnEditor.LevelState levelState = new scnEditor.LevelState(data, list, array, dataHasChanged);
+			levelState.settingsEventType = settingsPanel.selectedEventType;
+			levelState.floorEventType = levelEventsPanel.selectedEventType;
+			levelState.floorEventTypeIndex = levelEventsPanel.EventNumOfTab(levelState.floorEventType);
+			undoStates.Add(levelState);
+			if (clearRedo)
+			{
+				redoStates.Clear();
+			}
+			if (undoStates.Count > 100)
+			{
+				undoStates.RemoveAt(0);
+			}
+			if (dataHasChanged)
+			{
+				unsavedChanges = true;
+			}
+			saveStateLastFrame = Time.frameCount;
 		}
 
 		public void ShowExportWindow(int state)
@@ -1560,13 +1577,13 @@ namespace NeoEditor
 
 		private void UpdateEventVisibility(LevelEvent e)
 		{
-			scrDecoration scrDecoration = this.allDecorations.Find((scrDecoration d) => d.sourceLevelEvent == e);
+			scrDecoration scrDecoration = allDecorations.Find((scrDecoration d) => d.sourceLevelEvent == e);
 			scrDecoration.SetVisible(e.visible && !scrDecoration.forceHide);
 		}
 
 		public void OnDecorationSelected(LevelEvent decorationEvent)
 		{
-			//if (!this.SelectionIsEmpty())
+			//if (!SelectionIsEmpty())
 			//{
 			//	this.DeselectFloors(false);
 			//}
@@ -1593,7 +1610,7 @@ namespace NeoEditor
 
 		public void SelectDecoration(LevelEvent levelEvent, bool jumpToDecoration = true, bool showPanel = true, bool ignoreDeselection = false, bool ignoreAdjustRect = false)
 		{
-			using (new SaveStateScope(this, false, false, false))
+			using (new SaveStateScope(null, false, false, false))
 			{
 				bool flag = selectedDecorations.Contains(levelEvent);
 				if (flag && RDInput.holdingControl && !ignoreDeselection)
@@ -1646,6 +1663,8 @@ namespace NeoEditor
 							propertyControlDecorationsList.OnItemSelected(levelEvent);
 						}
 						selectingFloorID = false;
+
+						// TODO: Timeline panel reset.
 					}
 				}
 			}
@@ -1653,7 +1672,7 @@ namespace NeoEditor
 
 		public void DeselectDecoration(LevelEvent levelEvent)
 		{
-			using (new SaveStateScope(this, false, true, false))
+			using (new SaveStateScope(null, false, true, false))
 			{
 				if (selectedDecorations.Count <= 1)
 				{
@@ -1676,7 +1695,7 @@ namespace NeoEditor
 			{
 				return;
 			}
-			using (new SaveStateScope(this, false, false, false))
+			using (new SaveStateScope(null, false, false, false))
 			{
 				//levelEventsPanel.ShowInspector(false, false);
 				scrDecorationManager.instance.ClearDecorationBorders();
@@ -1716,7 +1735,7 @@ namespace NeoEditor
 
 		public void AddDecoration(LevelEvent dec, int index = -1)
 		{
-			using (new SaveStateScope(this, false, true, false))
+			using (new SaveStateScope(null, false, true, false))
 			{
 				int index2 = (index == -1) ? levelData.decorations.Count : (index + 1);
 				levelData.decorations.Insert(index2, dec);
@@ -1753,7 +1772,7 @@ namespace NeoEditor
 			{
 				return;
 			}
-			using (new SaveStateScope(this, false, true, false))
+			using (new SaveStateScope(null, false, true, false))
 			{
 				if (evnt.IsDecoration)
 				{
@@ -1789,7 +1808,7 @@ namespace NeoEditor
 			{
 				return;
 			}
-			using (new SaveStateScope(this, false, true, false))
+			using (new SaveStateScope(null, false, true, false))
 			{
 				for (int i = 0; i < events.Count; i++)
 				{

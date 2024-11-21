@@ -125,19 +125,19 @@ namespace NeoEditor.Menu
             file.AddSubMenu(new SeparatorMenuItem());
 			file.AddSubMenu(new ActionMenuItem("Open", new EditorKeybind(KeyModifier.Control, KeyCode.O), () =>
 			{
-				NeoEditor.Instance.OpenLevel();
+				editor.OpenLevel();
 			}));
             file.AddSubMenu(new ActionMenuItem("Open Recent",
                 new EditorKeybind(KeyModifier.Control | KeyModifier.Shift, KeyCode.O), () => { }));
             file.AddSubMenu(new SeparatorMenuItem());
 			file.AddSubMenu(new ActionMenuItem("Save", new EditorKeybind(KeyModifier.Control, KeyCode.S), () =>
 			{
-				NeoEditor.Instance.SaveLevel();
+				editor.SaveLevel();
 			}));
 			file.AddSubMenu(new ActionMenuItem("Save As",
                 new EditorKeybind(KeyModifier.Control | KeyModifier.Shift, KeyCode.S), () =>
 			{
-				NeoEditor.Instance.SaveLevelAs();
+				editor.SaveLevelAs();
 			}));
 			file.AddSubMenu(new SeparatorMenuItem());
             file.AddSubMenu(new ActionMenuItem("Help", new EditorKeybind(KeyModifier.Control, KeyCode.H), () => { }));
@@ -147,9 +147,9 @@ namespace NeoEditor.Menu
             AddMenu(file);
 
             var edit = new MenuItem("Edit");
-            edit.AddSubMenu(new ActionMenuItem("Undo", new EditorKeybind(KeyModifier.Control, KeyCode.Z), () => { }));
+            edit.AddSubMenu(new ActionMenuItem("Undo", new EditorKeybind(KeyModifier.Control, KeyCode.Z), () => { editor.Undo(); }));
             edit.AddSubMenu(new ActionMenuItem("Redo", 
-                new EditorKeybind(KeyModifier.Control | KeyModifier.Shift, KeyCode.Z), () => { }));
+                new EditorKeybind(KeyModifier.Control | KeyModifier.Shift, KeyCode.Z), () => { editor.Redo(); }));
             edit.AddSubMenu(new SeparatorMenuItem());
             edit.AddSubMenu(new ActionMenuItem("Cut", new EditorKeybind(KeyModifier.Control, KeyCode.X), () => { }));
             edit.AddSubMenu(new ActionMenuItem("Copy", new EditorKeybind(KeyModifier.Control, KeyCode.C), () => { }));
